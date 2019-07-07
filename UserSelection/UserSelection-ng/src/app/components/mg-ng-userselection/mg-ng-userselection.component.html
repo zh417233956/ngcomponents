@@ -1,0 +1,9 @@
+<button nz-button [nzType]="'primary'" (click)="showModal()"><span>{{title}}</span></button>
+<nz-modal [(nzVisible)]="isVisible" nzTitle="{{title}}" nzCancelText="{{cancleText}}" nzOkText="{{okText}}" (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()"
+          [nzBodyStyle]="bodyStyle" (nzAfterOpen)="afterOpen()" (nzAfterClose)="afterClose()"  [nzClosable]="closable" [nzOkLoading]="okLoading" [nzCancelLoading]="cancelLoding"
+          [nzOkDisabled]="okDisabled" [nzCancelDisabled]="cancelDisabled" [nzKeyboard]="keyboard" [nzMask]="mask" [nzMaskClosable]="maskClosable" [nzMaskStyle]="maskStyle"
+          [nzOkType]="okType" [nzStyle]="floatStyle" [nzWidth]="width" [nzClassName]="className" [nzWrapClassName]="wrapClassName" [nzZIndex]="zIndex" [nzContent]="content" >
+    <p>内容 1</p>
+    <p>内容 2</p>
+    <p>内容 3</p>
+</nz-modal>

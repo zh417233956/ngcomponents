@@ -1,0 +1,1 @@
+export * from './src/app/mangomodel/mangomodel.module';
