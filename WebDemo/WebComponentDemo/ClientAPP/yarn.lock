@@ -4033,6 +4033,13 @@ methods@~1.1.2:
   resolved "https://registry.npm.taobao.org/methods/download/methods-1.1.2.tgz#5529a4d67654134edcc5266656835b0f851afcee"
   integrity sha1-VSmk1nZUE07cxSZmVoNbD4Ua/O4=
 
+mg-ng-userselection@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.npm.taobao.org/mg-ng-userselection/download/mg-ng-userselection-1.0.0.tgz#4d5762def62a3b2cbf3f550e5a4a803b5b293bc7"
+  integrity sha1-TVdi3vYqOyy/P1UOWkqAO1spO8c=
+  dependencies:
+    tslib "^1.9.0"
+
 micromatch@^3.1.10, micromatch@^3.1.4, micromatch@^3.1.8:
   version "3.1.10"
   resolved "https://registry.npm.taobao.org/micromatch/download/micromatch-3.1.10.tgz#70859bc95c9840952f359a068a3fc49f9ecfac23"
@@ -6959,13 +6966,6 @@ yn@^2.0.0:
   version "2.0.0"
   resolved "https://registry.npm.taobao.org/yn/download/yn-2.0.0.tgz#e5adabc8acf408f6385fc76495684c88e6af689a"
   integrity sha1-5a2ryKz0CPY4X8dklWhMiOavaJo=
-
-zh-ng-demo@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.npm.taobao.org/zh-ng-demo/download/zh-ng-demo-1.0.0.tgz#bf5a275d041ea6d1043cc7e546dcf3b55d76667b"
-  integrity sha1-v1onXQQeptEEPMflRtzztV12Zns=
-  dependencies:
-    tslib "^1.9.0"
 
 zone.js@~0.9.1:
   version "0.9.1"
