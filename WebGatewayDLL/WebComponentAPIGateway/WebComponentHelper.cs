@@ -60,16 +60,13 @@ namespace WebComponentAPIGateway
                 {
                     uuid = Guid.NewGuid().ToString();
                 }
-                //await Task.Run(async () =>
-                await Task.Run(() =>
+                await Task.Run(async () =>
+                //await Task.Run(() =>
                 {
                     var requsetData = new { Cookies = Request.Cookies, Header = Request.Headers, Method = Request.Method, QueryString = Request.Query, PostData = PostData };
                     var param = Newtonsoft.Json.JsonConvert.SerializeObject(requsetData);
-                    //TODO:进行请求转发，通过微服务API获取真正的组件数据
-                    //result = await HttpClientHelper.HttpPostAsync(Host + Path, param, "application/json");
-
-                    result = param;
-
+                    //进行请求转发，通过微服务API获取真正的组件数据
+                    result = await HttpClientHelper.HttpPostAsync(Host + Path, param, "application/json");
                 });
             }
             catch (Exception)
