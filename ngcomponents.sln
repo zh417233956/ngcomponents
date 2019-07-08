@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebComponentDemo", "WebDemo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebComponentAPIGateway", "WebGatewayDLL\WebComponentAPIGateway\WebComponentAPIGateway.csproj", "{3C4F53BC-DE6E-4375-A30E-230318716AF1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebComponentWebAPI", "WebGatewayDLL\WebComponentWebAPI\WebComponentWebAPI.csproj", "{7513FEB2-6571-4319-A519-7C557C994A2B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{3C4F53BC-DE6E-4375-A30E-230318716AF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3C4F53BC-DE6E-4375-A30E-230318716AF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3C4F53BC-DE6E-4375-A30E-230318716AF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7513FEB2-6571-4319-A519-7C557C994A2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7513FEB2-6571-4319-A519-7C557C994A2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7513FEB2-6571-4319-A519-7C557C994A2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7513FEB2-6571-4319-A519-7C557C994A2B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -41,6 +47,7 @@ Global
 		{148ECDB7-8045-48FA-9791-2A027A32452F} = {04CCD11E-B33C-495B-BF8C-454DD1828C77}
 		{4B894F6F-B692-4F5A-9064-C052B07D6A97} = {066661A1-AF1A-4569-8564-7DFC842CF9CA}
 		{3C4F53BC-DE6E-4375-A30E-230318716AF1} = {C62E823E-8C36-44D0-B984-66BB5E48C4E8}
+		{7513FEB2-6571-4319-A519-7C557C994A2B} = {C62E823E-8C36-44D0-B984-66BB5E48C4E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {81D89D67-3A7C-47D4-9E79-9D13107F4E1B}
