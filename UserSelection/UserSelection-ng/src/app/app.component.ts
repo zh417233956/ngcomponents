@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-root',
@@ -6,8 +6,7 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.less']
 })
 export class AppComponent implements OnInit {
-  title = '用户选择';
-  bodyStyle = { 'width.px': 100, 'height.px': 100 };
+  title = '用户选择页面';
   constructor() { }
   mgOnOk(data): void {
     // tslint:disable-next-line:no-console
