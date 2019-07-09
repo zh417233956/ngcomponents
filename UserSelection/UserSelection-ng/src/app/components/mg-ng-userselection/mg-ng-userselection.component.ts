@@ -1,4 +1,6 @@
-import {Component, Input, Output, OnInit, EventEmitter, TemplateRef, Type} from '@angular/core';
+import { Component, Input, Output, OnInit, EventEmitter, TemplateRef, Type } from '@angular/core';
+import { HttpService } from '../mg-ng-service/http-service.service';
+
 @Component({
   // tslint:disable-next-line:component-selector
   selector: 'mg-ng-userselection',
@@ -32,6 +34,17 @@ import {Component, Input, Output, OnInit, EventEmitter, TemplateRef, Type} from 
         border-radius: 15px !important;
         font-size: 15px;
       }
+      .div{
+        width: 45%;
+        float: left;
+        background: #CEECEB;
+        height: 200px;
+        margin: 5px;
+      }
+      .div .chlid{
+        background: #F1F1F1;
+        height: 30px;
+      }
     `
   ]
 })
@@ -39,7 +52,7 @@ import {Component, Input, Output, OnInit, EventEmitter, TemplateRef, Type} from 
  * 员工选择组件
  */
 export class MgNgUserselectionComponent<T = any> implements OnInit {
-  constructor() {
+  constructor(private httpService: HttpService) {
   }
   // 是否显示弹窗
   isVisible = false;
@@ -63,7 +76,7 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
   okText = '确认';
   // body自定义样式
   @Input()
-  bodyStyle = { 'height.px': 500 }
+  bodyStyle = { 'height.px': 500 };
   // 是否显示右上角关闭按钮
   @Input()
   closable = true;
@@ -171,6 +184,9 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
     console.log('初始化');
     this.checkChange('history');
     this.isduoxuan === true ?  this.showResult = true : this.showResult = false;
+    this.httpService.get('/webcomponent/index', {}, false).subscribe(res => {
+      console.log(res);
+    });
   }
   // 显示弹窗
   showModal(): void {
