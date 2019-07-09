@@ -1,4 +1,5 @@
 import {Component, OnInit} from '@angular/core';
+import {NzMessageService} from 'ng-zorro-antd/message';
 
 @Component({
   selector: 'app-root',
@@ -8,7 +9,7 @@ import {Component, OnInit} from '@angular/core';
 export class AppComponent implements OnInit {
   title = '用户选择';
   bodyStyle = { 'width.px': 100, 'height.px': 100 };
-  constructor() { }
+  constructor(public msg: NzMessageService) { }
   mgOnOk(data): void {
     // tslint:disable-next-line:no-console
     console.info('所选择的数据:' + JSON.stringify(data));
@@ -26,5 +27,8 @@ export class AppComponent implements OnInit {
     console.info(data);
   }
   ngOnInit(): void {
+  }
+  test(): void {
+    this.msg.error('11111');
   }
 }

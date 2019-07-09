@@ -2,41 +2,58 @@
 <nz-modal [(nzVisible)]="isVisible" nzTitle="{{title}}" nzCancelText="{{cancleText}}" nzOkText="{{okText}}" (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()"
           [nzBodyStyle]="bodyStyle" (nzAfterOpen)="afterOpen()" (nzAfterClose)="afterClose()"  [nzClosable]="closable" [nzOkLoading]="okLoading" [nzCancelLoading]="cancelLoding"
           [nzOkDisabled]="okDisabled" [nzCancelDisabled]="cancelDisabled" [nzKeyboard]="keyboard" [nzMask]="mask" [nzMaskClosable]="maskClosable" [nzMaskStyle]="maskStyle"
-          [nzOkType]="okType" [nzStyle]="floatStyle" [nzWidth]="width" [nzClassName]="className" [nzWrapClassName]="wrapClassName" [nzZIndex]="zIndex">
+          [nzOkType]="okType" [nzStyle]="floatStyle" [nzWidth]="width" [nzClassName]="className" [nzWrapClassName]="wrapClassName" [nzZIndex]="zIndex" [nzContent]="content" >
+
+</nz-modal>
+
+<ng-template #content>
   <section>
     <span class="span">快捷搜索:</span>
     <nz-tag nzMode="default" [nzChecked]="true" class="tag" (click)="checkChange('mydian')">本店</nz-tag>
     <nz-tag nzMode="default" [nzChecked]="true" class="tag" (click)="checkChange('myarea')">本区</nz-tag>
     <nz-tag nzMode="default" [nzChecked]="true" class="tag" (click)="checkChange('myareachild')">本区下属</nz-tag>
     <nz-tag nzMode="default" [nzChecked]="true" class="tag" (click)="checkChange('history')">最近</nz-tag>
-    <input nz-input nzSize="default" class="input" placeholder="{{text}}"/>
-    <input nz-input nzSize="default" class="input" placeholder="输入组织名称或组织ID"/>
+    <label><input nz-input nzSize="default" class="input" placeholder="{{text}}"/></label>
+    <label><input nz-input nzSize="default" class="input" placeholder="输入组织名称或组织ID"/></label>
   </section>
   <section *ngIf="showHistory">
     <div class="div">
-      <div class="chlid">
-        <span class="span">历史记录:</span>
-        <nz-tag nzMode="default" [nzChecked]="true" [nzColor]="'#75B4D6'" class="tag1" >管理历史记录</nz-tag>
+      <div class="chlid-top">
+        <span class="span">最近结果:</span>
+        <nz-tag nzMode="default" [nzChecked]="true" [nzColor]="'#75B4D6'" class="tag1" (click)="refHistory()" >管理历史记录</nz-tag>
+      </div>
+      <div>
+        <nz-tag nzMode="default" [nzColor]="'#75B4D6'" [nzChecked]="true">全部选择</nz-tag>
+        <nz-tag nzMode="checkable" [nzChecked]="false" *ngFor="let user of historyUserList; let i = index">{{ user.UserName }}</nz-tag>
       </div>
     </div>
     <div class="div">
-      <div class="chlid">
+      <div class="chlid-top">
         <span class="span">常用结果:</span>
+      </div>
+      <div>
+        <nz-tag nzMode="default" [nzColor]="'#75B4D6'" [nzChecked]="true">全部选择</nz-tag>
+        <nz-tag nzMode="checkable" [nzChecked]="false" *ngFor="let user of changyongUserList; let i = index">{{ user.UserName }}</nz-tag>
       </div>
     </div>
   </section>
   <section *ngIf="showSearch">
-    <div class="div">
-      <div class="chlid">
+    <div class="div last">
+      <div class="chlid-top">
         <span class="span">搜索结果:</span>
       </div>
     </div>
   </section>
   <section *ngIf="showResult">
     <div class="div last">
-      <div class="chlid">
+      <div class="chlid-top">
         <span class="span">已选择结果:</span>
+      </div>
+      <div>
+        <nz-tag *ngFor="let tag of tags; let i = index" [nzMode]="i === 0 ? 'default' : 'closeable'" (nzAfterClose)="handleClose(tag)">
+          {{ sliceTagName(tag) }}
+        </nz-tag>
       </div>
     </div>
   </section>
-</nz-modal>
+</ng-template>

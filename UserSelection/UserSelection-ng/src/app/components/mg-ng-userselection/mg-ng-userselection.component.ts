@@ -1,5 +1,6 @@
-import { Component, Input, Output, OnInit, EventEmitter, TemplateRef, Type } from '@angular/core';
+import { Component, Input, Output, OnInit, EventEmitter } from '@angular/core';
 import { HttpService } from '../mg-ng-service/http-service.service';
+import { NzMessageService } from 'ng-zorro-antd/message';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -35,18 +36,19 @@ import { HttpService } from '../mg-ng-service/http-service.service';
         font-size: 15px;
       }
       .div{
-        width: 45%;
+        width: 49%;
         float: left;
         background: #CEECEB;
         height: 200px;
-        margin: 5px;
+        margin: 4px;
+        overflow-y: auto;
       }
       .last{
-        width: 91%;
+        width: 99%;
       }
-      .div .chlid{
+      .div .chlid-top{
         background: #F1F1F1;
-        height: 30px;
+        height: 15%;
       }
     `
   ]
@@ -55,7 +57,7 @@ import { HttpService } from '../mg-ng-service/http-service.service';
  * 员工选择组件
  */
 export class MgNgUserselectionComponent<T = any> implements OnInit {
-  constructor(private httpService: HttpService) {
+  constructor(private httpService: HttpService , public msg: NzMessageService) {
   }
   // 是否显示弹窗
   isVisible = false;
@@ -123,7 +125,7 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
   @Input()
   wrapClassName: string;
   // zIndex
-  zIndex = 1000;
+  zIndex = 400;
   // 弹窗内容
   // content: string | TemplateRef<{}> | Component | Type<T>;
   // 是否多选 默认 false（功能类）
@@ -175,6 +177,9 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
   @Output()
   mgAfterClose = new EventEmitter();
 
+  tags = ['选择全部', 'Tag 2', 'Tag 3'];
+  historyUserList = [];
+  changyongUserList = [];
   // 弹窗开启之后回调事件
   afterOpen(): void {
     this.mgAfterOpen.emit('弹窗打开了');
@@ -187,9 +192,6 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
     console.log('初始化');
     this.checkChange('history');
     this.isduoxuan === true ?  this.showResult = true : this.showResult = false;
-    this.httpService.get('/webcomponent/index', {}, false).subscribe(res => {
-      console.log(res);
-    });
   }
   // 显示弹窗
   showModal(): void {
@@ -214,5 +216,53 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
       this.showHistory = false;
       this.showSearch = true;
     }
+    this.bianData(type);
+  }
+  // 管理历史记录
+  refHistory(): void {
+    this.msg.warning(`暂未实现`);
+  }
+  // 关掉tags
+  handleClose(removedTag: {}): void {
+    this.tags = this.tags.filter(tag => tag !== removedTag);
+  }
+  sliceTagName(tag: string): string {
+    const isLongTag = tag.length > 20;
+    return isLongTag ? `${tag.slice(0, 20)}...` : tag;
+  }
+  // 获取数据
+  bianData(type: string): void {
+    const param = {
+      type,
+      action: 'user',
+      pagename : 'noPageName',
+      page : 1,
+      size: this.pizeSize,
+      ischangyong: 1,
+      selectIds: '',
+      ispowerorg: this.ispowerorg,
+      isShowDeleted: this.isShowDeleted
+    };
+    this.httpService.get('/webcomponent/index', param, false).subscribe(res => {
+      if (res.flag === 1) {
+        if ( type === 'history') {
+          if (res.data.data.length > 0) {
+            const dataList = res.data.data;
+            const changyong = res.data.changyong;
+            const history = res.data.history;
+            changyong.forEach(e => {
+              this.changyongUserList.push(dataList.find( a => a.UserId === e ));
+            });
+            history.forEach(e => {
+              this.historyUserList.push(dataList.find( a => a.UserId === e ));
+            });
+          } else {
+            this.msg.error(res.data.msg);
+          }
+        }
+      } else {
+        this.msg.error('程序异常');
+      }
+    });
   }
 }
