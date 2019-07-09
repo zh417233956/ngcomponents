@@ -2,7 +2,7 @@
 <nz-modal [(nzVisible)]="isVisible" nzTitle="{{title}}" nzCancelText="{{cancleText}}" nzOkText="{{okText}}" (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()"
           [nzBodyStyle]="bodyStyle" (nzAfterOpen)="afterOpen()" (nzAfterClose)="afterClose()"  [nzClosable]="closable" [nzOkLoading]="okLoading" [nzCancelLoading]="cancelLoding"
           [nzOkDisabled]="okDisabled" [nzCancelDisabled]="cancelDisabled" [nzKeyboard]="keyboard" [nzMask]="mask" [nzMaskClosable]="maskClosable" [nzMaskStyle]="maskStyle"
-          [nzOkType]="okType" [nzStyle]="floatStyle" [nzWidth]="width" [nzClassName]="className" [nzWrapClassName]="wrapClassName" [nzZIndex]="zIndex" [nzContent]="content" >
+          [nzOkType]="okType" [nzStyle]="floatStyle" [nzWidth]="width" [nzClassName]="className" [nzWrapClassName]="wrapClassName" [nzZIndex]="zIndex">
   <section>
     <span class="span">快捷搜索:</span>
     <nz-tag nzMode="default" [nzChecked]="true" class="tag" (click)="checkChange('mydian')">本店</nz-tag>
@@ -33,7 +33,7 @@
     </div>
   </section>
   <section *ngIf="showResult">
-    <div class="div">
+    <div class="div last">
       <div class="chlid">
         <span class="span">已选择结果:</span>
       </div>

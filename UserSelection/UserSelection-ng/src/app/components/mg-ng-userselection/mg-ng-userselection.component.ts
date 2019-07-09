@@ -41,6 +41,9 @@ import { HttpService } from '../mg-ng-service/http-service.service';
         height: 200px;
         margin: 5px;
       }
+      .last{
+        width: 91%;
+      }
       .div .chlid{
         background: #F1F1F1;
         height: 30px;
@@ -122,7 +125,7 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
   // zIndex
   zIndex = 1000;
   // 弹窗内容
-  content: string | TemplateRef<{}> | Component | Type<T>;
+  // content: string | TemplateRef<{}> | Component | Type<T>;
   // 是否多选 默认 false（功能类）
   @Input()
   isduoxuan = true;
