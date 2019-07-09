@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpRequest } from '@angular/common/http';
 import { Observable } from 'rxjs';
-// @ts-ignore
-import { _HttpClinet } from '@delon/mock';
 export interface HeaderParam {
   key: string;
   value: string;
@@ -14,9 +12,7 @@ export interface HeaderParam {
 export class HttpService {
   base: string;
   constructor(
-    private http: HttpClient,
-    // tslint:disable-next-line:variable-name
-    private _http: _HttpClinet
+    private http: HttpClient
   ) {
     this.base = '';
   }
