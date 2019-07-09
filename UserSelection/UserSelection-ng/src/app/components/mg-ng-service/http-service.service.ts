@@ -31,7 +31,7 @@ export class HttpService {
       });
       url += parameter.substring(0, parameter.length - 1);
     }
-    return this._http.get<T>(this.base + url, { withCredentials: credentials });
+    return this.http.get<T>(this.base + url, { withCredentials: credentials });
   }
 
   /**
