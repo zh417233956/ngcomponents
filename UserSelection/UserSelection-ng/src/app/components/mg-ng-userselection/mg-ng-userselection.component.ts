@@ -9,7 +9,58 @@ import { NzMessageService } from 'ng-zorro-antd/message';
   styleUrls: ['./mg-ng-userselection.component.less'],
   styles: [
     `
-     
+      .span{
+        padding: 15px;
+        font-size: 15px;
+        display: inline-block;
+        line-height: 2px;
+      }
+      .tag{
+        height: 25px !important;
+        border-radius: 15px !important;
+        text-align: -webkit-center;
+        font-size: 15px;
+      }
+      .tag1{
+        height: 25px !important;
+        border-radius: 5px !important;
+        text-align: -webkit-center;
+        font-size: 12px!important;
+        float: right;
+        margin-top: 3px!important;
+      }
+      .tag2{
+        margin: 4px 0 0 4px !important;
+      }
+      .input{
+        width: 200px !important;
+        margin: 0 8px 8px 0!important;
+        border-radius: 15px !important;
+        font-size: 15px;
+      }
+      .div{
+        width: 49%;
+        float: left;
+        background: #CEECEB;
+        height: 200px;
+        margin: 4px;
+        overflow-y: auto;
+      }
+      .div-three{
+        width: 99%;
+        background: #EAF5FF;
+      }
+      .div-last{
+        width: 99%;
+        background: #F1F1F1;
+      }
+      .chlid-top{
+        background: #F1F1F1;
+        height: 15%;
+      }
+      .chlid-top-last{
+        background: #ffffff;
+      }
     `
   ]
 })
@@ -216,7 +267,6 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
   // 关掉tags
   handleClose(removedTag): void {
     this.selectUserList.find( e =>  e.UserId === removedTag.UserId).checked = false;
-    this.selectUser();
   }
   // 全选
   checakAll(type: number): void {
@@ -248,10 +298,10 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
       this.loading = false;
       if (res.flag === 1) {
           if (res.data.data.length > 0) {
+            this.userList = [];
             this.changyongUserList = [];
             this.historyUserList = [];
-            this.userList = [];
-            this.selectUserList = [];
+           // this.selectUserList = [];
             const dataList = res.data.data;
             this.userList = dataList;
             if (type === 'history') {
