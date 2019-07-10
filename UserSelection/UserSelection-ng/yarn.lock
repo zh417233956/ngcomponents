@@ -317,6 +317,13 @@
     lodash "^4.17.11"
     to-fast-properties "^2.0.0"
 
+"@delon/mock@^8.0.0":
+  version "8.0.0"
+  resolved "https://registry.yarnpkg.com/@delon/mock/-/mock-8.0.0.tgz#aa0004edcac182915bb3ba25ba48bbbac505574b"
+  integrity sha512-nbJwk9/40Ft+t6LhhLHh07c8mQ3GvofXb8ephEPcWpCQb658y2I4mww9SRbFdsHObaIm/OOV/g++tjF7yGSJ6g==
+  dependencies:
+    tslib "^1.9.0"
+
 "@ngtools/json-schema@^1.1.0":
   version "1.1.0"
   resolved "https://registry.npm.taobao.org/@ngtools/json-schema/download/@ngtools/json-schema-1.1.0.tgz#c3a0c544d62392acc2813a42c8a0dc6f58f86922"
