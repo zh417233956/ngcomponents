@@ -30,7 +30,7 @@ import { NzMessageService } from 'ng-zorro-antd/message';
         margin-top: 3px!important;
       }
       .input{
-        width: 250px !important;
+        width: 200px !important;
         margin: 0 8px 8px 0!important;
         border-radius: 15px !important;
         font-size: 15px;
@@ -43,12 +43,20 @@ import { NzMessageService } from 'ng-zorro-antd/message';
         margin: 4px;
         overflow-y: auto;
       }
-      .last{
+      .div-three{
         width: 99%;
+        background: #EAF5FF;
       }
-      .div .chlid-top{
+      .div-last{
+        width: 99%;
+        background: #F1F1F1;
+      }
+      .chlid-top{
         background: #F1F1F1;
         height: 15%;
+      }
+      .chlid-top-last{
+        background: #ffffff;
       }
     `
   ]
@@ -158,9 +166,9 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
   // 打开时显示的组织员工，可以为空，默认为登录人所在组织（区以上组织无效）（快捷操作类）
   @Input()
   setOrgId: number;
-  // 是否根据员工或组织id搜索 默认true
+  // 是否开启传入Id搜员工功能搜索框
   @Input()
-  canSelectId = true;
+  canSelectId = false;
   // 最大选择数 默认5
   @Input()
   maxSelectNumber: number;
@@ -176,13 +184,34 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
   // 弹窗关闭之后回调事件输出
   @Output()
   mgAfterClose = new EventEmitter();
-
-  tags = ['选择全部', 'Tag 2', 'Tag 3'];
+  // 所选择的结果
+  selectUserList = [];
+  // 搜索结果
+  userList = [];
+  // 历史记录用户信息
   historyUserList = [];
+  // 常用用户信息
   changyongUserList = [];
+  // 全选状态
+  checkInfo = [false, false, false];
+  // 公用搜索参数
+  param = {
+    type: '',
+    action: 'user',
+    pagename : 'noPageName',
+    page : 1,
+    size: this.pizeSize,
+    ischangyong: 1,
+    selectIds: '',
+    ispowerorg: this.ispowerorg,
+    isShowDeleted: this.isShowDeleted,
+    orgId: ''
+  };
   // 弹窗开启之后回调事件
   afterOpen(): void {
     this.mgAfterOpen.emit('弹窗打开了');
+    // TODO 不知道可不可以调用初始化方法 现在调用为了打开窗口清空之前所选
+    this.ngOnInit();
   }
   // 弹窗关闭之后回调事件
   afterClose(): void {
@@ -200,7 +229,7 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
   // 确定提交
   handleOk(): void {
     this.isVisible = false;
-    this.mgOnOk.emit(new Array({id: 1, username : '邵文', orgname : '研发部'}));
+    this.mgOnOk.emit(this.selectUserList);
   }
   // 取消提交
   handleCancel(): void {
@@ -209,7 +238,7 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
   }
   // 查询种类切换
   checkChange(type: string): void {
-    if ( type === 'history') {
+    if (type === 'history') {
       this.showHistory = true;
       this.showSearch = false;
     } else {
@@ -218,47 +247,71 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
     }
     this.bianData(type);
   }
+  // 点击用户
+  checkUser(user, e: boolean): void {
+    user.checked = e;
+    this.selectUser();
+    if (!this.isduoxuan) {
+       this.handleOk();
+    }
+  }
   // 管理历史记录
   refHistory(): void {
     this.msg.warning(`暂未实现`);
   }
   // 关掉tags
-  handleClose(removedTag: {}): void {
-    this.tags = this.tags.filter(tag => tag !== removedTag);
+  handleClose(removedTag): void {
+    this.selectUserList.find( e =>  e.UserId === removedTag.UserId).checked = false;
+    this.selectUser();
   }
-  sliceTagName(tag: string): string {
-    const isLongTag = tag.length > 20;
-    return isLongTag ? `${tag.slice(0, 20)}...` : tag;
+  // 全选
+  checakAll(type: number): void {
+    this.checkInfo[type] = !this.checkInfo[type];
+    if (type === 0) {
+      this.historyUserList.forEach( e =>  e.checked = this.checkInfo[type]);
+    } else if (type === 1) {
+      this.changyongUserList.forEach( e =>  e.checked = this.checkInfo[type]);
+    } else if (type === 2) {
+      this.userList.forEach( e =>  e.checked = this.checkInfo[type]);
+    }
+    this.selectUser();
+  }
+  // 选择结果重组
+  selectUser(): void {
+     this.selectUserList = this.userList.filter( e => e.checked === true);
   }
   // 获取数据
   bianData(type: string): void {
-    const param = {
-      type,
-      action: 'user',
-      pagename : 'noPageName',
-      page : 1,
-      size: this.pizeSize,
-      ischangyong: 1,
-      selectIds: '',
-      ispowerorg: this.ispowerorg,
-      isShowDeleted: this.isShowDeleted
-    };
-    this.httpService.get('/webcomponent/index', param, false).subscribe(res => {
+    this.param.type = type;
+    this.httpService.get('/webcomponent/index', this.param, false).subscribe(res => {
       if (res.flag === 1) {
-        if ( type === 'history') {
           if (res.data.data.length > 0) {
+            this.changyongUserList = [];
+            this.historyUserList = [];
+            this.userList = [];
+            this.selectUserList = [];
             const dataList = res.data.data;
-            const changyong = res.data.changyong;
-            const history = res.data.history;
-            changyong.forEach(e => {
-              this.changyongUserList.push(dataList.find( a => a.UserId === e ));
-            });
-            history.forEach(e => {
-              this.historyUserList.push(dataList.find( a => a.UserId === e ));
-            });
-          } else {
+            this.userList = dataList;
+            if (type === 'history') {
+              const changyong = res.data.changyong;
+              const history = res.data.history;
+              changyong.forEach(e => {
+                const changyongUser = dataList.find( a => a.UserId === e );
+                this.changyongUserList.push(changyongUser);
+              });
+              this.changyongUserList = this.changyongUserList.sort( (a, b) => {
+                return a.UserId - b.UserId;
+              });
+              history.forEach(e => {
+                const historyUser = dataList.find( a => a.UserId === e );
+                this.historyUserList.push(historyUser);
+              });
+              this.historyUserList = this.historyUserList.sort(  (a, b) => {
+                return a.UserId - b.UserId;
+              });
+            }
+        } else {
             this.msg.error(res.data.msg);
-          }
         }
       } else {
         this.msg.error('程序异常');

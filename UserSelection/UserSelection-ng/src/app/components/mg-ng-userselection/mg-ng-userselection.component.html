@@ -3,7 +3,6 @@
           [nzBodyStyle]="bodyStyle" (nzAfterOpen)="afterOpen()" (nzAfterClose)="afterClose()"  [nzClosable]="closable" [nzOkLoading]="okLoading" [nzCancelLoading]="cancelLoding"
           [nzOkDisabled]="okDisabled" [nzCancelDisabled]="cancelDisabled" [nzKeyboard]="keyboard" [nzMask]="mask" [nzMaskClosable]="maskClosable" [nzMaskStyle]="maskStyle"
           [nzOkType]="okType" [nzStyle]="floatStyle" [nzWidth]="width" [nzClassName]="className" [nzWrapClassName]="wrapClassName" [nzZIndex]="zIndex" [nzContent]="content" >
-
 </nz-modal>
 
 <ng-template #content>
@@ -13,8 +12,9 @@
     <nz-tag nzMode="default" [nzChecked]="true" class="tag" (click)="checkChange('myarea')">本区</nz-tag>
     <nz-tag nzMode="default" [nzChecked]="true" class="tag" (click)="checkChange('myareachild')">本区下属</nz-tag>
     <nz-tag nzMode="default" [nzChecked]="true" class="tag" (click)="checkChange('history')">最近</nz-tag>
-    <label><input nz-input nzSize="default" class="input" placeholder="{{text}}"/></label>
-    <label><input nz-input nzSize="default" class="input" placeholder="输入组织名称或组织ID"/></label>
+    <label title="{{text}}"><input nz-input nzSize="default" class="input" placeholder="{{text}}" /></label>
+    <label title="输入组织名称或组织ID"><input nz-input nzSize="default" class="input" placeholder="输入组织名称或组织ID" [(ngModel)]="param.orgId"/></label>
+    <label title="输员工id可查询该员工,可传多个(以英文','分割)" *ngIf="canSelectId"><input nz-input nzSize="default" class="input" placeholder="输员工id可查询该员工,可传多个(以英文','分割)" [(ngModel)]="param.selectIds"/></label>
   </section>
   <section *ngIf="showHistory">
     <div class="div">
@@ -23,8 +23,8 @@
         <nz-tag nzMode="default" [nzChecked]="true" [nzColor]="'#75B4D6'" class="tag1" (click)="refHistory()" >管理历史记录</nz-tag>
       </div>
       <div>
-        <nz-tag nzMode="default" [nzColor]="'#75B4D6'" [nzChecked]="true">全部选择</nz-tag>
-        <nz-tag nzMode="checkable" [nzChecked]="false" *ngFor="let user of historyUserList; let i = index">{{ user.UserName }}</nz-tag>
+        <nz-tag nzMode="default" [nzColor]="'#75B4D6'" [nzChecked]="true" *ngIf="isduoxuan" (click)="checakAll(0)">全部选择</nz-tag>
+        <nz-tag nzMode="checkable" [nzChecked]="historyUser.checked" *ngFor="let historyUser of historyUserList; let i = index" (nzCheckedChange)="checkUser(historyUser,$event)">{{ historyUser.UserName }}</nz-tag>
       </div>
     </div>
     <div class="div">
@@ -32,26 +32,30 @@
         <span class="span">常用结果:</span>
       </div>
       <div>
-        <nz-tag nzMode="default" [nzColor]="'#75B4D6'" [nzChecked]="true">全部选择</nz-tag>
-        <nz-tag nzMode="checkable" [nzChecked]="false" *ngFor="let user of changyongUserList; let i = index">{{ user.UserName }}</nz-tag>
+        <nz-tag nzMode="default" [nzColor]="'#75B4D6'" [nzChecked]="true" *ngIf="isduoxuan" (click)="checakAll(1)">全部选择</nz-tag>
+        <nz-tag nzMode="checkable" [nzChecked]="changyongUser.checked" *ngFor="let changyongUser of changyongUserList; let i = index" (nzCheckedChange)="checkUser(changyongUser,$event)">{{ changyongUser.UserName }}</nz-tag>
       </div>
     </div>
   </section>
   <section *ngIf="showSearch">
-    <div class="div last">
+    <div class="div div-three">
       <div class="chlid-top">
         <span class="span">搜索结果:</span>
+      </div>
+      <div>
+        <nz-tag nzMode="default" [nzColor]="'#75B4D6'" [nzChecked]="true" *ngIf="isduoxuan" (click)="checakAll(2)">全部选择</nz-tag>
+        <nz-tag nzMode="checkable" [nzChecked]="resultUser.checked" *ngFor="let resultUser of userList; let i = index" (nzCheckedChange)="checkUser(resultUser,$event)">{{ resultUser.UserName }}</nz-tag>
       </div>
     </div>
   </section>
   <section *ngIf="showResult">
-    <div class="div last">
-      <div class="chlid-top">
+    <div class="div div-last">
+      <div class="chlid-top chlid-top-last">
         <span class="span">已选择结果:</span>
       </div>
       <div>
-        <nz-tag *ngFor="let tag of tags; let i = index" [nzMode]="i === 0 ? 'default' : 'closeable'" (nzAfterClose)="handleClose(tag)">
-          {{ sliceTagName(tag) }}
+        <nz-tag *ngFor="let selectUser of selectUserList; let i = index" nzMode="closeable" (nzAfterClose)="handleClose(selectUser)">
+          {{ selectUser.UserName }}
         </nz-tag>
       </div>
     </div>
