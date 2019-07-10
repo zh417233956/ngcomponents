@@ -9,55 +9,7 @@ import { NzMessageService } from 'ng-zorro-antd/message';
   styleUrls: ['./mg-ng-userselection.component.less'],
   styles: [
     `
-      .span{
-        padding: 15px;
-        font-size: 15px;
-        display: inline-block;
-        line-height: 2px;
-      }
-      .tag{
-        height: 25px !important;
-        border-radius: 15px !important;
-        text-align: -webkit-center;
-        font-size: 15px;
-      }
-      .tag1{
-        height: 25px !important;
-        border-radius: 5px !important;
-        text-align: -webkit-center;
-        font-size: 12px!important;
-        float: right;
-        margin-top: 3px!important;
-      }
-      .input{
-        width: 200px !important;
-        margin: 0 8px 8px 0!important;
-        border-radius: 15px !important;
-        font-size: 15px;
-      }
-      .div{
-        width: 49%;
-        float: left;
-        background: #CEECEB;
-        height: 200px;
-        margin: 4px;
-        overflow-y: auto;
-      }
-      .div-three{
-        width: 99%;
-        background: #EAF5FF;
-      }
-      .div-last{
-        width: 99%;
-        background: #F1F1F1;
-      }
-      .chlid-top{
-        background: #F1F1F1;
-        height: 15%;
-      }
-      .chlid-top-last{
-        background: #ffffff;
-      }
+     
     `
   ]
 })
@@ -75,6 +27,8 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
   showSearch: boolean;
   // 是否显示搜索结果 多选/单选
   showResult: boolean;
+  // 是否显示加载
+  loading: boolean;
   // 清求数据url
   @Input()
   url = '';
@@ -280,10 +234,18 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
   selectUser(): void {
      this.selectUserList = this.userList.filter( e => e.checked === true);
   }
+  // 回车事件绑定
+  enter(v: string, $event): void {
+    if ($event.which === 13) {
+      this.bianData(v);
+    }
+  }
   // 获取数据
   bianData(type: string): void {
     this.param.type = type;
+    this.loading = true;
     this.httpService.get('/webcomponent/index', this.param, false).subscribe(res => {
+      this.loading = false;
       if (res.flag === 1) {
           if (res.data.data.length > 0) {
             this.changyongUserList = [];

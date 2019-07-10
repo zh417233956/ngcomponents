@@ -2,9 +2,8 @@
 <nz-modal [(nzVisible)]="isVisible" nzTitle="{{title}}" nzCancelText="{{cancleText}}" nzOkText="{{okText}}" (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()"
           [nzBodyStyle]="bodyStyle" (nzAfterOpen)="afterOpen()" (nzAfterClose)="afterClose()"  [nzClosable]="closable" [nzOkLoading]="okLoading" [nzCancelLoading]="cancelLoding"
           [nzOkDisabled]="okDisabled" [nzCancelDisabled]="cancelDisabled" [nzKeyboard]="keyboard" [nzMask]="mask" [nzMaskClosable]="maskClosable" [nzMaskStyle]="maskStyle"
-          [nzOkType]="okType" [nzStyle]="floatStyle" [nzWidth]="width" [nzClassName]="className" [nzWrapClassName]="wrapClassName" [nzZIndex]="zIndex" [nzContent]="content" >
+          [nzOkType]="okType" [nzStyle]="floatStyle" [nzWidth]="width" [nzClassName]="className" [nzWrapClassName]="wrapClassName" [nzZIndex]="zIndex" [nzContent]="content">
 </nz-modal>
-
 <ng-template #content>
   <section>
     <span class="span">快捷搜索:</span>
@@ -12,7 +11,7 @@
     <nz-tag nzMode="default" [nzChecked]="true" class="tag" (click)="checkChange('myarea')">本区</nz-tag>
     <nz-tag nzMode="default" [nzChecked]="true" class="tag" (click)="checkChange('myareachild')">本区下属</nz-tag>
     <nz-tag nzMode="default" [nzChecked]="true" class="tag" (click)="checkChange('history')">最近</nz-tag>
-    <label title="{{text}}"><input nz-input nzSize="default" class="input" placeholder="{{text}}" /></label>
+    <label title="{{text}}"><input nz-input nzSize="default" #textbox class="input" placeholder="{{text}}" (keyup)="enter(textbox.value,$event)" /></label>
     <label title="输入组织名称或组织ID"><input nz-input nzSize="default" class="input" placeholder="输入组织名称或组织ID" [(ngModel)]="param.orgId"/></label>
     <label title="输员工id可查询该员工,可传多个(以英文','分割)" *ngIf="canSelectId"><input nz-input nzSize="default" class="input" placeholder="输员工id可查询该员工,可传多个(以英文','分割)" [(ngModel)]="param.selectIds"/></label>
   </section>
@@ -60,4 +59,6 @@
       </div>
     </div>
   </section>
+  <nz-spin *ngIf="loading" [nzTip]="'Loading'" [nzDelay]="30000">
+  </nz-spin>
 </ng-template>

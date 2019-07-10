@@ -5,10 +5,11 @@ import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 // 引入第三方组件
 import { NzModalModule } from 'ng-zorro-antd/modal';
-import { NzMessageModule} from 'ng-zorro-antd/message';
+import { NzMessageModule } from 'ng-zorro-antd/message';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzSpinModule } from 'ng-zorro-antd/spin';
 // 引入导出组件
 import { MgNgUserselectionComponent } from '../components/mg-ng-userselection/mg-ng-userselection.component';
 
@@ -25,6 +26,7 @@ import { MgNgUserselectionComponent } from '../components/mg-ng-userselection/mg
     NzTagModule,
     NzInputModule,
     NzMessageModule,
+    NzSpinModule,
     HttpClientModule,
     FormsModule
   ],
