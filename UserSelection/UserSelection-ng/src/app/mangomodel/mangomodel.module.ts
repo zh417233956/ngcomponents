@@ -14,7 +14,7 @@ import { DelonMockModule } from '@delon/mock';
 // 引入导出组件
 import { MgNgUserselectionComponent } from '../components/mg-ng-userselection/mg-ng-userselection.component';
 // mock模拟请求配置
-import * as MOCKDATA from '_mock';
+import * as MOCKDATA from '../../../_mock';
 // 只对开发环境有效
 import { environment } from '../../environments/environment';
 const MOCKMODULE = !environment.production ? [ DelonMockModule.forRoot({ data: MOCKDATA }) ] : [];
