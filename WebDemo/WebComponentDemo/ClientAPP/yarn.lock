@@ -4033,10 +4033,10 @@ methods@~1.1.2:
   resolved "https://registry.npm.taobao.org/methods/download/methods-1.1.2.tgz#5529a4d67654134edcc5266656835b0f851afcee"
   integrity sha1-VSmk1nZUE07cxSZmVoNbD4Ua/O4=
 
-mg-ng-userselection@^1.0.0:
+mg-ng-userselection@1.0.0:
   version "1.0.0"
-  resolved "https://registry.npm.taobao.org/mg-ng-userselection/download/mg-ng-userselection-1.0.0.tgz#4d5762def62a3b2cbf3f550e5a4a803b5b293bc7"
-  integrity sha1-TVdi3vYqOyy/P1UOWkqAO1spO8c=
+  resolved "http://repository.517.jiali/repository/mango-npm/mg-ng-userselection/-/mg-ng-userselection-1.0.0.tgz#9048b31e979ca58cac6473e45515cbfb00b50eb6"
+  integrity sha512-REefWv9+QySDeyv7kcbFxhPcRX4qTk3q8iJxbVXlQjBm/nUKZtBEvNm3YSY5JrDzAclIiPCTcC/PmyNoQzwy5A==
   dependencies:
     tslib "^1.9.0"
 

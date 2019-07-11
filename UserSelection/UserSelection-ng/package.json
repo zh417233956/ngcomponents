@@ -1,6 +1,6 @@
 {
     "name": "mg-ng-userselection",
-    "version": "1.0.1",
+    "version": "1.0.0",
     "scripts": {
         "ng": "ng",
         "start": "ng serve",
