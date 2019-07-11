@@ -231,7 +231,7 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
   checakAll(type: number): void {
     this.checkInfo[type] = !this.checkInfo[type];
     if (type === 0) {
-      this.historyUserList.forEach( e =>  e.checked = this.checkInfo[type]);
+      this.historyUserList.forEach( (e, i) => e.checked = this.checkInfo[type]);
     } else if (type === 1) {
       this.changyongUserList.forEach( e =>  e.checked = this.checkInfo[type]);
     } else if (type === 2) {
