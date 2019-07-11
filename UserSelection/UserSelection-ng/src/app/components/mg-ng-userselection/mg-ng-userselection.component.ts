@@ -1,4 +1,4 @@
-import { Component, Input, Output, OnInit, EventEmitter } from '@angular/core';
+import {Component, Input, Output, OnInit, EventEmitter, TemplateRef, Type} from '@angular/core';
 import { HttpService } from '../mg-ng-service/http-service.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
 
@@ -6,63 +6,7 @@ import { NzMessageService } from 'ng-zorro-antd/message';
   // tslint:disable-next-line:component-selector
   selector: 'mg-ng-userselection',
   templateUrl: './mg-ng-userselection.component.html',
-  styleUrls: ['./mg-ng-userselection.component.less'],
-  styles: [
-    `
-      .span{
-        padding: 15px;
-        font-size: 15px;
-        display: inline-block;
-        line-height: 2px;
-      }
-      .tag{
-        height: 25px !important;
-        border-radius: 15px !important;
-        text-align: -webkit-center;
-        font-size: 15px;
-      }
-      .tag1{
-        height: 25px !important;
-        border-radius: 5px !important;
-        text-align: -webkit-center;
-        font-size: 12px!important;
-        float: right;
-        margin-top: 3px!important;
-      }
-      .tag2{
-        margin: 4px 0 0 4px !important;
-      }
-      .input{
-        width: 200px !important;
-        margin: 0 8px 8px 0!important;
-        border-radius: 15px !important;
-        font-size: 15px;
-      }
-      .div{
-        width: 49%;
-        float: left;
-        background: #CEECEB;
-        height: 200px;
-        margin: 4px;
-        overflow-y: auto;
-      }
-      .div-three{
-        width: 99%;
-        background: #EAF5FF;
-      }
-      .div-last{
-        width: 99%;
-        background: #F1F1F1;
-      }
-      .chlid-top{
-        background: #F1F1F1;
-        height: 15%;
-      }
-      .chlid-top-last{
-        background: #ffffff;
-      }
-    `
-  ]
+  styleUrls: ['./mg-ng-userselection.component.less']
 })
 /**
  * 员工选择组件
@@ -80,9 +24,11 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
   showResult: boolean;
   // 是否显示加载
   loading: boolean;
-  // 清求数据url
+  // 请求数据url
   @Input()
   url = '';
+  // 请求数据类型
+  type: string;
   // 弹窗标题 可以为空
   @Input()
   title = '';
@@ -140,7 +86,7 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
   // zIndex
   zIndex = 400;
   // 弹窗内容
-  // content: string | TemplateRef<{}> | Component | Type<T>;
+  content: string | TemplateRef<{}> | Component | Type<T>;
   // 是否多选 默认 false（功能类）
   @Input()
   isduoxuan = true;
@@ -150,6 +96,12 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
   // 搜索框默认文字 可以为空（功能类）
   @Input()
   text = '输名称、拼音或员工编号,敲回车搜索';
+  // 当前页数
+  pageIndex = 1;
+  // 总条数
+  total: number;
+  // 是否开启分页
+  onPaging = false;
   // 默认每页显示 默认20（功能类）
   @Input()
   pizeSize = 20;
@@ -176,7 +128,11 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
   canSelectId = false;
   // 最大选择数 默认5
   @Input()
-  maxSelectNumber: number;
+  maxSelectNumber = 5;
+  // 员工id逗号分隔
+  selectIds = '';
+  // 组织id
+  orgId = [];
   // 确认事件输出
   @Output()
   mgOnOk = new EventEmitter();
@@ -199,24 +155,11 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
   changyongUserList = [];
   // 全选状态
   checkInfo = [false, false, false];
-  // 公用搜索参数
-  param = {
-    type: '',
-    action: 'user',
-    pagename : 'noPageName',
-    page : 1,
-    size: this.pizeSize,
-    ischangyong: 1,
-    selectIds: '',
-    ispowerorg: this.ispowerorg,
-    isShowDeleted: this.isShowDeleted,
-    orgId: ''
-  };
   // 弹窗开启之后回调事件
   afterOpen(): void {
     this.mgAfterOpen.emit('弹窗打开了');
     // TODO 不知道可不可以调用初始化方法 现在调用为了打开窗口清空之前所选
-    this.ngOnInit();
+    // this.ngOnInit();
   }
   // 弹窗关闭之后回调事件
   afterClose(): void {
@@ -250,15 +193,30 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
       this.showHistory = false;
       this.showSearch = true;
     }
-    this.bianData(type);
+    this.type = type;
+    this.bianData();
   }
   // 点击用户
   checkUser(user, e: boolean): void {
-    user.checked = e;
-    this.selectUser();
     if (!this.isduoxuan) {
        this.handleOk();
+    } else {
+      this.checkMaxSelect();
+      user.checked = e;
+      this.selectUser();
     }
+  }
+  // 检查是否超过最大选择数(多选时触发)
+  checkMaxSelect(): number {
+    let add = 0;
+    const tempList = this.userList.filter(f => f.checked === true);
+    if (this.maxSelectNumber === tempList.length) {
+      tempList[tempList.length - 1].checked = false;
+      add = 1;
+    } else {
+      add = this.maxSelectNumber - tempList.length;
+    }
+    return add;
   }
   // 管理历史记录
   refHistory(): void {
@@ -266,7 +224,8 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
   }
   // 关掉tags
   handleClose(removedTag): void {
-    this.selectUserList.find( e =>  e.UserId === removedTag.UserId).checked = false;
+    this.selectUserList = this.selectUserList.filter( e => e !== removedTag );
+    this.userList.find( e =>  e.UserId === removedTag.UserId).checked = false;
   }
   // 全选
   checakAll(type: number): void {
@@ -287,40 +246,66 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
   // 回车事件绑定
   enter(v: string, $event): void {
     if ($event.which === 13) {
-      this.bianData(v);
+      this.type = v;
+      this.bianData();
     }
   }
+  // 翻页事件
+  pageChange(pageIndex: number): void {
+    this.pageIndex = pageIndex;
+    this.bianData();
+  }
   // 获取数据
-  bianData(type: string): void {
-    this.param.type = type;
-    this.loading = true;
-    this.httpService.get('/webcomponent/index', this.param, false).subscribe(res => {
+  bianData(): void {
+    // 公用搜索参数
+   const param = {
+      type: this.type,
+      action: 'user',
+      pagename : 'noPageName',
+      page : this.pageIndex,
+      size: this.pizeSize,
+      ischangyong: 1,
+      selectIds: this.selectIds,
+      ispowerorg: this.ispowerorg,
+      isShowDeleted: this.isShowDeleted,
+      orgId: this.orgId
+    };
+   this.loading = true;
+   this.httpService.get('/webcomponent/index', param, false).subscribe(res => {
       this.loading = false;
       if (res.flag === 1) {
           if (res.data.data.length > 0) {
-            this.userList = [];
-            this.changyongUserList = [];
-            this.historyUserList = [];
-           // this.selectUserList = [];
-            const dataList = res.data.data;
-            this.userList = dataList;
-            if (type === 'history') {
+            // this.selectUserList = [];
+            this.userList = res.data.data;
+            this.selectUserList.forEach( e => {
+              this.userList.find( f => f.UserId === e.UserId).checked = true;
+            });
+            if (this.type === 'history') {
+              this.changyongUserList = [];
+              this.historyUserList = [];
               const changyong = res.data.changyong;
               const history = res.data.history;
               changyong.forEach(e => {
-                const changyongUser = dataList.find( a => a.UserId === e );
+                const changyongUser =  this.userList.find( a => a.UserId === e );
                 this.changyongUserList.push(changyongUser);
               });
               this.changyongUserList = this.changyongUserList.sort( (a, b) => {
                 return a.UserId - b.UserId;
               });
               history.forEach(e => {
-                const historyUser = dataList.find( a => a.UserId === e );
+                const historyUser =  this.userList.find( a => a.UserId === e );
                 this.historyUserList.push(historyUser);
               });
               this.historyUserList = this.historyUserList.sort(  (a, b) => {
                 return a.UserId - b.UserId;
               });
+            } else {
+              if ( this.userList.length > this.pizeSize) {
+                  this.onPaging = true;
+                  this.total = res.data.count;
+              } else {
+                  this.onPaging = false;
+              }
             }
         } else {
             this.msg.error(res.data.msg);

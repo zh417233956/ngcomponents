@@ -12,8 +12,8 @@
     <nz-tag nzMode="default" [nzChecked]="true" class="tag" (click)="checkChange('myareachild')">本区下属</nz-tag>
     <nz-tag nzMode="default" [nzChecked]="true" class="tag" (click)="checkChange('history')">最近</nz-tag>
     <label title="{{text}}"><input nz-input nzSize="default" #textbox class="input" placeholder="{{text}}" (keyup)="enter(textbox.value,$event)" /></label>
-    <label title="输入组织名称或组织ID"><input nz-input nzSize="default" class="input" placeholder="输入组织名称或组织ID" [(ngModel)]="param.orgId"/></label>
-    <label title="输员工id可查询该员工,可传多个(以英文','分割)" *ngIf="canSelectId"><input nz-input nzSize="default" class="input" placeholder="输员工id可查询该员工,可传多个(以英文','分割)" [(ngModel)]="param.selectIds"/></label>
+    <label title="输入组织名称或组织ID"><input nz-input nzSize="default" class="input" placeholder="输入组织名称或组织ID" [(ngModel)]="orgId"/></label>
+    <label title="输员工id可查询该员工,可传多个(以英文','分割)" *ngIf="canSelectId"><input nz-input nzSize="default" class="input" placeholder="输员工id可查询该员工,可传多个(以英文','分割)" [(ngModel)]="selectIds"/></label>
   </section>
   <section *ngIf="showHistory">
     <div class="div">
@@ -21,10 +21,13 @@
         <span class="span">最近结果:</span>
         <nz-tag nzMode="default" [nzChecked]="true" [nzColor]="'#75B4D6'" class="tag1" (click)="refHistory()" >管理历史记录</nz-tag>
       </div>
-      <div>
+      <div [ngTemplateOutlet]="tag">
+
+      </div>
+      <ng-template #tag>
         <nz-tag nzMode="default" class="tag2" [nzColor]="'#75B4D6'" [nzChecked]="true" *ngIf="isduoxuan" (click)="checakAll(0)">全部选择</nz-tag>
         <nz-tag nzMode="checkable" class="tag2" [nzChecked]="historyUser.checked" *ngFor="let historyUser of historyUserList; let i = index" (nzCheckedChange)="checkUser(historyUser,$event)">{{ historyUser.UserName }}</nz-tag>
-      </div>
+      </ng-template>
     </div>
     <div class="div">
       <div class="chlid-top">
@@ -45,6 +48,10 @@
         <nz-tag nzMode="default" class="tag2" [nzColor]="'#75B4D6'" [nzChecked]="true" *ngIf="isduoxuan" (click)="checakAll(2)">全部选择</nz-tag>
         <nz-tag nzMode="checkable" class="tag2" [nzChecked]="resultUser.checked" *ngFor="let resultUser of userList; let i = index" (nzCheckedChange)="checkUser(resultUser,$event)">{{ resultUser.UserName }}</nz-tag>
       </div>
+    </div>
+    <div style="margin-left:38%;" *ngIf="onPaging" >
+      <nz-pagination [nzHideOnSinglePage]="false" [nzPageIndex]="pageIndex" [nzTotal]="total" [nzSimple]="true" [nzSize]="'small'" (nzPageIndexChange)="pageChange($event)">
+      </nz-pagination>
     </div>
   </section>
   <section *ngIf="showResult">

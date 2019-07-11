@@ -10,6 +10,7 @@ import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzTagModule } from 'ng-zorro-antd/tag';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSpinModule } from 'ng-zorro-antd/spin';
+import { NzPaginationModule } from 'ng-zorro-antd/pagination';
 import { DelonMockModule } from '@delon/mock';
 // 引入导出组件
 import { MgNgUserselectionComponent } from '../components/mg-ng-userselection/mg-ng-userselection.component';
@@ -32,6 +33,7 @@ const MOCKMODULE = !environment.production ? [ DelonMockModule.forRoot({ data: M
     NzInputModule,
     NzMessageModule,
     NzSpinModule,
+    NzPaginationModule,
     HttpClientModule,
     FormsModule,
     DelonMockModule,
