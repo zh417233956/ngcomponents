@@ -154,7 +154,23 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
   // 常用用户信息
   changyongUserList = [];
   // 全选状态
-  checkInfo = [false, false, false];
+  checkInfo = {
+      0: {
+        checked: false,
+        title: '选择全部',
+        userList: []
+      },
+      1: {
+        checked: false,
+        title: '选择全部',
+        userList: []
+      },
+      2: {
+        checked: false,
+        title: '选择全部',
+        userList: []
+      }
+    };
   // 弹窗开启之后回调事件
   afterOpen(): void {
     this.mgAfterOpen.emit('弹窗打开了');
@@ -203,20 +219,21 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
     } else {
       this.checkMaxSelect();
       user.checked = e;
+      this.selectUserList.push(user);
       this.selectUser();
     }
   }
   // 检查是否超过最大选择数(多选时触发)
   checkMaxSelect(): number {
     let add = 0;
-    const tempList = this.userList.filter(f => f.checked === true);
+    const tempList = this.selectUserList;
     if (this.maxSelectNumber === tempList.length) {
       tempList[tempList.length - 1].checked = false;
       add = 1;
     } else {
       add = this.maxSelectNumber - tempList.length;
     }
-    return add;
+    return add < 0 ? 0 : add;
   }
   // 管理历史记录
   refHistory(): void {
@@ -229,13 +246,13 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
   }
   // 全选
   checakAll(type: number): void {
-    this.checkInfo[type] = !this.checkInfo[type];
-    if (type === 0) {
-      this.historyUserList.forEach( (e, i) => e.checked = this.checkInfo[type]);
-    } else if (type === 1) {
-      this.changyongUserList.forEach( e =>  e.checked = this.checkInfo[type]);
-    } else if (type === 2) {
-      this.userList.forEach( e =>  e.checked = this.checkInfo[type]);
+    this.checkInfo[type].checked = !this.checkInfo[type].checked;
+    this.checkInfo[type].title  =  this.checkInfo[type].title === '选择全部' ? '取消全部' : '选择全部';
+    if (this.checkInfo[type].checked) {
+      // tslint:disable-next-line:max-line-length
+      (this.checkInfo[type].userList.filter( e => e !== this.selectUserList.find( f => f.UserId === e.UserId)).splice(0, this.maxSelectNumber - this.selectUserList.length)).forEach( e =>  e.checked = this.checkInfo[type].checked);
+    } else {
+      this.checkInfo[type].userList.forEach( e =>  e.checked = this.checkInfo[type].checked);
     }
     this.selectUser();
   }
@@ -277,6 +294,9 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
           if (res.data.data.length > 0) {
             // this.selectUserList = [];
             this.userList = res.data.data;
+            this.userList = this.userList.sort( (a, b) => {
+              return a.UserId - b.UserId;
+            });
             this.selectUserList.forEach( e => {
               this.userList.find( f => f.UserId === e.UserId).checked = true;
             });
@@ -296,9 +316,11 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
                 const historyUser =  this.userList.find( a => a.UserId === e );
                 this.historyUserList.push(historyUser);
               });
-              this.historyUserList = this.historyUserList.sort(  (a, b) => {
+              this.historyUserList = this.historyUserList.sort( (a, b) => {
                 return a.UserId - b.UserId;
               });
+              this.checkInfo['0'].userList = this.historyUserList;
+              this.checkInfo['1'].userList = this.changyongUserList;
             } else {
               if ( this.userList.length > this.pizeSize) {
                   this.onPaging = true;
@@ -307,6 +329,7 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
                   this.onPaging = false;
               }
             }
+            this.checkInfo['2'].userList = this.userList;
         } else {
             this.msg.error(res.data.msg);
         }
