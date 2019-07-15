@@ -12,7 +12,7 @@ import { NzMessageService } from 'ng-zorro-antd/message';
  * 员工选择组件
  */
 export class MgNgUserselectionComponent<T = any> implements OnInit {
-  constructor(private httpService: HttpService , public msg: NzMessageService) {
+  constructor(private http: HttpService , public msg: NzMessageService) {
   }
   // 是否显示弹窗
   isVisible = false;
@@ -24,6 +24,8 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
   showResult: boolean;
   // 是否显示加载
   loading: boolean;
+  // 是否显示上次所选的值
+  showPrev: boolean;
   // 请求数据url
   @Input()
   url = '';
@@ -107,7 +109,7 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
   pizeSize = 20;
   // 用来接收已存在信息并显示到结果栏  （功能类）
   @Input()
-  existResults: string;
+  existResults = '';
   // 是否只能选择可视组织（限制类）
   @Input()
   ispowerorg = true;
@@ -185,6 +187,7 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
     console.log('初始化');
     this.checkChange('history');
     this.isduoxuan === true ?  this.showResult = true : this.showResult = false;
+    this.existResults === '' ? this.showPrev = false : this.showPrev = true;
   }
   // 显示弹窗
   showModal(): void {
@@ -246,13 +249,18 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
   }
   // 全选
   checakAll(type: number): void {
-    this.checkInfo[type].checked = !this.checkInfo[type].checked;
-    this.checkInfo[type].title  =  this.checkInfo[type].title === '选择全部' ? '取消全部' : '选择全部';
-    if (this.checkInfo[type].checked) {
-      // tslint:disable-next-line:max-line-length
-      (this.checkInfo[type].userList.filter( e => e !== this.selectUserList.find( f => f.UserId === e.UserId)).splice(0, this.maxSelectNumber - this.selectUserList.length)).forEach( e =>  e.checked = this.checkInfo[type].checked);
+    if (type === 3) {
+      this.userList.find( e =>  e.checked === true).checked = false;
+      this.showPrev = false;
     } else {
-      this.checkInfo[type].userList.forEach( e =>  e.checked = this.checkInfo[type].checked);
+      this.checkInfo[type].checked = !this.checkInfo[type].checked;
+      this.checkInfo[type].title  =  this.checkInfo[type].title === '选择全部' ? '取消全部' : '选择全部';
+      if (this.checkInfo[type].checked) {
+        // tslint:disable-next-line:max-line-length
+        (this.checkInfo[type].userList.filter( e => e !== this.selectUserList.find( f => f.UserId === e.UserId)).splice(0, this.maxSelectNumber - this.selectUserList.length)).forEach( e =>  e.checked = this.checkInfo[type].checked);
+      } else {
+        this.checkInfo[type].userList.forEach( e =>  e.checked = this.checkInfo[type].checked);
+      }
     }
     this.selectUser();
   }
@@ -288,7 +296,7 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
       orgId: this.orgId
     };
    this.loading = true;
-   this.httpService.get('/webcomponent/index', param, false).subscribe(res => {
+   this.http.get('/webcomponent/index', param, false).subscribe(res => {
       this.loading = false;
       if (res.flag === 1) {
           if (res.data.data.length > 0) {
@@ -330,6 +338,13 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
               }
             }
             this.checkInfo['2'].userList = this.userList;
+            if ( this.existResults !== '') {
+              const resultIds = this.existResults.split(',' );
+              resultIds.forEach( a => {
+                this.userList.find( e =>  e.UserId.toString() === a).checked = true;
+              });
+              this.selectUser();
+            }
         } else {
             this.msg.error(res.data.msg);
         }

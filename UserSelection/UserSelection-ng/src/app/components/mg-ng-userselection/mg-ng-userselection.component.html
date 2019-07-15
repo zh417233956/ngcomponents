@@ -57,12 +57,13 @@
         <span class="span">已选择结果:</span>
       </div>
       <div class="chlid-content">
+        <nz-tag *ngIf="showPrev" nzMode="default" class="tag2" [nzColor]="'#75B4D6'" [nzChecked]="true" (click)="checakAll(3)">全部取消</nz-tag>
         <nz-tag class="tag2" *ngFor="let selectUser of selectUserList; let i = index" nzMode="closeable" (nzAfterClose)="handleClose(selectUser)">
           {{ selectUser.OrgName }}-{{ selectUser.UserName }}
         </nz-tag>
       </div>
     </div>
   </section>
-  <nz-spin *ngIf="loading" [nzTip]="'Loading'" [nzDelay]="30000">
+  <nz-spin *ngIf="loading" [nzTip]="'Loading'" [nzDelay]="3000">
   </nz-spin>
 </ng-template>
