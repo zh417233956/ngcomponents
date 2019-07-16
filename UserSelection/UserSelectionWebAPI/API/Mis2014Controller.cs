@@ -26,5 +26,20 @@ namespace UserSelectionWebAPI.API
             }
             return Content(result);
         }
+        [HttpGet("Get")]
+        public IActionResult Get()
+        {
+            string result = "";
+            try
+            {
+                var key = WebComponentWebAPI.ConfigCenter.Config.WCFSecretkey;
+                var iv = WebComponentWebAPI.ConfigCenter.Config.WCFSecretiv;
+                var pwd = WebComponentWebAPI.ConfigCenter.Config.WCFPasskey;
+            }
+            catch (Exception)
+            {
+            }
+            return Content(result);
+        }
     }
 }

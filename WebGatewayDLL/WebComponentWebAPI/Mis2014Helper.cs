@@ -1,9 +1,5 @@
 ﻿using log4net;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Text;
 using WebComponentWebAPI.Configs;
 using WebComponentWebAPI.Utilitys;
 
@@ -37,6 +33,13 @@ namespace WebComponentWebAPI
             _log.DebugFormat("GetAPIData==>apiurl:{0}\r\nresult:{1}", apiUrl, result);
 
             return result;
+        }
+        public object GetWCFData()
+        {
+            string result = "";
+            string apiUrl = "http://apicache200.517.dev:51707/User/v3.0/NetService/";
+
+            return null;
         }
     }
 }
