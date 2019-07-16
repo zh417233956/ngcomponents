@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using WebComponentWebAPI.Configs;
 using WebComponentWebAPI.Utilitys;
+using WebComponentWebAPI.WCF;
 
 namespace WebComponentWebAPI
 {
@@ -40,6 +41,35 @@ namespace WebComponentWebAPI
             string apiUrl = "http://apicache200.517.dev:51707/User/v3.0/NetService/";
 
             return null;
+        }
+
+        public ISecondBaseInterface<MT> GetInterfaces<MT>(string url)
+        {
+            var address = new System.ServiceModel.EndpointAddress(url);
+            var ws = new System.ServiceModel.BasicHttpBinding();
+            ws.AllowCookies = true;
+            ws.MaxReceivedMessageSize = 2147483647;
+            ws.ReaderQuotas = new System.Xml.XmlDictionaryReaderQuotas();
+            ws.ReaderQuotas.MaxArrayLength = int.MaxValue;
+            ws.ReaderQuotas.MaxStringContentLength = int.MaxValue;
+            ws.ReaderQuotas.MaxBytesPerRead = int.MaxValue;
+            if (url.ToLower().StartsWith("https://"))
+            {
+                ws.Security.Mode = System.ServiceModel.BasicHttpSecurityMode.Transport;
+                //ws.Security.Transport = new HttpTransportSecurity() { ClientCredentialType = HttpClientCredentialType.None };
+            }
+
+            var factory = new System.ServiceModel.ChannelFactory<ISecondBaseInterface<MT>>(ws, address);
+            foreach (System.ServiceModel.Description.OperationDescription op in factory.Endpoint.Contract.Operations)
+            {
+                var dataContractBehavior = op.Behaviors.Find<System.ServiceModel.Description.DataContractSerializerOperationBehavior>();
+                if (dataContractBehavior != null)
+                {
+                    dataContractBehavior.MaxItemsInObjectGraph = int.MaxValue;
+                }
+            }
+            return factory.CreateChannel();
+
         }
     }
 }

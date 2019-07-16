@@ -167,7 +167,7 @@ namespace WebComponentWebAPI.Utilitys
         /// <param name="key"></param>
         /// <param name="iv"></param>
         /// <returns></returns>
-        string DESDecryptString(string encryptedValue, string key, string iv)
+        static string DESDecryptString(string encryptedValue, string key, string iv)
         {
             encryptedValue = encryptedValue.Replace("%2B", "+");
             if (encryptedValue.Length < 0x10)
