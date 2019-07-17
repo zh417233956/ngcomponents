@@ -37,18 +37,19 @@ namespace WebComponentWebAPI
         }
         public object GetWCFData()
         {
-            string result = "";
-            string apiUrl = "http://apicache200.517.dev:51707/User/v3.0/NetService/";
+            //string result = "";
+            //string apiUrl = "http://apicache200.517.dev:51707/User/v3.0/NetService/";
 
             return null;
         }
 
-        public ISecondBaseInterface<MT> GetInterfaces<MT>(string url)
+        public static ISecondBaseInterface<MT> GetInterfaces<MT>(string url)
         {
+            url = ConfigCenter.Config.WCFHost + url;
             var address = new System.ServiceModel.EndpointAddress(url);
             var ws = new System.ServiceModel.BasicHttpBinding();
             ws.AllowCookies = true;
-            ws.MaxReceivedMessageSize = 2147483647;
+            ws.MaxReceivedMessageSize = int.MaxValue;
             ws.ReaderQuotas = new System.Xml.XmlDictionaryReaderQuotas();
             ws.ReaderQuotas.MaxArrayLength = int.MaxValue;
             ws.ReaderQuotas.MaxStringContentLength = int.MaxValue;
@@ -69,7 +70,18 @@ namespace WebComponentWebAPI
                 }
             }
             return factory.CreateChannel();
+        }      
 
+        public partial class ServiceClient<T> : System.ServiceModel.ClientBase<T> where T : class
+        {
+            public ServiceClient(System.ServiceModel.Channels.Binding binding, System.ServiceModel.EndpointAddress remoteAddress): base(binding, remoteAddress)
+            {
+
+            }
+            public T GetChannel()
+            {
+                return base.Channel;
+            }
         }
     }
 }

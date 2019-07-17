@@ -1,51 +1,58 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Text;
 
 namespace WebComponentWebAPI.WCF.Models
 {
-    //
-    // 摘要:
-    //     包含 KEY Type Debug Runtime
-    //
-    // 类型参数:
-    //   MT:
-    //     The type of the T.
-    [System.Runtime.Serialization.DataContractAttribute(Name = "R_{0}")]
+    /// <summary>
+    /// 包含 KEY Type  Debug Runtime
+    /// </summary>
+    /// <typeparam name="MT">The type of the T.</typeparam>
+    [Serializable]
+    [DataContract(Name = "R_{0}", Namespace = "http://schemas.datacontract.org/2004/07/TT.Common.Frame.Model")]
     public class DefaultResult<MT>
     {
-        public DefaultResult()
-        { }
-
-        //
-        // 摘要:
-        //     操作名称
-        [System.Runtime.Serialization.DataMemberAttribute]
+        /// <summary>
+        /// 操作名称
+        /// </summary>
+        [DataMember]
         public string Key { get; set; }
-        //
-        // 摘要:
-        //     数据集合,Add时该值是主键
-        [System.Runtime.Serialization.DataMemberAttribute]
+        /// <summary>
+        /// 数据集合，添加数据时为主键
+        /// </summary>
+        [DataMember]
         public MT Data { get; set; }
-        //
-        // 摘要:
-        //     加密数据字符串
-        [System.Runtime.Serialization.DataMemberAttribute]
+        /// <summary>
+        /// 加密数据字符串
+        /// </summary>
+        [DataMember]
         public string RETData { get; set; }
-        //
-        // 摘要:
-        //     调试信息
-        [System.Runtime.Serialization.DataMemberAttribute]
-        public string Debug { get; set; }
-        //
-        // 摘要:
-        //     执行耗时
-        [System.Runtime.Serialization.DataMemberAttribute]
+
+        private string _debug;
+        /// <summary>
+        /// 调试信息
+        /// </summary>
+        [DataMember]
+        public string Debug
+        {
+            get
+            {
+                return _debug ?? "";
+            }
+            set { _debug = value; }
+        }
+        /// <summary>
+        /// 执行耗时
+        /// </summary>
+        [DataMember]
         public double RunTime { get; set; }
-        //
-        // 摘要:
-        //     数据影响行数
-        [System.Runtime.Serialization.DataMemberAttribute]
+        /// <summary>
+        /// 数据影响行数
+        /// </summary>
+        [DataMember]
         public int RetInt { get; set; }
     }
+
+
 }

@@ -85,5 +85,22 @@ namespace WebComponentWebAPI.ConfigCenter
                 return wcfPasskey;
             }
         }
+
+        private static string wcfHost = "http://apicache200.517.dev:51707";//"http://192.168.4.98:8061";
+        /// <summary>
+        /// wcfpasskey
+        /// </summary>
+        public static string WCFHost
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(wcfHost))
+                {
+                    //TODO:需要从服务器拉取，暂时使用的固定值
+                    wcfHost = CCHelper.GetConfig("wcf.config.conn.third.host", SingleKey);
+                }
+                return wcfHost;
+            }
+        }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using UserSelectionData;
 using WebComponentWebAPI;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -26,15 +27,15 @@ namespace UserSelectionWebAPI.API
             }
             return Content(result);
         }
-        [HttpGet("Get")]
-        public IActionResult Get()
+        [HttpGet("Get/{id}")]
+        public IActionResult Get(int id)
         {
             string result = "";
             try
             {
-                var key = WebComponentWebAPI.ConfigCenter.Config.WCFSecretkey;
-                var iv = WebComponentWebAPI.ConfigCenter.Config.WCFSecretiv;
-                var pwd = WebComponentWebAPI.ConfigCenter.Config.WCFPasskey;
+                User_listVistor userVistor = new User_listVistor();
+                var modelRet = userVistor.GetModel(id);
+                result = Newtonsoft.Json.JsonConvert.SerializeObject(modelRet);
             }
             catch (Exception)
             {
