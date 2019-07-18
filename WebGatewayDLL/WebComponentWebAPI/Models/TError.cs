@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace WebComponentWebAPI.Models
+﻿namespace WebComponentWebAPI.Models
 {
     public enum TError
     {

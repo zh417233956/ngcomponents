@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace WebComponentWebAPI.ConfigCenter
+﻿namespace WebComponentWebAPI.ConfigCenter
 {
     /// <summary>
     /// CC配置变量

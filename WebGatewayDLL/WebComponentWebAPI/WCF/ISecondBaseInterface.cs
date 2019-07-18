@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ServiceModel;
-using System.Text;
 using WebComponentWebAPI.WCF.Models;
 
 namespace WebComponentWebAPI.WCF
 {
-      /// <summary>
+    /// <summary>
     /// 忙碌异常
     /// </summary>
     public class BusyException : Exception { }

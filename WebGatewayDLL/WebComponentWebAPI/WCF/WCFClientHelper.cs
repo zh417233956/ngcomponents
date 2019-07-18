@@ -1,21 +1,52 @@
-﻿using log4net;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Xml;
-using WebComponentWebAPI.Configs;
 
 namespace WebComponentWebAPI.WCF
 {
     /// <summary>
-    /// wcf解密帮助类
+    /// WCF连接帮助类
     /// </summary>
-    public class SecretHelper
+    public class WCFClientHelper : IWCFClientHelper
     {
-        private static readonly ILog _log = LogManager.GetLogger(ConfigManager.repository.Name, typeof(SecretHelper));
+        /// <summary>
+        /// 获取WCF连接接口通道
+        /// </summary>
+        /// <typeparam name="MT"></typeparam>
+        /// <param name="url">wcf地址，不包含host</param>
+        /// <returns></returns>
+        public ISecondBaseInterface<MT> GetInterfaces<MT>(string url)
+        {
+            url = ConfigCenter.Config.WCFHost + url;
+            var address = new System.ServiceModel.EndpointAddress(url);
+            var ws = new System.ServiceModel.BasicHttpBinding();
+            ws.AllowCookies = true;
+            ws.MaxReceivedMessageSize = int.MaxValue;
+            ws.ReaderQuotas = new System.Xml.XmlDictionaryReaderQuotas();
+            ws.ReaderQuotas.MaxArrayLength = int.MaxValue;
+            ws.ReaderQuotas.MaxStringContentLength = int.MaxValue;
+            ws.ReaderQuotas.MaxBytesPerRead = int.MaxValue;
+            if (url.ToLower().StartsWith("https://"))
+            {
+                ws.Security.Mode = System.ServiceModel.BasicHttpSecurityMode.Transport;
+                //ws.Security.Transport = new HttpTransportSecurity() { ClientCredentialType = HttpClientCredentialType.None };
+            }
+
+            var factory = new System.ServiceModel.ChannelFactory<ISecondBaseInterface<MT>>(ws, address);
+            foreach (System.ServiceModel.Description.OperationDescription op in factory.Endpoint.Contract.Operations)
+            {
+                var dataContractBehavior = op.Behaviors.Find<System.ServiceModel.Description.DataContractSerializerOperationBehavior>();
+                if (dataContractBehavior != null)
+                {
+                    dataContractBehavior.MaxItemsInObjectGraph = int.MaxValue;
+                }
+            }
+            return factory.CreateChannel();
+        }
 
         /// <summary>
         /// 解密返回的实体
@@ -24,7 +55,7 @@ namespace WebComponentWebAPI.WCF
         /// <param name="key"></param>
         /// <param name="iv"></param>
         /// <returns></returns>
-        public static object Decrypt_v2019(object result, string key, string iv)
+        public object Decrypt_v2019(object result, string key, string iv)
         {
             if (result == null)
             {
@@ -167,7 +198,7 @@ namespace WebComponentWebAPI.WCF
         /// <param name="key"></param>
         /// <param name="iv"></param>
         /// <returns></returns>
-        static string DESDecryptString(string encryptedValue, string key, string iv)
+        public string DESDecryptString(string encryptedValue, string key, string iv)
         {
             encryptedValue = encryptedValue.Replace("%2B", "+");
             if (encryptedValue.Length < 0x10)

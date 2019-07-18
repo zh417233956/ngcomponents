@@ -1,7 +1,4 @@
 ﻿using log4net.Repository;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace WebComponentWebAPI.Configs
 {

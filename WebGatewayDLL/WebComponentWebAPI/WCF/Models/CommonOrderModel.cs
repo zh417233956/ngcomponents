@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace WebComponentWebAPI.WCF.Models
+﻿namespace WebComponentWebAPI.WCF.Models
 {
     //
     // 摘要:

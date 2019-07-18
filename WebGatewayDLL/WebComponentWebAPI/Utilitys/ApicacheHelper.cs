@@ -25,7 +25,7 @@ namespace WebComponentWebAPI.Utilitys
         /// <param name="iv"></param>
         /// <returns></returns>
         public static object Decrypt_v2019(object result, string key, string iv)
-        {            
+        {
             if (result == null)
             {
                 return null;

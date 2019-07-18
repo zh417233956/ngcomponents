@@ -24,7 +24,7 @@ namespace WebComponentAPIGateway
             string uuid = "";
             try
             {
-                
+
                 var PostData = new List<KeyValuePair<string, string>>();
                 if (Request.Method.ToLower().Equals("post"))
                 {
@@ -43,7 +43,7 @@ namespace WebComponentAPIGateway
                         foreach (var item in Request.Form)
                         {
                             PostData.Add(new KeyValuePair<string, string>(item.Key, item.Value));
-                        }                        
+                        }
                     }
                     //获取前端的uuid,方便记录日志进行追踪调试
                     if (PostData.Exists(m => m.Key.Equals("uuid")))
