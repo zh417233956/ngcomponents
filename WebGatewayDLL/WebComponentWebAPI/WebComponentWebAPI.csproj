@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <Compile Remove="Mis2014Helper.cs" />
+    <Compile Remove="Utilitys\ApicacheHelper.cs" />
     <Compile Remove="WCF\SecretHelper.cs" />
   </ItemGroup>
 
