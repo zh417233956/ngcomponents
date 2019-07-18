@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using WebComponentWebAPI.Configs;
 using WebComponentWebAPI.Ioc;
+using WebComponentWebAPI.Utilitys;
 
 namespace UserSelectionWebAPI
 {
@@ -19,6 +20,10 @@ namespace UserSelectionWebAPI
             // 加载log4net日志配置文件
             ConfigManager.repository = LogManager.CreateRepository("Web_COM_Repository");
             XmlConfigurator.Configure(ConfigManager.repository, new System.IO.FileInfo("Configs/log4net.config"));
+
+            // Redis连接
+            string RedisCon = Configuration.GetConnectionString("Redis");
+            RedisHelper.SetCon(RedisCon);
         }
 
         public IConfiguration Configuration { get; }

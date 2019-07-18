@@ -12,7 +12,7 @@ namespace UserSelectionData
         /// </summary>
         /// <param name="entityId"></param>
         /// <returns></returns>
-        DefaultResult<User_show> GetModelByID(int entityId);
+        DefaultResult<User_list> GetModelByID(int entityId);
         /// <summary>
         /// 通过指定的ids获取实例列表
         /// </summary>

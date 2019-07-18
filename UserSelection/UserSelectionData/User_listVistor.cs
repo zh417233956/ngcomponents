@@ -14,15 +14,19 @@ namespace UserSelectionData
     public class User_listVistor : IUser_listVistor
     {
         IWCFClientHelper _wcfClientHelper;
+        IUserStore _userStore;
         private IHttpContextAccessor _contextAccessor;
         /// <summary>
         /// 当前上下文
         /// </summary>
         public HttpContext _httpContext => _contextAccessor.HttpContext;
-        public User_listVistor(IWCFClientHelper wcfClientHelper, IHttpContextAccessor contextAccessor)
+        public User_listVistor(IWCFClientHelper wcfClientHelper,
+            IHttpContextAccessor contextAccessor,
+            IUserStore userStore)
         {
             _wcfClientHelper = wcfClientHelper;
             _contextAccessor = contextAccessor;
+            _userStore = userStore;
         }
         private ISecondBaseInterface<User_list> User_listClient
         {
@@ -64,12 +68,17 @@ namespace UserSelectionData
         /// </summary>
         /// <param name="entityId"></param>
         /// <returns></returns>
-        public DefaultResult<User_show> GetModelByID(int entityId)
+        public DefaultResult<User_list> GetModelByID(int entityId)
         {
             //调用wcf
-            var wcfRet = User_showClient.GetModelByID(entityId, WcfOtherString);
+            var wcfRet = User_listClient.GetModelByID(entityId, WcfOtherString);
             //进行数据解密
-            var modelRet = (DefaultResult<User_show>)_wcfClientHelper.Decrypt_v2019(wcfRet, Config.WCFSecretkey, Config.WCFSecretiv);
+            var modelRet = (DefaultResult<User_list>)_wcfClientHelper.Decrypt_v2019(wcfRet, Config.WCFSecretkey, Config.WCFSecretiv);
+
+            ////测试redis
+            //var modelUser = new User_Detail() { UserId = 58988, orgid = 22, isjjr = 9 };
+            //_userStore.SetUser(modelUser);
+            //var model = _userStore.GetUser(58988);
 
             return modelRet;
         }
