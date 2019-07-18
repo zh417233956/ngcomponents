@@ -48,7 +48,34 @@ namespace UserSelectionWebAPI.API
             }
             return Content(result);
         }
-
+        [HttpGet("GetIds/{ids}")]
+        public IActionResult GetIds(string ids)
+        {
+            string result = "";
+            try
+            {
+                var modelRet = _user_listVistor.GetModelByIds(ids);
+                result = JsonConvert.SerializeObject(modelRet);
+            }
+            catch (Exception)
+            {
+            }
+            return Content(result);
+        }
+        [HttpGet("GetList")]
+        public IActionResult GetList()
+        {
+            string result = "";
+            try
+            {
+                var modelRet = _user_listVistor.GetUserList();
+                result = JsonConvert.SerializeObject(modelRet);
+            }
+            catch (Exception)
+            {
+            }
+            return Content(result);
+        }
         /// <summary>
         /// 获取mis2014中的数据
         /// </summary>

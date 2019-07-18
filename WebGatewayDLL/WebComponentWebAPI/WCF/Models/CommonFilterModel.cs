@@ -26,7 +26,12 @@ namespace WebComponentWebAPI.WCF.Models
         //
         //   value:
         //     检索值
-        public CommonFilterModel(string name, string filter, string value) { }
+        public CommonFilterModel(string name, string filter, string value)
+        {
+            Name = name;
+            Filter = filter;
+            Value = value;
+        }
         //
         // 摘要:
         //     初始化一个 TT.Common.Frame.Model.CommonFilterModel 查询对象(多值).
@@ -40,7 +45,12 @@ namespace WebComponentWebAPI.WCF.Models
         //
         //   values:
         //     检索值
-        public CommonFilterModel(string name, string filter, List<object> values) { }
+        public CommonFilterModel(string name, string filter, List<object> values)
+        {
+            Name = name;
+            Filter = filter;
+            ListValue = values;
+        }
 
         //
         // 摘要:

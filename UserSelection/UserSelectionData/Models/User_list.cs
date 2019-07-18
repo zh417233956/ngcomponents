@@ -9,9 +9,6 @@ namespace UserSelectionData.Models
     [System.Runtime.Serialization.DataContractAttribute(Namespace = "", Name = "T")]
     public class User_list : EntityBase
     {
-        public User_list()
-        { }
-
         //
         // 摘要:
         //     [IsJYH]是否精英会
@@ -283,29 +280,143 @@ namespace UserSelectionData.Models
         [System.Runtime.Serialization.DataMemberAttribute]
         public int? CityID { get; set; }
 
-        ////
-        //// 摘要:
-        ////     本类快速排序
-        ////
-        //// 参数:
-        ////   entityBase:
-        ////     比较对象
-        ////
-        ////   LowerName:
-        ////     小写的属性名
-        //public override int CompareTo(object entityBase, string LowerName)
-        //{
-        //    return 0;
-        //}
-        ////
-        //// 摘要:
-        ////     本类快速查找
-        ////
-        //// 参数:
-        ////   ColunmName:
-        ////     属性名
-        //public override object FindColumn(string ColunmName) {
-        //    return null;
-        //}
+        //
+        // 摘要:
+        //     /// 本类快速排序 ///
+        //
+        // 参数:
+        //   entityBase:
+        //     比较对象
+        //
+        //   LowerName:
+        //     小写的属性名
+        public override int CompareTo(object entityBase, string LowerName)
+        {
+            return 0;
+        }
+
+        //
+        // 摘要:
+        //     /// 本类快速查找 ///
+        //
+        // 参数:
+        //   ColunmName:
+        //     属性名
+        public override object FindColumn(string ColunmName)
+        {
+            switch (ColunmName.ToLower())
+            {
+                case "userid":
+                    return UserId;
+                case "roleid":
+                    return RoleID;
+                case "username":
+                    return UserName;
+                case "username2":
+                    return UserName2;
+                case "dzbbsuid":
+                    return DzBbsUid;
+                case "loginname":
+                    return LoginName;
+                case "password":
+                    return Password;
+                case "passwordmd5":
+                    return PasswordMD5;
+                case "passerrorcount":
+                    return PassErrorCount;
+                case "rukoukey":
+                    return rukouKey;
+                case "rukoukeymd5":
+                    return RukouKeyMD5;
+                case "groupid":
+                    return groupid;
+                case "cityid":
+                    return CityID;
+                case "areaid":
+                    return AreaID;
+                case "orgid":
+                    return orgid;
+                case "adduserid":
+                    return adduserid;
+                case "flag":
+                    return flag;
+                case "sex":
+                    return sex;
+                case "orgzu":
+                    return orgzu;
+                case "isjjr":
+                    return isjjr;
+                case "isjjrhouqin":
+                    return isjjrhouqin;
+                case "usergrade":
+                    return UserGrade;
+                case "gzjifenxz":
+                    return GzJifenXZ;
+                case "mgoparentuserid":
+                    return MgoParentUserID;
+                case "jjrfenzu":
+                    return JjrFenzu;
+                case "isjyh":
+                    return IsJYH;
+                case "isdzchubei":
+                    return IsDzChubei;
+                case "iszhiying":
+                    return isZhiying;
+                case "headimg":
+                    return HeadImg;
+                case "sellcount":
+                    return SellCount;
+                case "rentcount":
+                    return RentCount;
+                case "sellhtcount":
+                    return SellHTCount;
+                case "renthtcount":
+                    return RentHTCount;
+                case "rzruzhidate":
+                    return RzRuzhiDate;
+                case "isjiangshi":
+                    return IsJiangShi;
+                case "vers":
+                    return vers;
+                case "mangocoin":
+                    return MangoCoin;
+                case "lasttime":
+                    return lasttime;
+                case "userindexshow":
+                    return UserIndexShow;
+                case "iwebdomainname":
+                    return iWebDomainName;
+                case "mangocoinused":
+                    return MangoCoinUsed;
+                case "ishidden":
+                    return ishidden;
+                case "disorder":
+                    return disorder;
+                case "sellhtcounttotal":
+                    return SellHTCountTotal;
+                case "renthtcounttotal":
+                    return RentHTCountTotal;
+                case "pf_value_avg":
+                    return PF_Value_Avg;
+                case "edulevel":
+                    return EduLevel;
+                case "companyid":
+                    return CompanyId;
+                case "addtime":
+                    return AddTime;
+                case "iszhuanzheng":
+                    return IsZhuanZheng;
+                case "zhuanzhengdate":
+                    return ZhuanZhengDate;
+                case "userid_inherit":
+                    return userid_inherit;
+                case "mgbeancount":
+                    return MGBeanCount;
+                case "rzruzhidatelastcompany":
+                    return RzRuzhiDateLastCompany;
+                default:
+                    return null;
+            }
+        }
     }
 }

@@ -1,4 +1,6 @@
-﻿using WebComponentWebAPI.Ioc;
+﻿using UserSelectionData.Models;
+using WebComponentWebAPI.Ioc;
+using WebComponentWebAPI.Models;
 using WebComponentWebAPI.WCF.Models;
 
 namespace UserSelectionData
@@ -10,6 +12,17 @@ namespace UserSelectionData
         /// </summary>
         /// <param name="entityId"></param>
         /// <returns></returns>
-        DefaultResult<Models.User_list> GetModelByID(int entityId);
+        DefaultResult<User_show> GetModelByID(int entityId);
+        /// <summary>
+        /// 通过指定的ids获取实例列表
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        ClientResult GetModelByIds(string ids);
+        /// <summary>
+        /// 获取用户列表
+        /// </summary>
+        /// <returns></returns>
+        ClientResult GetUserList();
     }
 }
