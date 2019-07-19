@@ -68,10 +68,12 @@ namespace WebComponentWebAPI.Ioc
         /// <returns></returns>
         private static IDictionary<string, string> GetAssemblyNames()
         {
-            AssemblyName[] assemblies = Assembly.GetEntryAssembly().GetReferencedAssemblies().Where(m =>
-                      (!m.FullName.Contains("Microsoft.")) &&
-                      (!m.FullName.Contains("System.")))
-                .ToArray();
+            //AssemblyName[] assemblies = Assembly.GetEntryAssembly().GetReferencedAssemblies().Where(m =>
+            //          (!m.FullName.Contains("Microsoft.")) &&
+            //          (!m.FullName.Contains("System.")))
+            //    .ToArray();
+
+            var assemblies = Utilitys.RuntimeHelper.GetAllAssemblies().Select(m=>m.GetName()).ToArray();
 
             IDictionary<string, string> assemblyNames = new Dictionary<string, string>();
             foreach (var item in assemblies)

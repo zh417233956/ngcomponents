@@ -16,6 +16,7 @@ namespace UserSelectionData
     {
         IWCFClientHelper _wcfClientHelper;
         IUserStore _userStore;
+        IDictStore _dictStore;
         private IHttpContextAccessor _contextAccessor;
         /// <summary>
         /// 当前上下文
@@ -23,11 +24,13 @@ namespace UserSelectionData
         public HttpContext _httpContext => _contextAccessor.HttpContext;
         public User_listVistor(IWCFClientHelper wcfClientHelper,
             IHttpContextAccessor contextAccessor,
-            IUserStore userStore)
+            IUserStore userStore,
+            IDictStore dictStore)
         {
             _wcfClientHelper = wcfClientHelper;
             _contextAccessor = contextAccessor;
             _userStore = userStore;
+            _dictStore = dictStore;
         }
         private ISecondBaseInterface<User_list> User_listClient
         {
@@ -295,7 +298,7 @@ namespace UserSelectionData
                 var list = tempList;
                 result = ReturnUsers(list, number, _httpContext.Request.GetKey("check") ?? "", history, changyong);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 result = ReturnUsers(null, -2, "(catch)选人插件代码错误");
             }
@@ -339,21 +342,24 @@ namespace UserSelectionData
                 {
                     if (item != null)
                     {
-                        //TODO:组织结构缓存
-                        //TODO:在职状态字典缓存
-                        //TODO:User_list中不存在mobile
+                        //TODO:OK,组织结构，从用户缓存获取
+                        //TODO:在职状态字典缓存，从redis缓存获取
+                        //TODO:OK,User_list中不存在mobile，从用户缓存获取
                         //TODO:isyunying 是如何判断的
 
                         //var org = item.orgid.Org();
+
+                        //直接通过redis获取用户数据
+                        var user_detail = _userStore.GetUser(item.UserId.Value) ?? new WebComponentStore.Models.User_Detail();
                         list.Add(new
                         {
                             item.UserId,
-                            ZaiZhiZhuangTai = "",// item.flag?.Int().Dict(77)?.DicName ?? "",
+                            ZaiZhiZhuangTai = user_detail.flag > 0 ? _dictStore.GetModel(user_detail.flag)?.DicName ?? "" : "",// item.flag?.Int().Dict(77)?.DicName ?? "",
                             UserName = item.UserName2,
                             item.orgid,
                             item.isjjr,
-                            OrgName = "",//org?.OrgName ?? "",
-                            mobile = "",//item.mobile,
+                            OrgName = user_detail.OrgName,
+                            mobile = user_detail.mobile,
                             RzRuzhiDate = string.Format("{0:yyyy-MM-dd}", item.RzRuzhiDate),
                             isyunying = false, //isYunYing_isjjrList.Contains(item.isjjr),
 

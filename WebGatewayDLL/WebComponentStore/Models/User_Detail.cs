@@ -18,5 +18,6 @@ namespace WebComponentStore.Models
         public DateTime? lasttime { get; set; }
         public int CompanyId { get; set; }
         public string mobile { get; set; }
+        public string OrgName { get; set; }
     }
 }
