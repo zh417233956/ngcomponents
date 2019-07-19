@@ -65,6 +65,22 @@ namespace WebComponentWebAPI.Utilitys
             int result;
             return int.TryParse(key2, out result) ? result : 0;
         }
+        /// <summary>
+        /// 取得Cook中Int的Key
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static int GetCookieKeyInt(this HttpRequest request, string key)
+        {
+            string key2 = "";
+            if (request.Cookies.ContainsKey(key))
+            {
+                key2=request.Cookies[key];
+            }
+            int result;
+            return int.TryParse(key2, out result) ? result : 0;
+        }
         #endregion 获取参数
 
 

@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UserSelectionData.Models;
+using WebComponentData.Interface;
+using WebComponentData.Models;
 using WebComponentStore.Interface;
 using WebComponentWebAPI.ConfigCenter;
 using WebComponentWebAPI.Models;
@@ -17,7 +19,10 @@ namespace UserSelectionData
         IWCFClientHelper _wcfClientHelper;
         IUserStore _userStore;
         IDictStore _dictStore;
-        private IHttpContextAccessor _contextAccessor;
+        IHttpContextAccessor _contextAccessor;
+        IPub_DictVistor _pub_DictVistor;
+        IPub_DicExtendItemVistor _pub_DicExtendItemVistor;
+        IOrg_ListVistor _org_ListVistor;
         /// <summary>
         /// 当前上下文
         /// </summary>
@@ -25,12 +30,18 @@ namespace UserSelectionData
         public User_listVistor(IWCFClientHelper wcfClientHelper,
             IHttpContextAccessor contextAccessor,
             IUserStore userStore,
-            IDictStore dictStore)
+            IDictStore dictStore,
+            IPub_DictVistor pub_DictVistor,
+            IPub_DicExtendItemVistor pub_DicExtendItemVistor,
+            IOrg_ListVistor org_ListVistor)
         {
             _wcfClientHelper = wcfClientHelper;
             _contextAccessor = contextAccessor;
             _userStore = userStore;
             _dictStore = dictStore;
+            _pub_DictVistor = pub_DictVistor;
+            _pub_DicExtendItemVistor = pub_DicExtendItemVistor;
+            _org_ListVistor = org_ListVistor;
         }
         private ISecondBaseInterface<User_list> User_listClient
         {
@@ -109,12 +120,12 @@ namespace UserSelectionData
 
                     if (data != null && data.Count > 0)
                     {
-                        var list = data.OrderBy(d => idList.IndexOf(d.UserId ?? 0)).ToList();
+                        var list = data.OrderBy(d => idList.IndexOf(d.UserId ?? 0)).Select(m => m.UserId.Value).ToList();
                         result = ReturnUsers(list, data.Count, _httpContext.Request.GetKey("check") ?? "");
                     }
                     else
                     {
-                        result = ReturnUsers(new List<User_list>(), 0, _httpContext.Request.GetKey("check") ?? "");
+                        result = ReturnUsers(new List<int>(), 0, _httpContext.Request.GetKey("check") ?? "");
                     }
                 }
             }
@@ -127,14 +138,19 @@ namespace UserSelectionData
             var result = ClientResult.Error("");
             try
             {
-                //TODO:当前用户信息暂无
-                var LoginUser = new User_list() { UserId = 58988, orgid = 22 };
+                //TODO:OK,当前用户信息,从cookie中获取newframeuid
+                int UserId = _httpContext.Request.GetCookieKeyInt("newframeuid");
+                var LoginUser = _userStore.GetUser(UserId) ?? new WebComponentStore.Models.User_Detail() { UserId = 58988, orgid = 22 };
 
                 var current = _httpContext.Request.GetKeyInt("page");
                 var pagesize = _httpContext.Request.GetKeyInt("size");
                 var orgidstr = _httpContext.Request.GetKey("orgId");
                 string action = _httpContext.Request.GetKey("type");
-                string orgId = orgidstr.Int() > 0 ? orgidstr : LoginUser.orgid.ToString();
+                //TODO:OK,如果传入字符串是有问题的,修正如下
+                //string orgId = orgidstr.Int() > 0 ? orgidstr : LoginUser.orgid.ToString();
+                int query_Orgid = 0;
+                var query_Orgid_IsInt = int.TryParse(orgidstr, out query_Orgid);
+                string orgId = query_Orgid_IsInt ? (orgidstr.Int() > 0 ? orgidstr : LoginUser.orgid.ToString()) : orgidstr;
                 int isPower = _httpContext.Request.GetKeyInt("ispowerorg");
                 int isShowDel = _httpContext.Request.GetKeyInt("isShowDeleted");
                 string isJJr = _httpContext.Request.GetKey("isJJr");
@@ -150,7 +166,7 @@ namespace UserSelectionData
                    .Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
                    .Select(TypeHelper.IntConvert).ToList() : null;
 
-                var tempList = new List<User_list>();
+                var tempList = new List<int>();
                 var selectList = new List<User_list>();
 
                 Org_List myorg = new Org_List();
@@ -162,14 +178,16 @@ namespace UserSelectionData
                     if (int.TryParse(orgId, out num))
                     {
                         action = "myorg";
-                        //TODO:获取指定的组织
+                        //TODO:OK,获取指定的组织
                         myorg = new Org_List() { OrgID = num };
                     }
                     else
                     {
                         //var orglike = MisCommonCache.OrgStore.Get(o => o.OrgName.Contains(orgId) && o.isdel == 0);
                         //TODO:通过模糊查询获取orglist
-                        var orglike = new List<Org_List>();
+                        var otherOrgfilterList = new List<CommonFilterModel>();
+                        otherOrgfilterList.Add(new CommonFilterModel("OrgName", "like", $"%{orgId}%"));
+                        var orglike = _org_ListVistor.GetListByQuery(1, 5, otherOrgfilterList, null).Data;
                         orgs = orglike == null ? new List<Org_List>() : orglike.ToList();
                     }
                 }
@@ -210,32 +228,45 @@ namespace UserSelectionData
 
                 var filterList = new List<CommonFilterModel>();
                 var orderby = new List<CommonOrderModel>() {
-                    new CommonOrderModel(){Name="UserId",Order=0}
+                    new CommonOrderModel(){ Name="UserId",Order=0 }
                 };
 
-                if (isShowDel == 0)
+                //显示离职员工 （限制类）
+                //isshowdelete;0=在职(flag=1),1=全部;2=(flag in (0,1,9))                
+                switch (isShowDel)
                 {
-                    filterList.Add(new CommonFilterModel("flag", "=", "1"));
+                    case 0:
+                        filterList.Add(new CommonFilterModel("flag", "=", "1"));
+                        break;
+                    case 2:
+                        var strWhereFlag = "0,1,9".Split(',').Select(s => (object)s).ToList();
+                        filterList.Add(new CommonFilterModel("flag", "in", strWhereFlag));
+                        break;
+                }
+                //限制经纪人等级 （限制类）
+                if (isJJrList != null && isJJrList.Count > 0)
+                {
+                    filterList.Add(new CommonFilterModel("isjjr", "in", isJJrList.Select(s => (object)s).ToList()));
                 }
 
                 switch (action)
                 {
                     case "myorg":
                         //获取我所在组织的用户
-                        var users = new List<User_list>();
+                        var users = new List<int>();
                         //增加过滤条件
                         filterList.Add(new CommonFilterModel("orgid", "=", myorg.OrgID.Value.ToString()));
-                        var wcfUsers = GetListByQuery(current, pagesize, filterList, orderby);
+                        var wcfUsers = GetIdListLock(current, pagesize, filterList, orderby);
                         users = wcfUsers.Data;
                         number = wcfUsers.RetInt;
                         tempList.AddRange(users);
                         break;
                     case "otherOrg":
                         //获取组织Ids的用户
-                        var usersList = new List<User_list>();
+                        var usersList = new List<int>();
                         //增加过滤条件
                         filterList.Add(new CommonFilterModel("orgid", "in", orgs.Select(s => (object)s.OrgID).ToList()));
-                        var wcfUsersList = GetListByQuery(current, pagesize, filterList, orderby);
+                        var wcfUsersList = GetIdListLock(current, pagesize, filterList, orderby);
                         usersList = wcfUsersList.Data;
                         number = wcfUsersList.RetInt;
                         tempList.AddRange(usersList);
@@ -249,42 +280,20 @@ namespace UserSelectionData
                         break;
                     case "selectIds":
                         //获取指定Ids的用户
-                        var usersIdList = new List<User_list>();
+                        var usersIdList = new List<int>();
                         //增加过滤条件
                         filterList.Add(new CommonFilterModel("orgid", "in", idsIn.Select(id => (object)id).ToList()));
-                        var wcfUsersIdList = GetListByQuery(current, pagesize, filterList, orderby);
+                        var wcfUsersIdList = GetIdListLock(current, pagesize, filterList, orderby);
                         usersIdList = wcfUsersIdList.Data;
                         number = wcfUsersIdList.RetInt;
                         tempList.AddRange(usersIdList);
 
                         break;
                     default:
-                        {
-                        }
                         break;
                 }
                 tempList = tempList.Where(e =>
                 {
-                    //isshowdelete;0=在职(flag=1),1=全部;2=(flag in (0,1,9))
-
-
-                    if (isShowDel == 0)
-                    {
-                        if (e == null) return false;
-                        if (e.flag != 1) return false;
-                    }
-
-                    if (isShowDel == 2)
-                    {
-
-                        if (e == null) return false;
-                        if (!(e.flag == 0 || e.flag == 1 || e.flag == 9)) return false;
-                    }
-
-                    if (isJJrList != null && isJJrList.Count > 0)
-                    {
-                        if (!isJJrList.Contains(e.isjjr.Value)) return false;
-                    }
                     if (mastOrgId != null && mastOrgId.Count > 0)
                     {
                         //var tempParentOrg = CommonFrame.FindOrg(CommonFrame.FindOrg(e.orgid.Value)?.OrgParentID.Value ?? 0);
@@ -292,11 +301,8 @@ namespace UserSelectionData
                     }
                     return true;
                 }).ToList();
-                //number = tempList.Count;
-                // LogHelper.WriteCustom("员工选人插件", "tempList.Count:" + number);
-                //var list = tempList.Skip((current - 1) * pagesize).Take(pagesize).ToList();
-                var list = tempList;
-                result = ReturnUsers(list, number, _httpContext.Request.GetKey("check") ?? "", history, changyong);
+
+                result = ReturnUsers(tempList, number, _httpContext.Request.GetKey("check") ?? "", history, changyong);
             }
             catch (Exception)
             {
@@ -325,47 +331,88 @@ namespace UserSelectionData
 
             return modelRet;
         }
+        /// <summary>
+        /// 通过分页、条件、排序查询数据主键
+        /// </summary>
+        /// <param name="page"></param>
+        /// <param name="pagesize"></param>
+        /// <param name="filters"></param>
+        /// <param name="orders"></param>
+        /// <returns></returns>
+        private DefaultResult<List<int>> GetIdListLock(int page, int pagesize, List<CommonFilterModel> filters, List<CommonOrderModel> orders)
+        {
+            //调用wcf
+            var wcfRet = User_listClient.GetIdListLock(page, pagesize, filters, orders, WcfOtherString);
+            //进行数据解密
+            var modelRet = (DefaultResult<List<int>>)_wcfClientHelper.Decrypt_v2019(wcfRet, Config.WCFSecretkey, Config.WCFSecretiv);
 
-        private ClientResult ReturnUsers(IEnumerable<User_list> users, int number, string info, List<int> history = null, List<int> changyong = null)
+            return modelRet;
+        }
+        /// <summary>
+        /// 通过分页、条件、排序查询数据列的数据
+        /// </summary>
+        /// <param name="page"></param>
+        /// <param name="pagesize"></param>
+        /// <param name="filters"></param>
+        /// <param name="orders"></param>
+        /// <param name="columns"></param>
+        /// <returns></returns>
+        private DefaultResult<List<User_list>> GetQueryAggregatePageLock(int page, int pagesize, List<CommonFilterModel> filters, List<CommonOrderModel> orders, List<string> columns)
+        {
+            //调用wcf
+            var wcfRet = User_listClient.GetQueryAggregatePageLock(page, pagesize, filters, columns, null, orders, WcfOtherString);
+            //进行数据解密
+            var modelRet = (DefaultResult<List<User_list>>)_wcfClientHelper.Decrypt_v2019(wcfRet, Config.WCFSecretkey, Config.WCFSecretiv);
+            return modelRet;
+        }
+        /// <summary>
+        /// 返回用户数据格式封装
+        /// </summary>
+        /// <param name="users"></param>
+        /// <param name="number"></param>
+        /// <param name="info"></param>
+        /// <param name="history"></param>
+        /// <param name="changyong"></param>
+        /// <returns></returns>
+        private ClientResult ReturnUsers(IEnumerable<int> userIds, int number, string info, List<int> history = null, List<int> changyong = null)
         {
             var result = ClientResult.Error("");
-            if (users == null)
+            if (userIds == null)
             {
                 result = ClientResult.Ok(new { data = new List<object>(), count = 0, msg = info });
             }
             else
             {
-                //var dictExtendItem = MangoMis.MisFrame.Cache.DictExtendCache.GetItemWithOutIsdel("isjjr_extend", "isyunying", null, new List<string> { "1" });
-                //var isYunYing_isjjrList = dictExtendItem.Select(e => (object)e.ItemKey).ToList();
+                //TODO:OK,在职状态字典缓存，从wcf获取
+                var flag_Dics = _pub_DictVistor.GetListByClassId(77).Data;
+                //TODO:OK,isyunying从wcf扩展字典中获取
+                var dictExtendItem = _pub_DicExtendItemVistor.GetItemWithOutIsdel("isjjr_extend", "isyunying").Data;
+                var isYunYing_isjjrList = dictExtendItem.Select(e => (object)e.ItemKey).ToList();
                 var list = new List<object>();
-                foreach (var item in users)
-                {
-                    if (item != null)
-                    {
-                        //TODO:OK,组织结构，从用户缓存获取
-                        //TODO:在职状态字典缓存，从redis缓存获取
-                        //TODO:OK,User_list中不存在mobile，从用户缓存获取
-                        //TODO:isyunying 是如何判断的
 
-                        //var org = item.orgid.Org();
+                foreach (var item in userIds)
+                {
+                    if (item != 0)
+                    {
+                        //TODO:OK,组织结构，从用户缓存获取                      
+                        //TODO:OK,User_list中不存在mobile，从用户缓存获取 
 
                         //直接通过redis获取用户数据
-                        var user_detail = _userStore.GetUser(item.UserId.Value) ?? new WebComponentStore.Models.User_Detail();
+                        var user_detail = _userStore.GetUser(item) ?? new WebComponentStore.Models.User_Detail();
                         list.Add(new
                         {
-                            item.UserId,
-                            ZaiZhiZhuangTai = user_detail.flag > 0 ? _dictStore.GetModel(user_detail.flag)?.DicName ?? "" : "",// item.flag?.Int().Dict(77)?.DicName ?? "",
-                            UserName = item.UserName2,
-                            item.orgid,
-                            item.isjjr,
-                            OrgName = user_detail.OrgName,
-                            mobile = user_detail.mobile,
-                            RzRuzhiDate = string.Format("{0:yyyy-MM-dd}", item.RzRuzhiDate),
-                            isyunying = false, //isYunYing_isjjrList.Contains(item.isjjr),
+                            user_detail.UserId,
+                            ZaiZhiZhuangTai = flag_Dics.FirstOrDefault(m => m.DictUseId == user_detail.flag)?.DicName ?? "",
+                            UserName = user_detail.UserName2,
+                            user_detail.orgid,
+                            user_detail.isjjr,
+                            user_detail.OrgName,
+                            user_detail.mobile,
+                            RzRuzhiDate = string.Format("{0:yyyy-MM-dd}", user_detail.RzRuzhiDate),
+                            isyunying = isYunYing_isjjrList.Contains(user_detail.isjjr),
 
                         });
                     }
-
                 }
                 result = ClientResult.Ok(new { data = list, count = number, msg = info, history, changyong });
             }

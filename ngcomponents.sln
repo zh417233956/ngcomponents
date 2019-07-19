@@ -21,6 +21,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserSelectionData", "UserSe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebComponentStore", "WebGatewayDLL\WebComponentStore\WebComponentStore.csproj", "{3197CF90-DC0C-4334-9717-4293E0340462}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebComponentData", "WebGatewayDLL\WebComponentData\WebComponentData.csproj", "{359F7FDB-B806-47E4-9743-117738E9EE20}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{3197CF90-DC0C-4334-9717-4293E0340462}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3197CF90-DC0C-4334-9717-4293E0340462}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3197CF90-DC0C-4334-9717-4293E0340462}.Release|Any CPU.Build.0 = Release|Any CPU
+		{359F7FDB-B806-47E4-9743-117738E9EE20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{359F7FDB-B806-47E4-9743-117738E9EE20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{359F7FDB-B806-47E4-9743-117738E9EE20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{359F7FDB-B806-47E4-9743-117738E9EE20}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -62,6 +68,7 @@ Global
 		{7513FEB2-6571-4319-A519-7C557C994A2B} = {C62E823E-8C36-44D0-B984-66BB5E48C4E8}
 		{D07F0AF7-8A02-4AA1-A135-7044086BDA06} = {04CCD11E-B33C-495B-BF8C-454DD1828C77}
 		{3197CF90-DC0C-4334-9717-4293E0340462} = {C62E823E-8C36-44D0-B984-66BB5E48C4E8}
+		{359F7FDB-B806-47E4-9743-117738E9EE20} = {C62E823E-8C36-44D0-B984-66BB5E48C4E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {81D89D67-3A7C-47D4-9E79-9D13107F4E1B}

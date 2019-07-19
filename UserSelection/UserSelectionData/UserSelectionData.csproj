@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -6,10 +6,12 @@
 
   <ItemGroup>
     <Compile Remove="IUserStore.cs" />
+    <Compile Remove="Models\Org_List.cs" />
     <Compile Remove="UserStore.cs" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\WebGatewayDLL\WebComponentData\WebComponentData.csproj" />
     <ProjectReference Include="..\..\WebGatewayDLL\WebComponentStore\WebComponentStore.csproj" />
     <ProjectReference Include="..\..\WebGatewayDLL\WebComponentWebAPI\WebComponentWebAPI.csproj" />
   </ItemGroup>
