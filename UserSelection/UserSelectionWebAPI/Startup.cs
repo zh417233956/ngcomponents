@@ -22,8 +22,9 @@ namespace UserSelectionWebAPI
             XmlConfigurator.Configure(ConfigManager.repository, new System.IO.FileInfo("Configs/log4net.config"));
 
             // Redis连接
-            string RedisCon = Configuration.GetConnectionString("Redis");
-            RedisHelper.SetCon(RedisCon);
+            string RedisCon = Configuration.GetConnectionString("Store.Redis");
+            string RedisMergeKey = Configuration.GetConnectionString("Store.MergeKey");
+            RedisHelper.SetCon(RedisCon, RedisMergeKey);
         }
 
         public IConfiguration Configuration { get; }

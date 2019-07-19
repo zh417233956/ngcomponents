@@ -1,15 +1,16 @@
-﻿using StackExchange.Redis;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Threading.Tasks;
-using UserSelectionData.Models;
+using WebComponentStore.Interface;
+using WebComponentStore.Models;
 using WebComponentWebAPI.Utilitys;
 
-namespace UserSelectionData
+namespace WebComponentStore.Data
 {
     public class UserStore : IUserStore
     {
+        private const string RedisKey = "_MangoUserDetailStore_";
+
         /// <summary>
         /// 获取用户信息
         /// </summary>
@@ -17,7 +18,7 @@ namespace UserSelectionData
         /// <returns></returns>
         public User_Detail GetUser(int userId)
         {
-            var model = RedisHelper.Get<User_Detail>("mango:user:" + userId);
+            var model = RedisHelper.Get<User_Detail>(RedisKey + userId);
 
             return model;
         }
@@ -28,7 +29,7 @@ namespace UserSelectionData
         /// <param name="model"></param>
         public void SetUser(User_Detail model)
         {
-            RedisHelper.Set("mango:user:" + model.UserId, model);
+            RedisHelper.Set(RedisKey + model.UserId, model);
         }
     }
 }

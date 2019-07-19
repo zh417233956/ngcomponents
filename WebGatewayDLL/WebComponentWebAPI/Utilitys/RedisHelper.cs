@@ -15,6 +15,7 @@ namespace WebComponentWebAPI.Utilitys
     public static class RedisHelper
     {
         private static string Constr = "";
+        private static string PreMergeKey = "";
 
         private static object _locker = new Object();
         private static ConnectionMultiplexer _instance = null;
@@ -59,6 +60,11 @@ namespace WebComponentWebAPI.Utilitys
         {
             Constr = config;
         }
+        public static void SetCon(string config,string mergeKey)
+        {
+            Constr = config;
+            PreMergeKey = mergeKey;
+        }
 
         /// <summary>
         /// 
@@ -76,8 +82,8 @@ namespace WebComponentWebAPI.Utilitys
         /// <returns></returns>
         private static string MergeKey(string key)
         {
-            return key;
-            //return BaseSystemInfo.SystemCode + key;
+            //return key;
+            return PreMergeKey + key;
         }
 
         /// <summary>

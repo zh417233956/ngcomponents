@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace UserSelectionData.Models
+﻿namespace UserSelectionData.Models
 {
     public class User_show
     {

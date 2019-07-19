@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using UserSelectionData.Models;
+using WebComponentStore.Models;
 using WebComponentWebAPI.Ioc;
 
-namespace UserSelectionData
+namespace WebComponentStore.Interface
 {
     public interface IUserStore : ITransentInject
     {
