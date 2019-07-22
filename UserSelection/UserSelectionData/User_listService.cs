@@ -25,13 +25,16 @@ namespace UserSelectionData
         /// 当前上下文
         /// </summary>
         public HttpContext _httpContext => _contextAccessor.HttpContext;
-        public User_listService(IHttpContextAccessor contextAccessor,
+        public User_listService(
+            IUser_listVistor uer_listVistor,
+        IHttpContextAccessor contextAccessor,
             IUserStore userStore,
             IDictStore dictStore,
             IPub_DictVistor pub_DictVistor,
             IPub_DicExtendItemVistor pub_DicExtendItemVistor,
             IOrg_ListVistor org_ListVistor)
         {
+            _uer_listVistor = uer_listVistor;
             _contextAccessor = contextAccessor;
             _userStore = userStore;
             _dictStore = dictStore;
