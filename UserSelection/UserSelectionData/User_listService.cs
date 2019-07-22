@@ -85,6 +85,7 @@ namespace UserSelectionData
             var result = ClientResult.Error("");
             try
             {
+                #region 参数处理
                 //TODO:OK,当前用户信息,从cookie中获取newframeuid
                 int UserId = _httpContext.Request.GetCookieKeyInt("newframeuid");
                 var LoginUser = _userStore.GetUser(UserId) ?? new WebComponentStore.Models.User_Detail() { UserId = 58988, orgid = 22 };
@@ -113,11 +114,21 @@ namespace UserSelectionData
                    .Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
                    .Select(TypeHelper.IntConvert).ToList() : null;
 
+                #endregion 参数处理
+
+                #region 条件过滤处理
                 var tempList = new List<int>();
                 var selectList = new List<User_list>();
 
                 Org_List myorg = new Org_List();
-                var orgs = new List<int>();//所有组织名称拼音包含搜索关键字拼音的组织
+                //所有组织名称拼音包含搜索关键字拼音的组织
+                var orgs = new List<int>();
+
+                //wcf查询过滤条件及排序方式
+                var filterList = new List<CommonFilterModel>();
+                var orderby = new List<CommonOrderModel>() {
+                    new CommonOrderModel(){ Name="UserId",Order=0 }
+                };
 
                 if (action == "otherOrg" && !string.IsNullOrEmpty(orgId))
                 {
@@ -147,6 +158,7 @@ namespace UserSelectionData
                 {
                     //TODO:OK,当前用户的组织
                     myorg = new Org_List() { OrgID = LoginUser.orgid.Value };
+                    filterList.Add(new CommonFilterModel("orgid", "=", LoginUser.orgid.ToString()));
                 }
 
                 if (action == "otherOrg" && orgId == "0")
@@ -162,26 +174,6 @@ namespace UserSelectionData
                     }
                 }
                 int number = 0;
-
-                List<int> history = null;
-                List<int> changyong = null;
-                if (action == "history")
-                {
-                    //TODO:历史记录
-                    history = new List<int>();
-                    action = string.Join(",", history);
-                    if (_httpContext.Request.GetKeyInt("ischangyong") == 1)
-                    {
-                        //TODO:常用历史记录
-                        changyong = new List<int>();
-                        action += "," + string.Join(",", changyong);
-                    }
-                }
-
-                var filterList = new List<CommonFilterModel>();
-                var orderby = new List<CommonOrderModel>() {
-                    new CommonOrderModel(){ Name="UserId",Order=0 }
-                };
 
                 //显示离职员工 （限制类）
                 //isshowdelete;0=在职(flag=1),1=全部;2=(flag in (0,1,9))                
@@ -201,6 +193,14 @@ namespace UserSelectionData
                     filterList.Add(new CommonFilterModel("isjjr", "in", isJJrList.Select(s => (object)s).ToList()));
                 }
 
+                //TODO:OK,必须在指定组织内,此处有待确认
+                if (mastOrgId != null && mastOrgId.Count > 0)
+                {
+                    filterList.Add(new CommonFilterModel("orgid", "in", mastOrgId.Select(s => (object)s).ToList()));
+                }
+
+                #endregion 条件过滤处理
+
                 switch (action)
                 {
                     case "myorg":
@@ -217,7 +217,14 @@ namespace UserSelectionData
                         //获取组织Ids的用户
                         var usersList = new List<int>();
                         //增加过滤条件
-                        filterList.Add(new CommonFilterModel("orgid", "in", orgs.Select(s => (object)s).ToList()));
+                        if (orgs.Count > 0)
+                        {
+                            filterList.Add(new CommonFilterModel("orgid", "in", orgs.Select(s => (object)s).ToList()));
+                        }
+                        else
+                        {
+                            //filterList.Add(new CommonFilterModel("orgid", "=", LoginUser.orgid.ToString()));
+                        }
                         var wcfUsersList = _uer_listVistor.GetIdListLock(current, pagesize, filterList, orderby);
                         usersList = wcfUsersList.Data;
                         number = wcfUsersList.RetInt;
@@ -293,18 +300,89 @@ namespace UserSelectionData
 
                         break;
                     default:
+                        #region default
+                        int temp;
+                        if (int.TryParse(action, out temp))
+                        {
+                            if (temp > 10000 && temp < 99999)
+                            {
+                                filterList.Add(new CommonFilterModel("UserId", "=", action));
+
+                                var wcfdefaultUserList = _uer_listVistor.GetIdListLock(current, pagesize, filterList, orderby);
+                                var defaultUserList = wcfdefaultUserList.Data;
+                                number = wcfdefaultUserList.RetInt;
+                                tempList.AddRange(defaultUserList);
+                            }
+                        }
+                        else
+                        {
+                            var arr = action.Split(',');
+                            if (arr.Length > 1)
+                            {
+                                var userids = arr.Select(a => a.Int()).Where(a => a != 0).Distinct().ToList();
+                                filterList.Add(new CommonFilterModel("UserId", "in", userids.Cast<object>().ToList()));
+
+                                var wcfdefaultUserList = _uer_listVistor.GetIdListLock(current, pagesize, filterList, orderby);
+                                var defaultUserList = wcfdefaultUserList.Data;
+                                number = wcfdefaultUserList.RetInt;
+                                tempList.AddRange(defaultUserList);
+                            }
+                            else
+                            {
+                                if (action.Length < 1)
+                                {
+                                    return ReturnUsers(null, -1, "请使用1个以上的拼音进行查询");
+                                }
+
+                                List<PinYinResult> pinyinResult;
+
+                                var wcfdefaultUserList = _uer_listVistor.GetIdListLock(current, pagesize, filterList, orderby);
+                                var defaultUserList = wcfdefaultUserList.Data;
+                                number = wcfdefaultUserList.RetInt;
+                                var pinYinSourceList = new List<PinYinSource>();
+                                foreach (var item in defaultUserList)
+                                {
+                                    var userDetail = _userStore.GetUser(item);
+                                    if (userDetail != null && !string.IsNullOrWhiteSpace(userDetail.UserName2))
+                                    {
+                                        pinYinSourceList.Add(new PinYinSource
+                                        {
+                                            ID = userDetail.UserId,
+                                            Name = userDetail.UserName2
+                                        });
+                                    }
+                                }
+                                var _pinyinHelper = new PinYinLibraryHelper();
+                                pinyinResult = _pinyinHelper.GetPinYinAndHanZiResult(pinYinSourceList, action, int.MaxValue, out number, 1);
+
+                                if (pinyinResult != null && pinyinResult.Count > 0)
+                                {
+                                    tempList.AddRange(pinyinResult.Select(p => p.ID).ToList());
+                                }
+                            }
+                        }
+
+                        #endregion default
+
                         break;
                 }
 
-                //tempList = tempList.Where(e =>
-                //{
-                //    if (mastOrgId != null && mastOrgId.Count > 0)
-                //    {
-                //        //var tempParentOrg = CommonFrame.FindOrg(CommonFrame.FindOrg(e.orgid.Value)?.OrgParentID.Value ?? 0);
-                //        //if (!mastOrgId.Contains(e.orgid.Value) && !mastOrgId.Contains(tempParentOrg?.OrgID.Value ?? 0)) return false;
-                //    }
-                //    return true;
-                //}).ToList();
+                #region 历史记录及常用信息
+                List<int> history = null;
+                List<int> changyong = null;
+                if (action == "history")
+                {
+                    //TODO:历史记录
+                    history = new List<int>();
+                    action = string.Join(",", history);
+                    if (_httpContext.Request.GetKeyInt("ischangyong") == 1)
+                    {
+                        //TODO:常用历史记录
+                        changyong = new List<int>();
+                        action += "," + string.Join(",", changyong);
+                    }
+                }
+                #endregion 历史记录及常用信息
 
                 result = ReturnUsers(tempList, number, _httpContext.Request.GetKey("check") ?? "", history, changyong);
             }
@@ -405,7 +483,7 @@ namespace UserSelectionData
                 array[i] = _orgStore.GetModel(list[i]) ?? new Org_Detail();
             }
             //获取大于等于指定级别的组织
-            return array.Where(m => m.OrgLevelKey >= getLevel && m.OrgID > 0).OrderByDescending(b=>b.OrgLevelKey).ToArray();
+            return array.Where(m => m.OrgLevelKey >= getLevel && m.OrgID > 0).OrderByDescending(b => b.OrgLevelKey).ToArray();
         }
 
         #endregion 获取组织父级
@@ -534,6 +612,7 @@ namespace UserSelectionData
             }
             return result;
         }
+
         #endregion
     }
 }
