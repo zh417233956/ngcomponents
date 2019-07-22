@@ -61,5 +61,22 @@ namespace WebComponentData.Data
 
             return modelRet;
         }
+        /// <summary>
+        /// 通过分页、条件、排序查询数据主键
+        /// </summary>
+        /// <param name="page"></param>
+        /// <param name="pagesize"></param>
+        /// <param name="filters"></param>
+        /// <param name="orders"></param>
+        /// <returns></returns>
+        public DefaultResult<List<int>> GetIdList(int page, int pagesize, List<CommonFilterModel> filters, List<CommonOrderModel> orders)
+        {
+            //调用wcf
+            var wcfRet = Org_ListClient.GetIdList(page, pagesize, filters, orders, WcfOtherString);
+            //进行数据解密
+            var modelRet = (DefaultResult<List<int>>)_wcfClientHelper.Decrypt_v2019(wcfRet, Config.WCFSecretkey, Config.WCFSecretiv);
+
+            return modelRet;
+        }
     }
 }

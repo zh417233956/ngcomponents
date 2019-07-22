@@ -5,6 +5,7 @@ using System.Linq;
 using WebComponentData.Interface;
 using WebComponentData.Models;
 using WebComponentStore.Interface;
+using WebComponentStore.Models;
 using WebComponentWebAPI.ConfigCenter;
 using WebComponentWebAPI.Models;
 using WebComponentWebAPI.Utilitys;
@@ -21,6 +22,7 @@ namespace UserSelectionData
         IPub_DictVistor _pub_DictVistor;
         IPub_DicExtendItemVistor _pub_DicExtendItemVistor;
         IOrg_ListVistor _org_ListVistor;
+        IOrgStore _orgStore;
         /// <summary>
         /// 当前上下文
         /// </summary>
@@ -32,7 +34,8 @@ namespace UserSelectionData
             IDictStore dictStore,
             IPub_DictVistor pub_DictVistor,
             IPub_DicExtendItemVistor pub_DicExtendItemVistor,
-            IOrg_ListVistor org_ListVistor)
+            IOrg_ListVistor org_ListVistor,
+            IOrgStore orgStore)
         {
             _uer_listVistor = uer_listVistor;
             _contextAccessor = contextAccessor;
@@ -41,6 +44,7 @@ namespace UserSelectionData
             _pub_DictVistor = pub_DictVistor;
             _pub_DicExtendItemVistor = pub_DicExtendItemVistor;
             _org_ListVistor = org_ListVistor;
+            _orgStore = orgStore;
         }
         /// <summary>
         /// 通过指定的ids获取实例列表
@@ -113,7 +117,7 @@ namespace UserSelectionData
                 var selectList = new List<User_list>();
 
                 Org_List myorg = new Org_List();
-                var orgs = new List<Org_List>();//所有组织名称拼音包含搜索关键字拼音的组织
+                var orgs = new List<int>();//所有组织名称拼音包含搜索关键字拼音的组织
 
                 if (action == "otherOrg" && !string.IsNullOrEmpty(orgId))
                 {
@@ -127,16 +131,21 @@ namespace UserSelectionData
                     else
                     {
                         //var orglike = MisCommonCache.OrgStore.Get(o => o.OrgName.Contains(orgId) && o.isdel == 0);
-                        //TODO:通过模糊查询获取orglist
+                        //TODO:OK,通过模糊查询获取orglist
                         var otherOrgfilterList = new List<CommonFilterModel>();
                         otherOrgfilterList.Add(new CommonFilterModel("OrgName", "like", $"%{orgId}%"));
-                        var orglike = _org_ListVistor.GetListByQuery(1, 5, otherOrgfilterList, null).Data;
-                        orgs = orglike == null ? new List<Org_List>() : orglike.ToList();
+
+                        var otherOrgOrderby = new List<CommonOrderModel>() {
+                            new CommonOrderModel(){ Name="OrgID",Order=0 }
+                        };
+
+                        var orglike = _org_ListVistor.GetIdList(1, 5, otherOrgfilterList, otherOrgOrderby).Data;
+                        orgs = orglike == null ? new List<int>() : orglike.ToList();
                     }
                 }
                 else
                 {
-                    //TODO:获取指定的组织
+                    //TODO:OK,当前用户的组织
                     myorg = new Org_List() { OrgID = LoginUser.orgid.Value };
                 }
 
@@ -208,7 +217,7 @@ namespace UserSelectionData
                         //获取组织Ids的用户
                         var usersList = new List<int>();
                         //增加过滤条件
-                        filterList.Add(new CommonFilterModel("orgid", "in", orgs.Select(s => (object)s.OrgID).ToList()));
+                        filterList.Add(new CommonFilterModel("orgid", "in", orgs.Select(s => (object)s).ToList()));
                         var wcfUsersList = _uer_listVistor.GetIdListLock(current, pagesize, filterList, orderby);
                         usersList = wcfUsersList.Data;
                         number = wcfUsersList.RetInt;
@@ -216,10 +225,61 @@ namespace UserSelectionData
                         break;
                     case "myarea":
                     case "mydian":
-                        //TODO:mydian
+                        //TODO:OK,mydian
+                        var myorgDetail = _orgStore.GetModel(myorg.OrgID.Value);
+                        if (myorgDetail == null)
+                        {
+                            break;
+                        }
+                        int key = action == "mydian" ? 800 : 700;
+                        if (myorg.OrgLevelKey <= key || myorg.OrgLevelKey == 900)
+                        {
+                            filterList.Add(new CommonFilterModel("orgid", "=", myorg.OrgLevelKey == 900 ? myorg.OrgParentID.ToString() : myorg.OrgID.ToString()));
+
+                        }
+                        else if (myorg.OrgLevelKey > key && !string.IsNullOrEmpty(myorg.OrgParentIDALL))
+                        {
+                            //MisCommonCache.OrgStore.Get(e => myorg.OrgParentIDALL.Contains("|" + e.OrgID + "|")).FirstOrDefault().OrgID.GetValueOrDefault(1);                          
+
+                            var myorgArea = FindOrgArea(myorg.OrgID.GetValueOrDefault(1));
+                            if (myorgArea.OrgID == null)
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                filterList.Add(new CommonFilterModel("orgid", "=", myorgArea.OrgID.ToString()));
+                            }
+                        }
+                        else
+                        {
+                            break;
+                        }
+                        //根据过滤条件查询处理
+                        var wcfUsermydianChildList = _uer_listVistor.GetIdListLock(current, pagesize, filterList, orderby);
+                        var mydianUserList = wcfUsermydianChildList.Data;
+                        number = wcfUsermydianChildList.RetInt;
+                        tempList.AddRange(mydianUserList);
+
                         break;
                     case "myareachild":
-                        //TODO:myareachild
+                        //TODO:OK,myareachild
+                        var orgArea = FindOrgArea(myorg.OrgID.GetValueOrDefault(1));
+                        if (orgArea.OrgID == null)
+                        {
+                            break;
+                        }
+                        List<int> orgids = FindOrgChilds(orgArea.OrgID.GetValueOrDefault(1)).Select(o => o.OrgID.GetValueOrDefault()).ToList();
+                        if (orgids.Count > 0)
+                        {
+                            filterList.Add(new CommonFilterModel("orgid", "in", orgids.Select(s => (object)s).ToList()));
+                            var wcfUserOrgChildList = _uer_listVistor.GetIdListLock(current, pagesize, filterList, orderby);
+
+                            var userOrgChildList = wcfUserOrgChildList.Data;
+                            number = wcfUserOrgChildList.RetInt;
+                            tempList.AddRange(userOrgChildList);
+                        }
+
                         break;
                     case "selectIds":
                         //获取指定Ids的用户
@@ -235,15 +295,16 @@ namespace UserSelectionData
                     default:
                         break;
                 }
-                tempList = tempList.Where(e =>
-                {
-                    if (mastOrgId != null && mastOrgId.Count > 0)
-                    {
-                        //var tempParentOrg = CommonFrame.FindOrg(CommonFrame.FindOrg(e.orgid.Value)?.OrgParentID.Value ?? 0);
-                        //if (!mastOrgId.Contains(e.orgid.Value) && !mastOrgId.Contains(tempParentOrg?.OrgID.Value ?? 0)) return false;
-                    }
-                    return true;
-                }).ToList();
+
+                //tempList = tempList.Where(e =>
+                //{
+                //    if (mastOrgId != null && mastOrgId.Count > 0)
+                //    {
+                //        //var tempParentOrg = CommonFrame.FindOrg(CommonFrame.FindOrg(e.orgid.Value)?.OrgParentID.Value ?? 0);
+                //        //if (!mastOrgId.Contains(e.orgid.Value) && !mastOrgId.Contains(tempParentOrg?.OrgID.Value ?? 0)) return false;
+                //    }
+                //    return true;
+                //}).ToList();
 
                 result = ReturnUsers(tempList, number, _httpContext.Request.GetKey("check") ?? "", history, changyong);
             }
@@ -255,7 +316,171 @@ namespace UserSelectionData
             return result;
         }
 
-        #region 私有方法       
+        #region 私有方法      
+
+        #region 获取组织父级
+
+
+        /// <summary>
+        /// 获取指定组织的700父级
+        /// </summary>
+        /// <param name="OrgID"></param>
+        /// <returns></returns>
+        private Org_Detail FindOrgArea(int orgID)
+        {
+            //获取OrgID所在的父级
+            var orgdetail = _orgStore.GetModel(orgID);
+            if (orgdetail != null)
+            {
+                List<Org_Detail> list = currentOrgParents(orgdetail, 700).ToList();
+                if (list.Count > 0)
+                {
+                    return list[0];
+                }
+            }
+
+            return new Org_Detail();
+
+        }
+        /// <summary>
+        /// 对应等级的父级
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="parentLevel">父级等级</param>
+        /// <returns></returns>
+        private Org_Detail[] currentOrgParents(Org_Detail item, int parentLevel = 0)
+        {
+            if (string.IsNullOrEmpty(item?.OrgParentIDALL))
+            {
+                return new Org_Detail[0];
+            }
+            //父级等级为0
+            if (parentLevel == 0)
+            {
+                var array = GetCurrentOrgAndOrgParentIds(item);
+
+                return array;
+            }
+            //当前组织的级别与所要获取级别的等级一致，比如当前组织级别为700，需要获取的级别也为700
+            if (item.OrgLevelKey == parentLevel)
+            {
+                return new Org_Detail[1]
+                {
+                    item
+                };
+            }
+            //所在组织级别小于要获取的级别
+            if (item.OrgLevelKey < parentLevel)
+            {
+                return new Org_Detail[0];
+            }
+            //所在组织级别大于要获取的级别，往所要查找的级别获取
+            var array2 = GetCurrentOrgAndOrgParentIds(item, parentLevel);
+            return array2;
+        }
+        /// <summary>
+        /// 取得当前组织与组织对应等级的子集
+        /// </summary>
+        /// <param name="orgid"></param>
+        /// <param name="getLevel"></param>
+        /// <returns></returns>
+        public Org_Detail[] GetCurrentOrgAndOrgParentIds(Org_Detail item, int getLevel = 0)
+        {
+            //TODO:OK,获取父级组织的核心方法
+            if (getLevel == 0)
+            {
+                return new Org_Detail[1]
+                {
+                    item
+                };
+            }
+            //获取指定等级的组织的父级ID
+            List<int> list = (from e in ExpandHelper.ChangeToIntList(item.OrgParentIDALL.Replace("|", "")).Distinct()
+                              where e != 0
+                              select e).ToList();
+            Org_Detail[] array = new Org_Detail[list.Count];
+            for (int i = 0; i < list.Count; i++)
+            {
+                //TODO:OK.遍历通过redis获取组织信息,当前组织的父级节点，到根节点3级左右
+                array[i] = _orgStore.GetModel(list[i]) ?? new Org_Detail();
+            }
+            //获取大于等于指定级别的组织
+            return array.Where(m => m.OrgLevelKey >= getLevel && m.OrgID > 0).OrderByDescending(b=>b.OrgLevelKey).ToArray();
+        }
+
+        #endregion 获取组织父级
+
+
+        #region 获取组织子级
+
+        /// <summary>
+        ///  对应等级的子级(包括自身)
+        /// </summary>
+        /// <param name="orgID">要查找的组织</param>
+        /// <param name="LevelKey"> 对应等级(0为全部)</param>
+        /// <returns></returns>
+        private List<Org_Detail> FindOrgChilds(int orgID, int LevelKey = 0)
+        {
+            var item = _orgStore.GetModel(orgID);
+            if (item == null || !item.OrgID.HasValue)
+            {
+                return new List<Org_Detail>();
+            }
+            if (LevelKey != 0 && item.OrgLevelKey == LevelKey)
+            {
+                return new List<Org_Detail>
+                {
+                    item
+                };
+            }
+            if (LevelKey != 0 && item.OrgLevelKey > LevelKey)
+            {
+                return new List<Org_Detail>();
+            }
+            return GetCurrentOrgAndOrgChilds(item, LevelKey);
+        }
+
+        /// <summary>
+        /// 取得当前组织与组织对应等级的子集
+        /// </summary>
+        /// <param name="item">当前组织</param>
+        /// <param name="getLevel">取得等级</param>
+        /// <returns></returns>
+        public List<Org_Detail> GetCurrentOrgAndOrgChilds(Org_Detail item, int getLevel = 0)
+        {
+            var filterList = new List<CommonFilterModel>();
+            var orderby = new List<CommonOrderModel>() {
+                    new CommonOrderModel(){ Name="OrgID",Order=0 }
+                };
+
+            if (getLevel != 0)
+            {
+                //指定级别
+                filterList.Add(new CommonFilterModel("OrgLevelKey", "=", getLevel.ToString()));
+            }
+            //模糊查询获取所有的子节点
+            filterList.Add(new CommonFilterModel("OrgParentIDALL", "like", $"%|{item.OrgID}|%"));
+
+            //TODO:OK.通过wcf获取指定组织的子节点
+            List<int> list = new List<int>();
+            var wcfList = _org_ListVistor.GetIdList(1, 100, filterList, orderby);
+            if (wcfList.RetInt > 0)
+            {
+                list = wcfList.Data.Select(m => m).ToList();
+            }
+
+            List<Org_Detail> resultList = new List<Org_Detail>();
+
+            foreach (var itemChilds in list)
+            {
+                Org_Detail org_Detail = _orgStore.GetModel(itemChilds) ?? new Org_Detail();
+                resultList.Add(org_Detail);
+            }
+            return resultList;
+        }
+
+        #endregion 获取组织子级
+
         /// <summary>
         /// 返回用户数据格式封装
         /// </summary>
