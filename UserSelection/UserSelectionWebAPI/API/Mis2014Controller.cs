@@ -15,10 +15,10 @@ namespace UserSelectionWebAPI.API
     public class Mis2014Controller : Controller
     {
         private static readonly ILog _log = LogManager.GetLogger(ConfigManager.repository.Name, typeof(Mis2014Controller));
-        IUser_listVistor _user_listVistor;
-        public Mis2014Controller(IUser_listVistor user_listVistor)
+        IUser_listService _user_listService;
+        public Mis2014Controller(IUser_listService user_listService)
         {
-            _user_listVistor = user_listVistor;
+            _user_listService = user_listService;
         }
 
         [HttpPost("GetPostData")]
@@ -35,12 +35,12 @@ namespace UserSelectionWebAPI.API
             return Content(result);
         }
         [HttpGet("Get/{id}")]
-        public IActionResult Get(int id)
+        public IActionResult Get(string id)
         {
             string result = "";
             try
             {
-                var modelRet = _user_listVistor.GetModelByID(id);
+                var modelRet = _user_listService.GetModelByIds(id);
                 result = JsonConvert.SerializeObject(modelRet);
             }
             catch (Exception)
@@ -54,7 +54,7 @@ namespace UserSelectionWebAPI.API
             string result = "";
             try
             {
-                var modelRet = _user_listVistor.GetModelByIds(ids);
+                var modelRet = _user_listService.GetModelByIds(ids);
                 result = JsonConvert.SerializeObject(modelRet);
             }
             catch (Exception)
@@ -69,7 +69,7 @@ namespace UserSelectionWebAPI.API
             try
             {
                 DateTime dt1 = DateTime.Now;
-                var modelRet = _user_listVistor.GetUserList();
+                var modelRet = _user_listService.GetUserList();
                 DateTime dt2 = DateTime.Now;
                 modelRet.debug += $"查询耗时：{(dt2 - dt1).TotalMilliseconds}ms";
                 result = JsonConvert.SerializeObject(modelRet);

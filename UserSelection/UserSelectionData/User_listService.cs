@@ -2,24 +2,22 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UserSelectionData.Models;
 using WebComponentData.Interface;
 using WebComponentData.Models;
 using WebComponentStore.Interface;
 using WebComponentWebAPI.ConfigCenter;
 using WebComponentWebAPI.Models;
 using WebComponentWebAPI.Utilitys;
-using WebComponentWebAPI.WCF;
 using WebComponentWebAPI.WCF.Models;
 
 namespace UserSelectionData
 {
-    public class User_listVistor : IUser_listVistor
+    public class User_listService : IUser_listService
     {
-        IWCFClientHelper _wcfClientHelper;
         IUserStore _userStore;
         IDictStore _dictStore;
         IHttpContextAccessor _contextAccessor;
+        IUser_listVistor _uer_listVistor;
         IPub_DictVistor _pub_DictVistor;
         IPub_DicExtendItemVistor _pub_DicExtendItemVistor;
         IOrg_ListVistor _org_ListVistor;
@@ -27,75 +25,19 @@ namespace UserSelectionData
         /// 当前上下文
         /// </summary>
         public HttpContext _httpContext => _contextAccessor.HttpContext;
-        public User_listVistor(IWCFClientHelper wcfClientHelper,
-            IHttpContextAccessor contextAccessor,
+        public User_listService(IHttpContextAccessor contextAccessor,
             IUserStore userStore,
             IDictStore dictStore,
             IPub_DictVistor pub_DictVistor,
             IPub_DicExtendItemVistor pub_DicExtendItemVistor,
             IOrg_ListVistor org_ListVistor)
         {
-            _wcfClientHelper = wcfClientHelper;
             _contextAccessor = contextAccessor;
             _userStore = userStore;
             _dictStore = dictStore;
             _pub_DictVistor = pub_DictVistor;
             _pub_DicExtendItemVistor = pub_DicExtendItemVistor;
             _org_ListVistor = org_ListVistor;
-        }
-        private ISecondBaseInterface<User_list> User_listClient
-        {
-            get
-            {
-                return _wcfClientHelper.GetInterfaces<User_list>("/User/v3.0/NetService/User_listService.svc");
-            }
-        }
-        private ISecondBaseInterface<User_show> User_showClient
-        {
-            get
-            {
-                return _wcfClientHelper.GetInterfaces<User_show>("/User/v3.0/NetService/User_showService.svc");
-            }
-        }
-        private string WcfOtherString
-        {
-            get
-            {
-                //加密方式
-                var passkey = Config.WCFPasskey;
-                //使用哪个加密的连接字符串
-                var connkey = "new";
-                return $"passkey$bc${passkey}$ac$debug$bc${IsDebug}$ac$connkey$bc${connkey}";
-            }
-        }
-        private int isdebug = 1;
-        /// <summary>
-        /// 是否显示debug, 0不显示,1显示
-        /// </summary>
-        public int IsDebug
-        {
-            get { return isdebug; }
-            set { isdebug = value; }
-        }
-
-        /// <summary>
-        /// 取得实体的接口
-        /// </summary>
-        /// <param name="entityId"></param>
-        /// <returns></returns>
-        public DefaultResult<User_list> GetModelByID(int entityId)
-        {
-            //调用wcf
-            var wcfRet = User_listClient.GetModelByID(entityId, WcfOtherString);
-            //进行数据解密
-            var modelRet = (DefaultResult<User_list>)_wcfClientHelper.Decrypt_v2019(wcfRet, Config.WCFSecretkey, Config.WCFSecretiv);
-
-            ////测试redis
-            //var modelUser = new User_Detail() { UserId = 58988, orgid = 22, isjjr = 9 };
-            //_userStore.SetUser(modelUser);
-            //var model = _userStore.GetUser(58988);
-
-            return modelRet;
         }
         /// <summary>
         /// 通过指定的ids获取实例列表
@@ -111,10 +53,8 @@ namespace UserSelectionData
                 var idList = ids.Split(',').Where(id => int.TryParse(id, out temp)).Select(id => Convert.ToInt32(id)).Distinct().ToList();
                 if (idList.Count > 0)
                 {
-                    //调用wcf
-                    var wcfRet = User_listClient.GetModelByIDS(idList, WcfOtherString);
-                    //进行数据解密
-                    var modelRet = (DefaultResult<List<User_list>>)_wcfClientHelper.Decrypt_v2019(wcfRet, Config.WCFSecretkey, Config.WCFSecretiv);
+                    //调用wcf,获取解密数据
+                    var modelRet = _uer_listVistor.GetModelByIds(idList);
 
                     var data = modelRet.Data;
 
@@ -256,7 +196,7 @@ namespace UserSelectionData
                         var users = new List<int>();
                         //增加过滤条件
                         filterList.Add(new CommonFilterModel("orgid", "=", myorg.OrgID.Value.ToString()));
-                        var wcfUsers = GetIdListLock(current, pagesize, filterList, orderby);
+                        var wcfUsers = _uer_listVistor.GetIdListLock(current, pagesize, filterList, orderby);
                         users = wcfUsers.Data;
                         number = wcfUsers.RetInt;
                         tempList.AddRange(users);
@@ -266,7 +206,7 @@ namespace UserSelectionData
                         var usersList = new List<int>();
                         //增加过滤条件
                         filterList.Add(new CommonFilterModel("orgid", "in", orgs.Select(s => (object)s.OrgID).ToList()));
-                        var wcfUsersList = GetIdListLock(current, pagesize, filterList, orderby);
+                        var wcfUsersList = _uer_listVistor.GetIdListLock(current, pagesize, filterList, orderby);
                         usersList = wcfUsersList.Data;
                         number = wcfUsersList.RetInt;
                         tempList.AddRange(usersList);
@@ -283,7 +223,7 @@ namespace UserSelectionData
                         var usersIdList = new List<int>();
                         //增加过滤条件
                         filterList.Add(new CommonFilterModel("orgid", "in", idsIn.Select(id => (object)id).ToList()));
-                        var wcfUsersIdList = GetIdListLock(current, pagesize, filterList, orderby);
+                        var wcfUsersIdList = _uer_listVistor.GetIdListLock(current, pagesize, filterList, orderby);
                         usersIdList = wcfUsersIdList.Data;
                         number = wcfUsersIdList.RetInt;
                         tempList.AddRange(usersIdList);
@@ -312,59 +252,7 @@ namespace UserSelectionData
             return result;
         }
 
-        #region 私有方法
-
-        /// <summary>
-        /// 通过分页、条件、排序查询数据
-        /// </summary>
-        /// <param name="page"></param>
-        /// <param name="pagesize"></param>
-        /// <param name="filters"></param>
-        /// <param name="orders"></param>
-        /// <returns></returns>
-        private DefaultResult<List<User_list>> GetListByQuery(int page, int pagesize, List<CommonFilterModel> filters, List<CommonOrderModel> orders)
-        {
-            //调用wcf
-            var wcfRet = User_listClient.GetListByQuery(page, pagesize, filters, orders, WcfOtherString);
-            //进行数据解密
-            var modelRet = (DefaultResult<List<User_list>>)_wcfClientHelper.Decrypt_v2019(wcfRet, Config.WCFSecretkey, Config.WCFSecretiv);
-
-            return modelRet;
-        }
-        /// <summary>
-        /// 通过分页、条件、排序查询数据主键
-        /// </summary>
-        /// <param name="page"></param>
-        /// <param name="pagesize"></param>
-        /// <param name="filters"></param>
-        /// <param name="orders"></param>
-        /// <returns></returns>
-        private DefaultResult<List<int>> GetIdListLock(int page, int pagesize, List<CommonFilterModel> filters, List<CommonOrderModel> orders)
-        {
-            //调用wcf
-            var wcfRet = User_listClient.GetIdListLock(page, pagesize, filters, orders, WcfOtherString);
-            //进行数据解密
-            var modelRet = (DefaultResult<List<int>>)_wcfClientHelper.Decrypt_v2019(wcfRet, Config.WCFSecretkey, Config.WCFSecretiv);
-
-            return modelRet;
-        }
-        /// <summary>
-        /// 通过分页、条件、排序查询数据列的数据
-        /// </summary>
-        /// <param name="page"></param>
-        /// <param name="pagesize"></param>
-        /// <param name="filters"></param>
-        /// <param name="orders"></param>
-        /// <param name="columns"></param>
-        /// <returns></returns>
-        private DefaultResult<List<User_list>> GetQueryAggregatePageLock(int page, int pagesize, List<CommonFilterModel> filters, List<CommonOrderModel> orders, List<string> columns)
-        {
-            //调用wcf
-            var wcfRet = User_listClient.GetQueryAggregatePageLock(page, pagesize, filters, columns, null, orders, WcfOtherString);
-            //进行数据解密
-            var modelRet = (DefaultResult<List<User_list>>)_wcfClientHelper.Decrypt_v2019(wcfRet, Config.WCFSecretkey, Config.WCFSecretiv);
-            return modelRet;
-        }
+        #region 私有方法       
         /// <summary>
         /// 返回用户数据格式封装
         /// </summary>

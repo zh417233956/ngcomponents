@@ -1,14 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
-using WebComponentWebAPI.Models;
+using System.Text;
 
-namespace UserSelectionData.Models
+namespace WebComponentData.Models
 {
     /// <summary>
     /// User_list实体
     /// </summary>
     [DataContract(Namespace = "", Name = "T")]
-    public class User_list : EntityBase
+    public class User_list 
     {
         [DataMember]
         public int? UserId { get; set; }

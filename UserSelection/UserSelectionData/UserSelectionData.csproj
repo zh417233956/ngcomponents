@@ -5,8 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Models\**" />
+    <EmbeddedResource Remove="Models\**" />
+    <None Remove="Models\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="IUserStore.cs" />
-    <Compile Remove="Models\Org_List.cs" />
     <Compile Remove="UserStore.cs" />
   </ItemGroup>
 
