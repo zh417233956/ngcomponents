@@ -158,7 +158,7 @@ namespace UserSelectionData
                 {
                     //TODO:OK,当前用户的组织
                     myorg = new Org_List() { OrgID = LoginUser.orgid.Value };
-                    filterList.Add(new CommonFilterModel("orgid", "=", LoginUser.orgid.ToString()));
+                    //filterList.Add(new CommonFilterModel("orgid", "=", LoginUser.orgid.ToString()));
                 }
 
                 if (action == "otherOrg" && orgId == "0")
@@ -223,7 +223,7 @@ namespace UserSelectionData
                         }
                         else
                         {
-                            //filterList.Add(new CommonFilterModel("orgid", "=", LoginUser.orgid.ToString()));
+                            filterList.Add(new CommonFilterModel("orgid", "=", LoginUser.orgid.ToString()));
                         }
                         var wcfUsersList = _uer_listVistor.GetIdListLock(current, pagesize, filterList, orderby);
                         usersList = wcfUsersList.Data;
@@ -335,25 +335,28 @@ namespace UserSelectionData
                                 }
 
                                 List<PinYinResult> pinyinResult;
-
-                                var wcfdefaultUserList = _uer_listVistor.GetIdListLock(current, pagesize, filterList, orderby);
+                                //TODO:wcf获取指定条件的用户信息,此处数据如何实现，待商榷
+                                List<string> columns = new List<string>() {
+                                    "UserId",
+                                    "UserName2"
+                                };
+                                var wcfdefaultUserList = _uer_listVistor.GetColumnsNoCount(1, 200, filterList, orderby, columns);
                                 var defaultUserList = wcfdefaultUserList.Data;
                                 number = wcfdefaultUserList.RetInt;
                                 var pinYinSourceList = new List<PinYinSource>();
-                                foreach (var item in defaultUserList)
+                                foreach (var userDetail in defaultUserList)
                                 {
-                                    var userDetail = _userStore.GetUser(item);
                                     if (userDetail != null && !string.IsNullOrWhiteSpace(userDetail.UserName2))
                                     {
                                         pinYinSourceList.Add(new PinYinSource
                                         {
-                                            ID = userDetail.UserId,
+                                            ID = userDetail.UserId.Value,
                                             Name = userDetail.UserName2
                                         });
                                     }
                                 }
                                 var _pinyinHelper = new PinYinLibraryHelper();
-                                pinyinResult = _pinyinHelper.GetPinYinAndHanZiResult(pinYinSourceList, action, int.MaxValue, out number, 1);
+                                pinyinResult = _pinyinHelper.GetPinYinAndHanZiResult(pinYinSourceList, action, pagesize, out number, current);
 
                                 if (pinyinResult != null && pinyinResult.Count > 0)
                                 {

@@ -107,5 +107,23 @@ namespace WebComponentData.Data
 
             return modelRet;
         }
+        /// <summary>
+        /// 指定列数据查询并且不进行count操作
+        /// </summary>
+        /// <param name="page"></param>
+        /// <param name="pagesize"></param>
+        /// <param name="filters"></param>
+        /// <param name="orders"></param>
+        /// <param name="columns"></param>
+        /// <returns></returns>
+        public DefaultResult<List<User_list>> GetColumnsNoCount(int page, int pagesize, List<CommonFilterModel> filters, List<CommonOrderModel> orders, List<string> columns)
+        {
+            //调用wcf
+            var wcfRet = User_listClient.GetColumnsNoCount(page, pagesize, filters, orders, columns, WcfOtherString);
+            //进行数据解密
+            var modelRet = (DefaultResult<List<User_list>>)_wcfClientHelper.Decrypt_v2019(wcfRet, Config.WCFSecretkey, Config.WCFSecretiv);
+
+            return modelRet;
+        }
     }
 }
