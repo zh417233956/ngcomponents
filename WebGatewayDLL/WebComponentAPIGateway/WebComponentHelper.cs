@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace WebComponentAPIGateway
@@ -54,22 +55,49 @@ namespace WebComponentAPIGateway
                 else
                 {
                     uuid = Request.Query["uuid"];
+                    foreach (var item in Request.Query)
+                    {
+                        PostData.Add(new KeyValuePair<string, string>(item.Key, item.Value));
+                    }
                 }
                 //uuid如果为空
                 if (uuid == null)
                 {
                     uuid = Guid.NewGuid().ToString();
                 }
-                await Task.Run(async () =>
-                //await Task.Run(() =>
-                {
-                    var requsetData = new { Cookies = Request.Cookies, Header = Request.Headers, Method = Request.Method, QueryString = Request.Query, PostData = PostData };
-                    var param = Newtonsoft.Json.JsonConvert.SerializeObject(requsetData);
-                    //进行请求转发，通过微服务API获取真正的组件数据
-                    result = await HttpClientHelper.HttpPostAsync(Host + Path, param, "application/json");
+                await Task.Run(async () =>               
+                {                 
+                    StringBuilder buffer = new StringBuilder();
+                    int i = 0;
+                    foreach (var item in PostData)
+                    {
+                        if (i > 0)
+                        {
+                            buffer.AppendFormat("&{0}={1}", item.Key, item.Value);
+                        }
+                        else
+                        {
+                            buffer.AppendFormat("{0}={1}", item.Key, item.Value);
+                        }
+                        i++;
+                    }
+                    string cookidStr = "";
+                    foreach (var item in Request.Cookies)
+                    {
+                        cookidStr += $"{item.Key}={item.Value};";
+                    }
+                    var header = new Dictionary<string, string>();
+                    header.Add("Cookie", cookidStr);
+                    //foreach (var item in Request.Headers)
+                    //{
+                    //    header.Add(item.Key, item.Value);
+                    //}
+
+                    result = await HttpClientHelper.HttpPostAsync(Host + Path, buffer.ToString(), "application/x-www-form-urlencoded", 100, header);
+
                 });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 //TODO:异常数据通过LTC进行记录
             }

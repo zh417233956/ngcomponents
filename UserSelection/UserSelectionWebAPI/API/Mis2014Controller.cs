@@ -63,6 +63,7 @@ namespace UserSelectionWebAPI.API
             return Content(result);
         }
         [HttpGet("GetList")]
+        [HttpPost("GetList")]
         public IActionResult GetList()
         {
             string result = "";

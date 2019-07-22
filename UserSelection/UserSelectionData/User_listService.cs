@@ -88,6 +88,7 @@ namespace UserSelectionData
                 #region 参数处理
                 //TODO:OK,当前用户信息,从cookie中获取newframeuid
                 int UserId = _httpContext.Request.GetCookieKeyInt("newframeuid");
+                //TODO:暂时如果未登录，使用模拟数据orgid=22
                 var LoginUser = _userStore.GetUser(UserId) ?? new WebComponentStore.Models.User_Detail() { UserId = 58988, orgid = 22 };
 
                 var current = _httpContext.Request.GetKeyInt("page");
