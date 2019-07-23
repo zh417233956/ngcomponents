@@ -9,11 +9,11 @@ namespace WebComponentStore.Cache
 {
     public class UserCache : IUserCache
     {
-        private static List<User_Detail> _UserList = new List<User_Detail>();
+        private List<User_Detail> _UserList = new List<User_Detail>();
         /// <summary>
         /// 用户数据列表
         /// </summary>
-        private static List<User_Detail> UserList
+        private List<User_Detail> UserList
         {
             get { return _UserList; }
             set { _UserList = value; }
@@ -21,9 +21,9 @@ namespace WebComponentStore.Cache
         /// <summary>
         /// list是否正在作业
         /// </summary>
-        private static bool IsBusies { get; set; }
+        private bool IsBusies { get; set; }
 
-        private static DateTime LastUpdateTime { get; set; }
+        private DateTime LastUpdateTime { get; set; }
 
         public List<User_Detail> GetUserList()
         {

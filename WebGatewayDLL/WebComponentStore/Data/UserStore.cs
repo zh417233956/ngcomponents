@@ -31,5 +31,14 @@ namespace WebComponentStore.Data
         {
             RedisHelper.Set(RedisKey + model.UserId, model);
         }
+        /// <summary>
+        /// 获取所有用户的keys
+        /// </summary>
+        /// <returns></returns>
+        public List<int> GetUserKeys()
+        {
+            var result = RedisHelper.Get<List<int>>(RedisKey + "keys");
+            return result;
+        }
     }
 }

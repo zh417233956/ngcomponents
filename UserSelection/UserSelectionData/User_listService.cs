@@ -608,55 +608,64 @@ namespace UserSelectionData
         /// </summary>
         /// <param name="retFlag">是否返回数据，默认返回</param>
         /// <returns></returns>
-        private List<User_Detail> UserCacheList(bool retFlag=true)
+        private List<User_Detail> UserCacheList(bool retFlag = true)
         {
             //通过wcf处理变更集
             var lastUpdateTime = _userCache.GetLastUpdateTime();
             //初始化数据状态
             bool InitTag = lastUpdateTime.Year > 1970 ? true : false;
 
-            //wcf查询过滤条件及排序方式
-            var filterList = new List<CommonFilterModel>()
-            {
-                new CommonFilterModel("UserId", ">", "10000")
-            };
-
             if (InitTag)
             {
+                //wcf查询过滤条件及排序方式
+                var filterList = new List<CommonFilterModel>();
+                filterList.Add(new CommonFilterModel("UserId", ">", "10000"));
                 filterList.Add(new CommonFilterModel("LastTime", ">", lastUpdateTime.ToString("yyyy-MM-dd HH:mm:ss")));
-            }
 
-            var orderby = new List<CommonOrderModel>() {
-                new CommonOrderModel(){ Name="UserId",Order=0 }
-            };
+                var orderby = new List<CommonOrderModel>() { new CommonOrderModel() { Name = "UserId", Order = 0 } };
 
+                var changeUsers = new List<int>();
 
-            var changeUsers = new List<int>();
-
-            //查询wcf
-
-            int page = 1;
-            int pagesize = 5;
-            var wcfChangeUsers = _user_listVistor.GetIdListLock(page, pagesize, filterList, orderby);
-            //返回总条数
-            int changeCount = wcfChangeUsers.RetInt;
-            if (changeCount > 0)
-            {
-                //返回数据
-                changeUsers.AddRange(wcfChangeUsers.Data);
-                //计算总页数
-                var pagecount = (changeCount / pagesize) + (changeCount % pagesize > 0 ? 1 : 0);
-                //获取剩余页数
-                for (int i = 2; i <= pagecount && i < 5; i++)
+                //查询wcf
+                int page = 1;
+                int pagesize = 100;
+                var wcfChangeUsers = _user_listVistor.GetIdListLock(page, pagesize, filterList, orderby);
+                //返回总条数
+                int changeCount = wcfChangeUsers.RetInt;
+                if (changeCount > 0)
                 {
-                    page++;
-                    wcfChangeUsers = _user_listVistor.GetIdListLock(page, pagesize, filterList, orderby);
                     //返回数据
                     changeUsers.AddRange(wcfChangeUsers.Data);
-                }
+                    //计算总页数
+                    var pagecount = (changeCount / pagesize) + (changeCount % pagesize > 0 ? 1 : 0);
+                    //获取剩余页数
+                    for (int i = 2; i <= pagecount; i++)
+                    {
+                        page++;
+                        wcfChangeUsers = _user_listVistor.GetIdListLock(page, pagesize, filterList, orderby);
+                        //返回数据
+                        changeUsers.AddRange(wcfChangeUsers.Data);
+                    }
 
+                    var userDetailList = new List<User_Detail>();
+                    foreach (var item in changeUsers)
+                    {
+                        var itemUser = _userStore.GetUser(item);
+                        if (itemUser != null)
+                        {
+                            userDetailList.Add(itemUser);
+                        }
+                    }
+                    //更新缓存
+                    _userCache.SetUserList(userDetailList);
+                }
+            }
+            else
+            {
+                //尚未初始化，通过redis加载数据
+                var allUserKeys = _userStore.GetUserKeys();
                 var userDetailList = new List<User_Detail>();
-                foreach (var item in changeUsers)
+                foreach (var item in allUserKeys)
                 {
                     var itemUser = _userStore.GetUser(item);
                     if (itemUser != null)
@@ -668,11 +677,12 @@ namespace UserSelectionData
                 _userCache.SetUserList(userDetailList);
             }
 
+
             //数据返回
             if (retFlag)
             {
                 //返回缓存数据
-                return _userCache.GetUserList();                
+                return _userCache.GetUserList();
             }
             else
             {

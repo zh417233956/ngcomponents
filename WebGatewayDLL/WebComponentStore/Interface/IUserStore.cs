@@ -19,5 +19,10 @@ namespace WebComponentStore.Interface
         /// </summary>
         /// <param name="model"></param>
         void SetUser(User_Detail model);
+        /// <summary>
+        /// 获取所有用户的keys
+        /// </summary>
+        /// <returns></returns>
+        List<int> GetUserKeys();
     }
 }

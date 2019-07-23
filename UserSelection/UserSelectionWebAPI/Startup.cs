@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using WebComponentWebAPI.Configs;
 using WebComponentWebAPI.Ioc;
 using WebComponentWebAPI.Utilitys;
@@ -30,7 +31,7 @@ namespace UserSelectionWebAPI
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
@@ -38,10 +39,12 @@ namespace UserSelectionWebAPI
             services.AutoRegisterService();
             services.AddSingleton<Microsoft.AspNetCore.Http.IHttpContextAccessor, Microsoft.AspNetCore.Http.HttpContextAccessor>();
 
-            #region 用户数据初始化
             var serviceProvider = services.BuildServiceProvider();
+            #region 用户数据初始化
             serviceProvider.GetService<UserSelectionData.IUser_listService>();
             #endregion 用户数据初始化
+
+            return serviceProvider;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
