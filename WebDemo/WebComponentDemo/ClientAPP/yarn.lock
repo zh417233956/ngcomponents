@@ -317,6 +317,13 @@
     lodash "^4.17.11"
     to-fast-properties "^2.0.0"
 
+"@delon/mock@^8.0.0":
+  version "8.2.0"
+  resolved "https://registry.npmjs.org/@delon/mock/-/mock-8.2.0.tgz#85abf721110fa90147ba59143168093116409820"
+  integrity sha512-ddjRCVc0Z8Mnr+OHewtVu2RTP+aU5ZOAc7e4auipdAXDfXCGziklaxA+4sOSBYMg2JZRemXViIb70nx2bsoH8A==
+  dependencies:
+    tslib "^1.9.0"
+
 "@ngtools/webpack@8.0.6":
   version "8.0.6"
   resolved "https://registry.npm.taobao.org/@ngtools/webpack/download/@ngtools/webpack-8.0.6.tgz#c6b5416710913b24b741a17c8f255e54f42c9abf"
@@ -4033,10 +4040,10 @@ methods@~1.1.2:
   resolved "https://registry.npm.taobao.org/methods/download/methods-1.1.2.tgz#5529a4d67654134edcc5266656835b0f851afcee"
   integrity sha1-VSmk1nZUE07cxSZmVoNbD4Ua/O4=
 
-mg-ng-userselection@1.0.0:
+mg-ng-userselection@^1.0.0:
   version "1.0.0"
-  resolved "http://repository.517.jiali/repository/mango-npm/mg-ng-userselection/-/mg-ng-userselection-1.0.0.tgz#9048b31e979ca58cac6473e45515cbfb00b50eb6"
-  integrity sha512-REefWv9+QySDeyv7kcbFxhPcRX4qTk3q8iJxbVXlQjBm/nUKZtBEvNm3YSY5JrDzAclIiPCTcC/PmyNoQzwy5A==
+  resolved "http://repository.517.jiali/repository/mango-npm/mg-ng-userselection/-/mg-ng-userselection-1.0.0.tgz#ed80b542ad54c18ae4060ba89461061f8d413895"
+  integrity sha512-NiOBnvGpxLGtswEt2GHM+B1QXOmLQLSYM69YYW2kMuJAocKOG28f+LdCe6jjw/t6jOz2nVEuIntRDv13WbFwIA==
   dependencies:
     tslib "^1.9.0"
 

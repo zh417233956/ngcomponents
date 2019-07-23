@@ -1,69 +1,68 @@
 <button nz-button [nzType]="'primary'" (click)="showModal()"><span>{{title}}</span></button>
-<nz-modal [(nzVisible)]="isVisible" nzTitle="{{title}}" nzCancelText="{{cancleText}}" nzOkText="{{okText}}" (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()"
-          [nzBodyStyle]="bodyStyle" (nzAfterOpen)="afterOpen()" (nzAfterClose)="afterClose()"  [nzClosable]="closable" [nzOkLoading]="okLoading" [nzCancelLoading]="cancelLoding"
-          [nzOkDisabled]="okDisabled" [nzCancelDisabled]="cancelDisabled" [nzKeyboard]="keyboard" [nzMask]="mask" [nzMaskClosable]="maskClosable" [nzMaskStyle]="maskStyle"
-          [nzOkType]="okType" [nzStyle]="floatStyle" [nzWidth]="width" [nzClassName]="className" [nzWrapClassName]="wrapClassName" [nzZIndex]="zIndex" [nzContent]="content">
+<nz-modal [(nzVisible)]="isVisible" nzTitle="{{title}}" nzCancelText="{{cancleText}}" nzOkText="{{okText}}" (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()" [nzBodyStyle]="bodyStyle" (nzAfterOpen)="afterOpen()" (nzAfterClose)="afterClose()" [nzClosable]="closable"
+    [nzOkLoading]="okLoading" [nzCancelLoading]="cancelLoding" [nzOkDisabled]="okDisabled" [nzCancelDisabled]="cancelDisabled" [nzKeyboard]="keyboard" [nzMask]="mask" [nzMaskClosable]="maskClosable" [nzMaskStyle]="maskStyle" [nzOkType]="okType" [nzStyle]="floatStyle"
+    [nzWidth]="width" [nzClassName]="className" [nzWrapClassName]="wrapClassName" [nzZIndex]="zIndex" [nzContent]="content">
 </nz-modal>
 <ng-template #content>
-  <section>
-    <span class="span">快捷搜索:</span>
-    <nz-tag nzMode="default" [nzChecked]="true" class="tag" (click)="checkChange('mydian')">本店</nz-tag>
-    <nz-tag nzMode="default" [nzChecked]="true" class="tag" (click)="checkChange('myarea')">本区</nz-tag>
-    <nz-tag nzMode="default" [nzChecked]="true" class="tag" (click)="checkChange('myareachild')">本区下属</nz-tag>
-    <nz-tag nzMode="default" [nzChecked]="true" class="tag" (click)="checkChange('history')">最近</nz-tag>
-    <label title="{{text}}"><input nz-input nzSize="default" #textbox class="input" placeholder="{{text}}" (keyup)="enter(textbox.value,$event)" /></label>
-    <label title="输入组织名称或组织ID"><input nz-input nzSize="default" class="input" placeholder="输入组织名称或组织ID" [(ngModel)]="orgId"/></label>
-    <label title="输员工id可查询该员工,可传多个(以英文','分割)" *ngIf="canSelectId"><input nz-input nzSize="default" class="input" placeholder="输员工id可查询该员工,可传多个(以英文','分割)" [(ngModel)]="selectIds"/></label>
-  </section>
-  <section *ngIf="showHistory">
-    <div class="div">
-      <div class="chlid-top">
-        <span class="span">最近结果:</span>
-        <nz-tag nzMode="default" [nzChecked]="true" [nzColor]="'#75B4D6'" class="tag1" (click)="refHistory()" >管理历史记录</nz-tag>
-      </div>
-      <div class="chlid-content">
-        <nz-tag nzMode="default" class="tag2" [nzColor]="'#75B4D6'" [nzChecked]="true" *ngIf="isduoxuan" (click)="checakAll(0)" >{{checkInfo[0].title}}</nz-tag>
-        <nz-tag nzMode="checkable" class="tag2" [nzChecked]="historyUser.checked" *ngFor="let historyUser of historyUserList; let i = index" (nzCheckedChange)="checkUser(historyUser,$event)">{{ historyUser.OrgName }}-{{ historyUser.UserName }}</nz-tag>
-      </div>
-    </div>
-    <div class="div">
-      <div class="chlid-top">
-        <span class="span">常用结果:</span>
-      </div>
-      <div>
-        <nz-tag nzMode="default" class="tag2" [nzColor]="'#75B4D6'" [nzChecked]="true" *ngIf="isduoxuan" (click)="checakAll(1)">{{checkInfo[1].title}}</nz-tag>
-        <nz-tag nzMode="checkable" class="tag2" [nzChecked]="changyongUser.checked" *ngFor="let changyongUser of changyongUserList; let i = index" (nzCheckedChange)="checkUser(changyongUser,$event)">{{ changyongUser.OrgName }}-{{ changyongUser.UserName }}</nz-tag>
-      </div>
-    </div>
-  </section>
-  <section *ngIf="showSearch">
-    <div class="div div-three">
-      <div class="chlid-top">
-        <span class="span">搜索结果:</span>
-      </div>
-      <div class="chlid-content">
-        <nz-tag nzMode="default" class="tag2" [nzColor]="'#75B4D6'" [nzChecked]="true" *ngIf="isduoxuan" (click)="checakAll(2)">{{checkInfo[2].title}}</nz-tag>
-        <nz-tag nzMode="checkable" class="tag2" [nzChecked]="resultUser.checked" *ngFor="let resultUser of userList; let i = index" (nzCheckedChange)="checkUser(resultUser,$event)">{{ resultUser.OrgName }}-{{ resultUser.UserName }}</nz-tag>
-      </div>
-    </div>
-    <div style="margin-left:38%;" *ngIf="onPaging" >
-      <nz-pagination [nzHideOnSinglePage]="false" [nzPageIndex]="pageIndex" [nzTotal]="total" [nzSimple]="true" [nzSize]="'small'" (nzPageIndexChange)="pageChange($event)">
-      </nz-pagination>
-    </div>
-  </section>
-  <section *ngIf="showResult">
-    <div class="div div-last">
-      <div class="chlid-top chlid-top-last">
-        <span class="span">已选择结果:</span>
-      </div>
-      <div class="chlid-content">
-        <nz-tag *ngIf="showPrev" nzMode="default" class="tag2" [nzColor]="'#75B4D6'" [nzChecked]="true" (click)="checakAll(3)">全部取消</nz-tag>
-        <nz-tag class="tag2" *ngFor="let selectUser of selectUserList; let i = index" nzMode="closeable" (nzAfterClose)="handleClose(selectUser)">
-          {{ selectUser.OrgName }}-{{ selectUser.UserName }}
-        </nz-tag>
-      </div>
-    </div>
-  </section>
-  <nz-spin *ngIf="loading" [nzTip]="'Loading'" [nzDelay]="3000">
-  </nz-spin>
+    <section>
+        <span class="span">快捷搜索:</span>
+        <nz-tag nzMode="default" [nzChecked]="true" class="tag" (click)="checkChange('mydian')">本店</nz-tag>
+        <nz-tag nzMode="default" [nzChecked]="true" class="tag" (click)="checkChange('myarea')">本区</nz-tag>
+        <nz-tag nzMode="default" [nzChecked]="true" class="tag" (click)="checkChange('myareachild')">本区下属</nz-tag>
+        <nz-tag nzMode="default" [nzChecked]="true" class="tag" (click)="checkChange('history')">最近</nz-tag>
+        <label title="{{text}}"><input nz-input nzSize="default" #textbox class="input" placeholder="{{text}}" (keyup)="enter(textbox.value,$event)" /></label>
+        <label title="输入组织名称或组织ID"><input nz-input nzSize="default" class="input" placeholder="输入组织名称或组织ID" [(ngModel)]="orgId" (keyup)="enter('otherOrg',$event)"/></label>
+        <label title="输员工id可查询该员工,可传多个(以英文','分割)" *ngIf="canSelectId"><input nz-input nzSize="default" class="input" placeholder="输员工id可查询该员工,可传多个(以英文','分割)" [(ngModel)]="selectIds"/></label>
+    </section>
+    <section *ngIf="showHistory">
+        <div class="div">
+            <div class="chlid-top">
+                <span class="span">最近结果:</span>
+                <nz-tag nzMode="default" [nzChecked]="true" [nzColor]="'#75B4D6'" class="tag1" (click)="refHistory()">管理历史记录</nz-tag>
+            </div>
+            <div class="chlid-content">
+                <nz-tag nzMode="default" class="tag2" [nzColor]="'#75B4D6'" [nzChecked]="true" *ngIf="isduoxuan" (click)="checakAll(0)">{{checkInfo[0].title}}</nz-tag>
+                <nz-tag nzMode="checkable" class="tag2" [nzChecked]="historyUser.checked" *ngFor="let historyUser of historyUserList; let i = index" (nzCheckedChange)="checkUser(historyUser,$event)">{{ historyUser.OrgName }}-{{ historyUser.UserName }}</nz-tag>
+            </div>
+        </div>
+        <div class="div">
+            <div class="chlid-top">
+                <span class="span">常用结果:</span>
+            </div>
+            <div>
+                <nz-tag nzMode="default" class="tag2" [nzColor]="'#75B4D6'" [nzChecked]="true" *ngIf="isduoxuan" (click)="checakAll(1)">{{checkInfo[1].title}}</nz-tag>
+                <nz-tag nzMode="checkable" class="tag2" [nzChecked]="changyongUser.checked" *ngFor="let changyongUser of changyongUserList; let i = index" (nzCheckedChange)="checkUser(changyongUser,$event)">{{ changyongUser.OrgName }}-{{ changyongUser.UserName }}</nz-tag>
+            </div>
+        </div>
+    </section>
+    <section *ngIf="showSearch">
+        <div class="div div-three">
+            <div class="chlid-top">
+                <span class="span">搜索结果:</span>
+            </div>
+            <div class="chlid-content">
+                <nz-tag nzMode="default" class="tag2" [nzColor]="'#75B4D6'" [nzChecked]="true" *ngIf="isduoxuan" (click)="checakAll(2)">{{checkInfo[2].title}}</nz-tag>
+                <nz-tag nzMode="checkable" class="tag2" [nzChecked]="resultUser.checked" *ngFor="let resultUser of userList; let i = index" (nzCheckedChange)="checkUser(resultUser,$event)">{{ resultUser.OrgName }}-{{ resultUser.UserName }}</nz-tag>
+            </div>
+        </div>
+        <div style="margin-left:38%;" *ngIf="onPaging">
+            <nz-pagination [nzHideOnSinglePage]="false" [nzPageIndex]="pageIndex" [nzTotal]="total" [nzSimple]="true" [nzSize]="'small'" (nzPageIndexChange)="pageChange($event)">
+            </nz-pagination>
+        </div>
+    </section>
+    <section *ngIf="showResult">
+        <div class="div div-last">
+            <div class="chlid-top chlid-top-last">
+                <span class="span">已选择结果:</span>
+            </div>
+            <div class="chlid-content">
+                <nz-tag *ngIf="showPrev" nzMode="default" class="tag2" [nzColor]="'#75B4D6'" [nzChecked]="true" (click)="checakAll(3)">全部取消</nz-tag>
+                <nz-tag class="tag2" *ngFor="let selectUser of selectUserList; let i = index" nzMode="closeable" (nzAfterClose)="handleClose(selectUser)">
+                    {{ selectUser.OrgName }}-{{ selectUser.UserName }}
+                </nz-tag>
+            </div>
+        </div>
+    </section>
+    <nz-spin *ngIf="loading" [nzTip]="'Loading'" [nzDelay]="3000">
+    </nz-spin>
 </ng-template>

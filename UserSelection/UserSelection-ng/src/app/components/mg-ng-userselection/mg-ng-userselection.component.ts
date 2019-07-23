@@ -1,4 +1,4 @@
-import {Component, Input, Output, OnInit, EventEmitter, TemplateRef, Type} from '@angular/core';
+import { Component, Input, Output, OnInit, EventEmitter, TemplateRef, Type } from '@angular/core';
 import { HttpService } from '../mg-ng-service/http-service.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
 
@@ -12,7 +12,7 @@ import { NzMessageService } from 'ng-zorro-antd/message';
  * 员工选择组件
  */
 export class MgNgUserselectionComponent<T = any> implements OnInit {
-  constructor(private http: HttpService , public msg: NzMessageService) {
+  constructor(private http: HttpService, public msg: NzMessageService) {
   }
   // 是否显示弹窗
   isVisible = false;
@@ -157,22 +157,22 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
   changyongUserList = [];
   // 全选状态
   checkInfo = {
-      0: {
-        checked: false,
-        title: '选择全部',
-        userList: []
-      },
-      1: {
-        checked: false,
-        title: '选择全部',
-        userList: []
-      },
-      2: {
-        checked: false,
-        title: '选择全部',
-        userList: []
-      }
-    };
+    0: {
+      checked: false,
+      title: '选择全部',
+      userList: []
+    },
+    1: {
+      checked: false,
+      title: '选择全部',
+      userList: []
+    },
+    2: {
+      checked: false,
+      title: '选择全部',
+      userList: []
+    }
+  };
   // 弹窗开启之后回调事件
   afterOpen(): void {
     this.mgAfterOpen.emit('弹窗打开了');
@@ -186,7 +186,7 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
   ngOnInit() {
     console.log('初始化');
     this.checkChange('history');
-    this.isduoxuan === true ?  this.showResult = true : this.showResult = false;
+    this.isduoxuan === true ? this.showResult = true : this.showResult = false;
     this.existResults === '' ? this.showPrev = false : this.showPrev = true;
   }
   // 显示弹窗
@@ -218,7 +218,7 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
   // 点击用户
   checkUser(user, e: boolean): void {
     if (!this.isduoxuan) {
-       this.handleOk();
+      this.handleOk();
     } else {
       this.checkMaxSelect();
       user.checked = e;
@@ -244,35 +244,37 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
   }
   // 关掉tags
   handleClose(removedTag): void {
-    this.selectUserList = this.selectUserList.filter( e => e !== removedTag );
-    this.userList.find( e =>  e.UserId === removedTag.UserId).checked = false;
+    this.selectUserList = this.selectUserList.filter(e => e !== removedTag);
+    this.userList.find(e => e.UserId === removedTag.UserId).checked = false;
   }
   // 全选
   checakAll(type: number): void {
     if (type === 3) {
-      this.userList.find( e =>  e.checked === true).checked = false;
+      this.userList.find(e => e.checked === true).checked = false;
       this.showPrev = false;
     } else {
       this.checkInfo[type].checked = !this.checkInfo[type].checked;
-      this.checkInfo[type].title  =  this.checkInfo[type].title === '选择全部' ? '取消全部' : '选择全部';
+      this.checkInfo[type].title = this.checkInfo[type].title === '选择全部' ? '取消全部' : '选择全部';
       if (this.checkInfo[type].checked) {
         // tslint:disable-next-line:max-line-length
-        (this.checkInfo[type].userList.filter( e => e !== this.selectUserList.find( f => f.UserId === e.UserId)).splice(0, this.maxSelectNumber - this.selectUserList.length)).forEach( e =>  e.checked = this.checkInfo[type].checked);
+        (this.checkInfo[type].userList.filter(e => e !== this.selectUserList.find(f => f.UserId === e.UserId)).splice(0, this.maxSelectNumber - this.selectUserList.length)).forEach(e => e.checked = this.checkInfo[type].checked);
       } else {
-        this.checkInfo[type].userList.forEach( e =>  e.checked = this.checkInfo[type].checked);
+        this.checkInfo[type].userList.forEach(e => e.checked = this.checkInfo[type].checked);
       }
     }
     this.selectUser();
   }
   // 选择结果重组
   selectUser(): void {
-     this.selectUserList = this.userList.filter( e => e.checked === true);
+    this.selectUserList = this.userList.filter(e => e.checked === true);
   }
   // 回车事件绑定
   enter(v: string, $event): void {
     if ($event.which === 13) {
       this.type = v;
       this.bianData();
+      this.showHistory=false;
+      this.showSearch=true;
     }
   }
   // 翻页事件
@@ -283,11 +285,11 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
   // 获取数据
   bianData(): void {
     // 公用搜索参数
-   const param = {
+    const param = {
       type: this.type,
       action: 'user',
-      pagename : 'noPageName',
-      page : this.pageIndex,
+      pagename: 'noPageName',
+      page: this.pageIndex,
       size: this.pizeSize,
       ischangyong: 1,
       selectIds: this.selectIds,
@@ -295,58 +297,60 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
       isShowDeleted: this.isShowDeleted,
       orgId: this.orgId
     };
-   this.loading = true;
-   this.http.get('/webcomponent/index', param, false).subscribe(res => {
+    this.loading = true;
+    this.http.get('/webcomponent/index', param, false).subscribe(res => {
       this.loading = false;
       if (res.flag === 1) {
-          if (res.data.data.length > 0) {
-            // this.selectUserList = [];
-            this.userList = res.data.data;
-            this.userList = this.userList.sort( (a, b) => {
-              return a.UserId - b.UserId;
+        if (res.data.data.length > 0) {
+          // this.selectUserList = [];
+          this.userList = res.data.data;
+          // this.userList = this.userList.sort((a, b) => {
+          //   return a.UserId - b.UserId;
+          // });
+          this.selectUserList.forEach(e => {
+            this.userList.find(f => f.UserId === e.UserId).checked = true;
+          });
+          if (this.type === 'history') {
+            this.changyongUserList = [];
+            this.historyUserList = [];
+            const changyong = res.data.changyong;
+            const history = res.data.history;
+            changyong.forEach(e => {
+              const changyongUser = this.userList.find(a => a.UserId === e);
+              this.changyongUserList.push(changyongUser);
             });
-            this.selectUserList.forEach( e => {
-              this.userList.find( f => f.UserId === e.UserId).checked = true;
+            // this.changyongUserList = this.changyongUserList.sort((a, b) => {
+            //   return a.UserId - b.UserId;
+            // });
+            history.forEach(e => {
+              const historyUser = this.userList.find(a => a.UserId === e);
+              this.historyUserList.push(historyUser);
             });
-            if (this.type === 'history') {
-              this.changyongUserList = [];
-              this.historyUserList = [];
-              const changyong = res.data.changyong;
-              const history = res.data.history;
-              changyong.forEach(e => {
-                const changyongUser =  this.userList.find( a => a.UserId === e );
-                this.changyongUserList.push(changyongUser);
-              });
-              this.changyongUserList = this.changyongUserList.sort( (a, b) => {
-                return a.UserId - b.UserId;
-              });
-              history.forEach(e => {
-                const historyUser =  this.userList.find( a => a.UserId === e );
-                this.historyUserList.push(historyUser);
-              });
-              this.historyUserList = this.historyUserList.sort( (a, b) => {
-                return a.UserId - b.UserId;
-              });
-              this.checkInfo['0'].userList = this.historyUserList;
-              this.checkInfo['1'].userList = this.changyongUserList;
+            // this.historyUserList = this.historyUserList.sort((a, b) => {
+            //   return a.UserId - b.UserId;
+            // });
+            this.checkInfo['0'].userList = this.historyUserList;
+            this.checkInfo['1'].userList = this.changyongUserList;
+          } else {
+            if (this.userList.length > this.pizeSize) {
+              this.onPaging = true;
+              this.total = res.data.count;
             } else {
-              if ( this.userList.length > this.pizeSize) {
-                  this.onPaging = true;
-                  this.total = res.data.count;
-              } else {
-                  this.onPaging = false;
-              }
+              this.onPaging = false;
             }
-            this.checkInfo['2'].userList = this.userList;
-            if ( this.existResults !== '') {
-              const resultIds = this.existResults.split(',' );
-              resultIds.forEach( a => {
-                this.userList.find( e =>  e.UserId.toString() === a).checked = true;
-              });
-              this.selectUser();
-            }
+          }
+          this.checkInfo['2'].userList = this.userList;
+          if (this.existResults !== '') {
+            const resultIds = this.existResults.split(',');
+            resultIds.forEach(a => {
+              this.userList.find(e => e.UserId.toString() === a).checked = true;
+            });
+            this.selectUser();
+          }
         } else {
+          if (res.data.msg.length > 0) {
             this.msg.error(res.data.msg);
+          }
         }
       } else {
         this.msg.error('程序异常');
