@@ -1,9 +1,11 @@
-﻿using WebComponentWebAPI.Ioc;
+﻿using System.Collections.Generic;
+using WebComponentStore.Models;
+using WebComponentWebAPI.Ioc;
 using WebComponentWebAPI.Models;
 
 namespace UserSelectionData
 {
-    public interface IUser_listService : ITransentInject
+    public interface IUser_listService :ISingleTonInject
     {
         /// <summary>
         /// 通过指定的ids获取实例列表

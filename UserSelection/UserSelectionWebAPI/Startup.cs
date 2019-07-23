@@ -37,6 +37,11 @@ namespace UserSelectionWebAPI
             //依赖注入
             services.AutoRegisterService();
             services.AddSingleton<Microsoft.AspNetCore.Http.IHttpContextAccessor, Microsoft.AspNetCore.Http.HttpContextAccessor>();
+
+            #region 用户数据初始化
+            var serviceProvider = services.BuildServiceProvider();
+            serviceProvider.GetService<UserSelectionData.IUser_listService>();
+            #endregion 用户数据初始化
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

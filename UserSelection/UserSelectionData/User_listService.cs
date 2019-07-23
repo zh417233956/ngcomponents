@@ -18,18 +18,19 @@ namespace UserSelectionData
         IUserStore _userStore;
         IDictStore _dictStore;
         IHttpContextAccessor _contextAccessor;
-        IUser_listVistor _uer_listVistor;
+        IUser_listVistor _user_listVistor;
         IPub_DictVistor _pub_DictVistor;
         IPub_DicExtendItemVistor _pub_DicExtendItemVistor;
         IOrg_ListVistor _org_ListVistor;
         IOrgStore _orgStore;
+        IUserCache _userCache;
         IPinYinLibraryHelper _pinYinLibraryHelper;
         /// <summary>
         /// 当前上下文
         /// </summary>
         public HttpContext _httpContext => _contextAccessor.HttpContext;
         public User_listService(
-            IUser_listVistor uer_listVistor,
+            IUser_listVistor user_listVistor,
         IHttpContextAccessor contextAccessor,
             IUserStore userStore,
             IDictStore dictStore,
@@ -37,9 +38,10 @@ namespace UserSelectionData
             IPub_DicExtendItemVistor pub_DicExtendItemVistor,
             IOrg_ListVistor org_ListVistor,
             IOrgStore orgStore,
-            IPinYinLibraryHelper pinYinLibraryHelper)
+            IUserCache userCache,
+        IPinYinLibraryHelper pinYinLibraryHelper)
         {
-            _uer_listVistor = uer_listVistor;
+            _user_listVistor = user_listVistor;
             _contextAccessor = contextAccessor;
             _userStore = userStore;
             _dictStore = dictStore;
@@ -47,7 +49,10 @@ namespace UserSelectionData
             _pub_DicExtendItemVistor = pub_DicExtendItemVistor;
             _org_ListVistor = org_ListVistor;
             _orgStore = orgStore;
+            _userCache = userCache;
             _pinYinLibraryHelper = pinYinLibraryHelper;
+            //初始化用户缓存数据
+            UserCacheList(false);
         }
         /// <summary>
         /// 通过指定的ids获取实例列表
@@ -64,7 +69,7 @@ namespace UserSelectionData
                 if (idList.Count > 0)
                 {
                     //调用wcf,获取解密数据
-                    var modelRet = _uer_listVistor.GetModelByIds(idList);
+                    var modelRet = _user_listVistor.GetModelByIds(idList);
 
                     var data = modelRet.Data;
 
@@ -180,15 +185,15 @@ namespace UserSelectionData
                 int number = 0;
 
                 //显示离职员工 （限制类）
-                //isshowdelete;0=在职(flag=1),1=全部;2=(flag in (0,1,9))                
+                //isshowdelete;0=在职(flag=1),1=全部;2=(flag in (0,1,9))    
+                var strWhereFlag2 = "0,1,9".Split(',').Select(s => (object)s).ToList();
                 switch (isShowDel)
                 {
                     case 0:
                         filterList.Add(new CommonFilterModel("flag", "=", "1"));
                         break;
                     case 2:
-                        var strWhereFlag = "0,1,9".Split(',').Select(s => (object)s).ToList();
-                        filterList.Add(new CommonFilterModel("flag", "in", strWhereFlag));
+                        filterList.Add(new CommonFilterModel("flag", "in", strWhereFlag2));
                         break;
                 }
                 //限制经纪人等级 （限制类）
@@ -212,7 +217,7 @@ namespace UserSelectionData
                         var users = new List<int>();
                         //增加过滤条件
                         filterList.Add(new CommonFilterModel("orgid", "=", myorg.OrgID.Value.ToString()));
-                        var wcfUsers = _uer_listVistor.GetIdListLock(current, pagesize, filterList, orderby);
+                        var wcfUsers = _user_listVistor.GetIdListLock(current, pagesize, filterList, orderby);
                         users = wcfUsers.Data;
                         number = wcfUsers.RetInt;
                         tempList.AddRange(users);
@@ -229,7 +234,7 @@ namespace UserSelectionData
                         {
                             filterList.Add(new CommonFilterModel("orgid", "=", LoginUser.orgid.ToString()));
                         }
-                        var wcfUsersList = _uer_listVistor.GetIdListLock(current, pagesize, filterList, orderby);
+                        var wcfUsersList = _user_listVistor.GetIdListLock(current, pagesize, filterList, orderby);
                         usersList = wcfUsersList.Data;
                         number = wcfUsersList.RetInt;
                         tempList.AddRange(usersList);
@@ -267,7 +272,7 @@ namespace UserSelectionData
                             break;
                         }
                         //根据过滤条件查询处理
-                        var wcfUsermydianChildList = _uer_listVistor.GetIdListLock(current, pagesize, filterList, orderby);
+                        var wcfUsermydianChildList = _user_listVistor.GetIdListLock(current, pagesize, filterList, orderby);
                         var mydianUserList = wcfUsermydianChildList.Data;
                         number = wcfUsermydianChildList.RetInt;
                         tempList.AddRange(mydianUserList);
@@ -284,7 +289,7 @@ namespace UserSelectionData
                         if (orgids.Count > 0)
                         {
                             filterList.Add(new CommonFilterModel("orgid", "in", orgids.Select(s => (object)s).ToList()));
-                            var wcfUserOrgChildList = _uer_listVistor.GetIdListLock(current, pagesize, filterList, orderby);
+                            var wcfUserOrgChildList = _user_listVistor.GetIdListLock(current, pagesize, filterList, orderby);
 
                             var userOrgChildList = wcfUserOrgChildList.Data;
                             number = wcfUserOrgChildList.RetInt;
@@ -297,7 +302,7 @@ namespace UserSelectionData
                         var usersIdList = new List<int>();
                         //增加过滤条件
                         filterList.Add(new CommonFilterModel("orgid", "in", idsIn.Select(id => (object)id).ToList()));
-                        var wcfUsersIdList = _uer_listVistor.GetIdListLock(current, pagesize, filterList, orderby);
+                        var wcfUsersIdList = _user_listVistor.GetIdListLock(current, pagesize, filterList, orderby);
                         usersIdList = wcfUsersIdList.Data;
                         number = wcfUsersIdList.RetInt;
                         tempList.AddRange(usersIdList);
@@ -312,7 +317,7 @@ namespace UserSelectionData
                             {
                                 filterList.Add(new CommonFilterModel("UserId", "=", action));
 
-                                var wcfdefaultUserList = _uer_listVistor.GetIdListLock(current, pagesize, filterList, orderby);
+                                var wcfdefaultUserList = _user_listVistor.GetIdListLock(current, pagesize, filterList, orderby);
                                 var defaultUserList = wcfdefaultUserList.Data;
                                 number = wcfdefaultUserList.RetInt;
                                 tempList.AddRange(defaultUserList);
@@ -326,7 +331,7 @@ namespace UserSelectionData
                                 var userids = arr.Select(a => a.Int()).Where(a => a != 0).Distinct().ToList();
                                 filterList.Add(new CommonFilterModel("UserId", "in", userids.Cast<object>().ToList()));
 
-                                var wcfdefaultUserList = _uer_listVistor.GetIdListLock(current, pagesize, filterList, orderby);
+                                var wcfdefaultUserList = _user_listVistor.GetIdListLock(current, pagesize, filterList, orderby);
                                 var defaultUserList = wcfdefaultUserList.Data;
                                 number = wcfdefaultUserList.RetInt;
                                 tempList.AddRange(defaultUserList);
@@ -339,14 +344,45 @@ namespace UserSelectionData
                                 }
 
                                 List<PinYinResult> pinyinResult;
-                                //TODO:wcf获取指定条件的用户信息,此处数据如何实现，待商榷
-                                List<string> columns = new List<string>() {
-                                    "UserId",
-                                    "UserName2"
-                                };
-                                var wcfdefaultUserList = _uer_listVistor.GetColumnsNoCount(1, 200, filterList, orderby, columns);
-                                var defaultUserList = wcfdefaultUserList.Data;
-                                number = wcfdefaultUserList.RetInt;
+                                ////TODO:wcf获取指定条件的用户信息,此处数据如何实现，待商榷
+                                //List<string> columns = new List<string>() {
+                                //    "UserId",
+                                //    "UserName2"
+                                //};
+                                //var wcfdefaultUserList = _user_listVistor.GetColumnsNoCount(1, 200, filterList, orderby, columns);
+                                //var defaultUserList = wcfdefaultUserList.Data;
+                                //number = wcfdefaultUserList.RetInt;
+
+
+                                var defaultUserList = UserCacheList();
+
+                                #region 特殊数据过滤
+
+                                //显示离职员工 （限制类）         
+                                switch (isShowDel)
+                                {
+                                    case 0:
+                                        defaultUserList = defaultUserList.Where(m => m.flag == 1).ToList();
+                                        break;
+                                    case 2:
+                                        defaultUserList = defaultUserList.Where(m => strWhereFlag2.Contains(m.flag)).ToList();
+                                        break;
+                                }
+                                //限制经纪人等级 （限制类）
+                                if (isJJrList != null && isJJrList.Count > 0)
+                                {
+                                    defaultUserList = defaultUserList.Where(m => isJJrList.Contains(m.isjjr)).ToList();
+                                }
+
+                                //必须在指定组织内
+                                if (mastOrgId != null && mastOrgId.Count > 0)
+                                {
+                                    defaultUserList = defaultUserList.Where(m => mastOrgId.Contains(m.orgid.Value)).ToList();
+                                }
+
+                                #endregion 特殊数据过滤
+
+
                                 var pinYinSourceList = new List<PinYinSource>();
                                 foreach (var userDetail in defaultUserList)
                                 {
@@ -354,12 +390,12 @@ namespace UserSelectionData
                                     {
                                         pinYinSourceList.Add(new PinYinSource
                                         {
-                                            ID = userDetail.UserId.Value,
+                                            ID = userDetail.UserId,
                                             Name = userDetail.UserName2
                                         });
                                     }
                                 }
-                               
+
                                 pinyinResult = _pinYinLibraryHelper.GetPinYinAndHanZiResult("UserSelectionData", pinYinSourceList, action, pagesize, out number, current);
 
                                 if (pinyinResult != null && pinyinResult.Count > 0)
@@ -400,6 +436,7 @@ namespace UserSelectionData
 
             return result;
         }
+
 
         #region 私有方法      
 
@@ -495,7 +532,6 @@ namespace UserSelectionData
 
         #endregion 获取组织父级
 
-
         #region 获取组织子级
 
         /// <summary>
@@ -565,6 +601,87 @@ namespace UserSelectionData
         }
 
         #endregion 获取组织子级
+
+        #region 用户变更数据操作
+        /// <summary>
+        /// 用户数据缓存处理
+        /// </summary>
+        /// <param name="retFlag">是否返回数据，默认返回</param>
+        /// <returns></returns>
+        private List<User_Detail> UserCacheList(bool retFlag=true)
+        {
+            //通过wcf处理变更集
+            var lastUpdateTime = _userCache.GetLastUpdateTime();
+            //初始化数据状态
+            bool InitTag = lastUpdateTime.Year > 1970 ? true : false;
+
+            //wcf查询过滤条件及排序方式
+            var filterList = new List<CommonFilterModel>()
+            {
+                new CommonFilterModel("UserId", ">", "10000")
+            };
+
+            if (InitTag)
+            {
+                filterList.Add(new CommonFilterModel("LastTime", ">", lastUpdateTime.ToString("yyyy-MM-dd HH:mm:ss")));
+            }
+
+            var orderby = new List<CommonOrderModel>() {
+                new CommonOrderModel(){ Name="UserId",Order=0 }
+            };
+
+
+            var changeUsers = new List<int>();
+
+            //查询wcf
+
+            int page = 1;
+            int pagesize = 5;
+            var wcfChangeUsers = _user_listVistor.GetIdListLock(page, pagesize, filterList, orderby);
+            //返回总条数
+            int changeCount = wcfChangeUsers.RetInt;
+            if (changeCount > 0)
+            {
+                //返回数据
+                changeUsers.AddRange(wcfChangeUsers.Data);
+                //计算总页数
+                var pagecount = (changeCount / pagesize) + (changeCount % pagesize > 0 ? 1 : 0);
+                //获取剩余页数
+                for (int i = 2; i <= pagecount && i < 5; i++)
+                {
+                    page++;
+                    wcfChangeUsers = _user_listVistor.GetIdListLock(page, pagesize, filterList, orderby);
+                    //返回数据
+                    changeUsers.AddRange(wcfChangeUsers.Data);
+                }
+
+                var userDetailList = new List<User_Detail>();
+                foreach (var item in changeUsers)
+                {
+                    var itemUser = _userStore.GetUser(item);
+                    if (itemUser != null)
+                    {
+                        userDetailList.Add(itemUser);
+                    }
+                }
+                //更新缓存
+                _userCache.SetUserList(userDetailList);
+            }
+
+            //数据返回
+            if (retFlag)
+            {
+                //返回缓存数据
+                return _userCache.GetUserList();                
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+
+        #endregion 用户变更数据操作
 
         /// <summary>
         /// 返回用户数据格式封装

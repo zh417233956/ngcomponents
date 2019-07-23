@@ -83,5 +83,6 @@ namespace WebComponentWebAPI.Ioc
 
             return assemblyNames;
         }
+
     }
 }
