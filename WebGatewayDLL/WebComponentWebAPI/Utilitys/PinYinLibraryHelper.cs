@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using WebComponentWebAPI.Ioc;
 using WebComponentWebAPI.Models;
 
 namespace WebComponentWebAPI.Utilitys
@@ -11,13 +12,16 @@ namespace WebComponentWebAPI.Utilitys
     /// <summary>
     /// 拼音文字库帮助类
     /// </summary>
-    public class PinYinLibraryHelper
+    public class PinYinLibraryHelper: IPinYinLibraryHelper
     {
-        public List<PinYinResult> GetPinYinAndHanZiResult(List<PinYinSource> pinyinSourceList, string searchText, int pageSize, out int count, int page = 1, bool isDebug = false)
+        public string typeString = "";
+        public PinYinLibraryHelper()
+        {            
+        }
+        public List<PinYinResult> GetPinYinAndHanZiResult(string typeString ,List<PinYinSource> pinyinSourceList, string searchText, int pageSize, out int count, int page = 1, bool isDebug = false)
         {
             try
-            {
-                string typeString = "UserSelectionData";
+            {                
                 #region 初始化数据构造
                 string error = "";
                 SetHanZi(typeString, pinyinSourceList, ref error);
@@ -402,5 +406,9 @@ namespace WebComponentWebAPI.Utilitys
         }
 
         #endregion 辅助方法 获取首字母
+    }
+    public interface IPinYinLibraryHelper : ITransentInject
+    {
+        List<PinYinResult> GetPinYinAndHanZiResult(string typeString, List<PinYinSource> pinyinSourceList, string searchText, int pageSize, out int count, int page = 1, bool isDebug = false);
     }
 }

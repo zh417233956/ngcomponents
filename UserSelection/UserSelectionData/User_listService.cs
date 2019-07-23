@@ -23,6 +23,7 @@ namespace UserSelectionData
         IPub_DicExtendItemVistor _pub_DicExtendItemVistor;
         IOrg_ListVistor _org_ListVistor;
         IOrgStore _orgStore;
+        IPinYinLibraryHelper _pinYinLibraryHelper;
         /// <summary>
         /// 当前上下文
         /// </summary>
@@ -35,7 +36,8 @@ namespace UserSelectionData
             IPub_DictVistor pub_DictVistor,
             IPub_DicExtendItemVistor pub_DicExtendItemVistor,
             IOrg_ListVistor org_ListVistor,
-            IOrgStore orgStore)
+            IOrgStore orgStore,
+            IPinYinLibraryHelper pinYinLibraryHelper)
         {
             _uer_listVistor = uer_listVistor;
             _contextAccessor = contextAccessor;
@@ -45,6 +47,7 @@ namespace UserSelectionData
             _pub_DicExtendItemVistor = pub_DicExtendItemVistor;
             _org_ListVistor = org_ListVistor;
             _orgStore = orgStore;
+            _pinYinLibraryHelper = pinYinLibraryHelper;
         }
         /// <summary>
         /// 通过指定的ids获取实例列表
@@ -356,8 +359,8 @@ namespace UserSelectionData
                                         });
                                     }
                                 }
-                                var _pinyinHelper = new PinYinLibraryHelper();
-                                pinyinResult = _pinyinHelper.GetPinYinAndHanZiResult(pinYinSourceList, action, pagesize, out number, current);
+                               
+                                pinyinResult = _pinYinLibraryHelper.GetPinYinAndHanZiResult("UserSelectionData", pinYinSourceList, action, pagesize, out number, current);
 
                                 if (pinyinResult != null && pinyinResult.Count > 0)
                                 {
