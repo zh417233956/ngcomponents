@@ -9,9 +9,11 @@ namespace WebComponentDemo
 {
     public class Startup
     {
+        public static string UserselectionAPI { get; set; }
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            UserselectionAPI = Configuration.GetConnectionString("UserselectionAPI");
         }
 
         public IConfiguration Configuration { get; }
