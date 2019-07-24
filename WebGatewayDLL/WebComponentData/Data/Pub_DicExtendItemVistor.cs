@@ -17,12 +17,14 @@ namespace WebComponentData.Data
         public Pub_DicExtendItemVistor(IWCFClientHelper wcfClientHelper)
         {
             _wcfClientHelper = wcfClientHelper;
+            pub_DicExtendItemClient = _wcfClientHelper.GetInterfaces<Pub_DicExtendItem>("/User/v3.0/NetService/Pub_DicExtendItemService.svc");
         }
+        private ISecondBaseInterface<Pub_DicExtendItem> pub_DicExtendItemClient;
         private ISecondBaseInterface<Pub_DicExtendItem> Pub_DicExtendItemClient
         {
             get
             {
-                return _wcfClientHelper.GetInterfaces<Pub_DicExtendItem>("/User/v3.0/NetService/Pub_DicExtendItemService.svc");
+                return pub_DicExtendItemClient;
             }
         }
         private string WcfOtherString

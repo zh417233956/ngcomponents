@@ -7,7 +7,7 @@ using WebComponentWebAPI.WCF.Models;
 
 namespace WebComponentData.Interface
 {
-    public interface IPub_DictVistor: ITransentInject
+    public interface IPub_DictVistor: ISingleTonInject
     {
        /// <summary>
        /// 通过指定ID获取字典列表

@@ -7,7 +7,7 @@ using WebComponentWebAPI.WCF.Models;
 
 namespace WebComponentData.Interface
 {
-    public interface IOrg_ListVistor : ITransentInject
+    public interface IOrg_ListVistor : ISingleTonInject
     {
         /// <summary>
         /// 通过分页、条件、排序查询数据

@@ -16,12 +16,14 @@ namespace WebComponentData.Data
         public Org_ListVistor(IWCFClientHelper wcfClientHelper)
         {
             _wcfClientHelper = wcfClientHelper;
+            org_ListClient = _wcfClientHelper.GetInterfaces<Org_List>("/User/v3.0/NetService/Org_ListService.svc");
         }
+        private ISecondBaseInterface<Org_List> org_ListClient;
         private ISecondBaseInterface<Org_List> Org_ListClient
         {
             get
             {
-                return _wcfClientHelper.GetInterfaces<Org_List>("/User/v3.0/NetService/Org_ListService.svc");
+                return org_ListClient;
             }
         }
         private string WcfOtherString

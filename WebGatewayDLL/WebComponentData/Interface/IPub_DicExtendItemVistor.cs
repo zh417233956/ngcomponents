@@ -7,7 +7,7 @@ using WebComponentWebAPI.WCF.Models;
 
 namespace WebComponentData.Interface
 {
-    public interface IPub_DicExtendItemVistor: ITransentInject
+    public interface IPub_DicExtendItemVistor: ISingleTonInject
     {
         /// <summary>
         /// 获取扩展的字典项

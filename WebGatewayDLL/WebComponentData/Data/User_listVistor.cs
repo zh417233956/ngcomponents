@@ -16,13 +16,15 @@ namespace WebComponentData.Data
         public User_listVistor(IWCFClientHelper wcfClientHelper)
         {
             _wcfClientHelper = wcfClientHelper;
+            user_listClient = _wcfClientHelper.GetInterfaces<User_list>("/User/v3.0/NetService/User_listService.svc");
         }
+        private ISecondBaseInterface<User_list> user_listClient;
         private ISecondBaseInterface<User_list> User_listClient
         {
             get
             {
-                return _wcfClientHelper.GetInterfaces<User_list>("/User/v3.0/NetService/User_listService.svc");
-            }
+                return user_listClient;
+            }            
         }
 
         private string WcfOtherString

@@ -7,7 +7,7 @@ using WebComponentWebAPI.WCF.Models;
 
 namespace WebComponentData.Interface
 {
-    public interface IUser_listVistor : ITransentInject
+    public interface IUser_listVistor : ISingleTonInject
     {
         /// <summary>
         /// 通过id获取一个实体
