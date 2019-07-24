@@ -64,6 +64,7 @@ namespace UserSelectionWebAPI.API
         }
         [HttpGet("GetList")]
         [HttpPost("GetList")]
+        [DisableRequestSizeLimit]
         public IActionResult GetList()
         {
             string result = "";

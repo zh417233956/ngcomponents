@@ -726,27 +726,8 @@ namespace UserSelectionData
                         //TODO:OK,User_list中不存在mobile，从用户缓存获取 
 
                         #region 方案一
-                        ////直接通过redis获取用户数据
-                        //var user_detail = _userStore.GetUser(item) ?? new WebComponentStore.Models.User_Detail();
-                        //list.Add(new
-                        //{
-                        //    user_detail.UserId,
-                        //    ZaiZhiZhuangTai = flag_Dics.FirstOrDefault(m => m.DictUseId == user_detail.flag)?.DicName ?? "",
-                        //    UserName = user_detail.UserName2,
-                        //    user_detail.orgid,
-                        //    user_detail.isjjr,
-                        //    user_detail.OrgName,
-                        //    user_detail.mobile,
-                        //    RzRuzhiDate = string.Format("{0:yyyy-MM-dd}", user_detail.RzRuzhiDate),
-                        //    isyunying = isYunYing_isjjrList.Contains(user_detail.isjjr),
-
-                        //});
-
-                        #endregion
-
-                        #region 方案二
-                        ////直接通过Cache获取用户数据
-                        var user_detail = _userCache.GetUser(item) ?? new WebComponentStore.Models.User_Detail();
+                        //直接通过redis获取用户数据
+                        var user_detail = _userStore.GetUser(item) ?? new WebComponentStore.Models.User_Detail();
                         list.Add(new
                         {
                             user_detail.UserId,
@@ -757,9 +738,26 @@ namespace UserSelectionData
                             user_detail.OrgName,
                             user_detail.mobile,
                             RzRuzhiDate = string.Format("{0:yyyy-MM-dd}", user_detail.RzRuzhiDate),
-                            isyunying = isYunYing_isjjrList.Contains(user_detail.isjjr),
-
+                            isyunying = isYunYing_isjjrList.Contains(user_detail.isjjr)
                         });
+
+                        #endregion
+
+                        #region 方案二
+                        //////直接通过Cache获取用户数据
+                        //var user_detail = _userCache.GetUser(item) ?? new WebComponentStore.Models.User_Detail();
+                        //list.Add(new
+                        //{
+                        //    user_detail.UserId,
+                        //    ZaiZhiZhuangTai = flag_Dics.FirstOrDefault(m => m.DictUseId == user_detail.flag)?.DicName ?? "",
+                        //    UserName = user_detail.UserName2,
+                        //    user_detail.orgid,
+                        //    user_detail.isjjr,
+                        //    user_detail.OrgName,
+                        //    user_detail.mobile,
+                        //    RzRuzhiDate = string.Format("{0:yyyy-MM-dd}", user_detail.RzRuzhiDate),
+                        //    isyunying = isYunYing_isjjrList.Contains(user_detail.isjjr)
+                        //});
                         #endregion
 
                     }
