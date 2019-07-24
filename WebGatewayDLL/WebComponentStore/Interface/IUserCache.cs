@@ -24,5 +24,12 @@ namespace WebComponentStore.Interface
         /// </summary>
         /// <returns></returns>
         DateTime GetLastUpdateTime();
+
+        /// <summary>
+        /// 获取用户信息
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        User_Detail GetUser(int userId);
     }
 }

@@ -429,9 +429,9 @@ namespace UserSelectionData
 
                 result = ReturnUsers(tempList, number, _httpContext.Request.GetKey("check") ?? "", history, changyong);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                result = ReturnUsers(null, -2, "(catch)选人插件代码错误");
+                result = ReturnUsers(null, -2, "(catch)选人插件代码错误"+ex.ToString());
             }
 
             return result;
@@ -725,8 +725,28 @@ namespace UserSelectionData
                         //TODO:OK,组织结构，从用户缓存获取                      
                         //TODO:OK,User_list中不存在mobile，从用户缓存获取 
 
-                        //直接通过redis获取用户数据
-                        var user_detail = _userStore.GetUser(item) ?? new WebComponentStore.Models.User_Detail();
+                        #region 方案一
+                        ////直接通过redis获取用户数据
+                        //var user_detail = _userStore.GetUser(item) ?? new WebComponentStore.Models.User_Detail();
+                        //list.Add(new
+                        //{
+                        //    user_detail.UserId,
+                        //    ZaiZhiZhuangTai = flag_Dics.FirstOrDefault(m => m.DictUseId == user_detail.flag)?.DicName ?? "",
+                        //    UserName = user_detail.UserName2,
+                        //    user_detail.orgid,
+                        //    user_detail.isjjr,
+                        //    user_detail.OrgName,
+                        //    user_detail.mobile,
+                        //    RzRuzhiDate = string.Format("{0:yyyy-MM-dd}", user_detail.RzRuzhiDate),
+                        //    isyunying = isYunYing_isjjrList.Contains(user_detail.isjjr),
+
+                        //});
+
+                        #endregion
+
+                        #region 方案二
+                        ////直接通过Cache获取用户数据
+                        var user_detail = _userCache.GetUser(item) ?? new WebComponentStore.Models.User_Detail();
                         list.Add(new
                         {
                             user_detail.UserId,
@@ -740,6 +760,8 @@ namespace UserSelectionData
                             isyunying = isYunYing_isjjrList.Contains(user_detail.isjjr),
 
                         });
+                        #endregion
+
                     }
                 }
                 result = ClientResult.Ok(new { data = list, count = number, msg = info, history, changyong });

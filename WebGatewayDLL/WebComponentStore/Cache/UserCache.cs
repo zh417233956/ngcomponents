@@ -82,5 +82,17 @@ namespace WebComponentStore.Cache
         {
             return LastUpdateTime;
         }
+
+        /// <summary>
+        /// 获取用户信息
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public User_Detail GetUser(int userId)
+        {
+            var model = UserList.FirstOrDefault(m => m.UserId == userId);
+
+            return model;
+        }
     }
 }
