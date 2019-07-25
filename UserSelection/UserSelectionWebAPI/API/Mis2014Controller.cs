@@ -14,6 +14,7 @@ namespace UserSelectionWebAPI.API
     [Route("api/[controller]")]
     public class Mis2014Controller : Controller
     {
+        DateTime dt1 = DateTime.Now;
         private static readonly ILog _log = LogManager.GetLogger(ConfigManager.repository.Name, typeof(Mis2014Controller));
         IUser_listService _user_listService;
         public Mis2014Controller(IUser_listService user_listService)
@@ -69,8 +70,7 @@ namespace UserSelectionWebAPI.API
         {
             string result = "";
             try
-            {
-                DateTime dt1 = DateTime.Now;
+            {               
                 var modelRet = _user_listService.GetUserList();
                 DateTime dt2 = DateTime.Now;
                 modelRet.debug += $"查询耗时：{(dt2 - dt1).TotalMilliseconds}ms";

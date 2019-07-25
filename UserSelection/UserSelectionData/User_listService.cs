@@ -7,7 +7,6 @@ using WebComponentData.Interface;
 using WebComponentData.Models;
 using WebComponentStore.Interface;
 using WebComponentStore.Models;
-using WebComponentWebAPI.ConfigCenter;
 using WebComponentWebAPI.Configs;
 using WebComponentWebAPI.Models;
 using WebComponentWebAPI.Utilitys;
@@ -17,9 +16,9 @@ namespace UserSelectionData
 {
     public class User_listService : IUser_listService
     {
+        DateTime dt1 = DateTime.Now;
         private static readonly ILog _log = LogManager.GetLogger(ConfigManager.repository.Name, typeof(User_listService));
         IUserStore _userStore;
-        IDictStore _dictStore;
         IHttpContextAccessor _contextAccessor;
         IUser_listVistor _user_listVistor;
         IPub_DictVistor _pub_DictVistor;
@@ -36,7 +35,6 @@ namespace UserSelectionData
             IUser_listVistor user_listVistor,
         IHttpContextAccessor contextAccessor,
             IUserStore userStore,
-            IDictStore dictStore,
             IPub_DictVistor pub_DictVistor,
             IPub_DicExtendItemVistor pub_DicExtendItemVistor,
             IOrg_ListVistor org_ListVistor,
@@ -47,7 +45,6 @@ namespace UserSelectionData
             _user_listVistor = user_listVistor;
             _contextAccessor = contextAccessor;
             _userStore = userStore;
-            _dictStore = dictStore;
             _pub_DictVistor = pub_DictVistor;
             _pub_DicExtendItemVistor = pub_DicExtendItemVistor;
             _org_ListVistor = org_ListVistor;
@@ -55,8 +52,14 @@ namespace UserSelectionData
             _userCache = userCache;
             _pinYinLibraryHelper = pinYinLibraryHelper;
             //初始化用户缓存数据
-            UserCacheList(false);
+            //UserCacheList(false);
+            //初始化时间
+            InitTims = (DateTime.Now - dt1).TotalMilliseconds;
         }
+
+
+        public double InitTims { get; set; }
+
         /// <summary>
         /// 通过指定的ids获取实例列表
         /// </summary>
@@ -775,6 +778,7 @@ namespace UserSelectionData
                     }
                 }
                 result = ClientResult.Ok(new { data = list, count = number, msg = info, history, changyong });
+                result.debug = $"构造函数初始化时间:{InitTims}ms;";
             }
             return result;
         }

@@ -6,7 +6,7 @@ using WebComponentWebAPI.Ioc;
 
 namespace WebComponentStore.Interface
 {
-    public interface IUserStore : ITransentInject
+    public interface IUserStore : ISingleTonInject
     {
         /// <summary>
         /// 获取用户信息

@@ -6,7 +6,7 @@ using WebComponentWebAPI.Ioc;
 
 namespace WebComponentStore.Interface
 {
-    public interface IOrgStore:ITransentInject
+    public interface IOrgStore : ISingleTonInject
     {
         /// <summary>
         /// 获取实体

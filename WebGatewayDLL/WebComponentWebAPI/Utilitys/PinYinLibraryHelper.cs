@@ -12,16 +12,16 @@ namespace WebComponentWebAPI.Utilitys
     /// <summary>
     /// 拼音文字库帮助类
     /// </summary>
-    public class PinYinLibraryHelper: IPinYinLibraryHelper
+    public class PinYinLibraryHelper : IPinYinLibraryHelper
     {
         public string typeString = "";
         public PinYinLibraryHelper()
-        {            
+        {
         }
-        public List<PinYinResult> GetPinYinAndHanZiResult(string typeString ,List<PinYinSource> pinyinSourceList, string searchText, int pageSize, out int count, int page = 1, bool isDebug = false)
+        public List<PinYinResult> GetPinYinAndHanZiResult(string typeString, List<PinYinSource> pinyinSourceList, string searchText, int pageSize, out int count, int page = 1, bool isDebug = false)
         {
             try
-            {                
+            {
                 #region 初始化数据构造
                 string error = "";
                 SetHanZi(typeString, pinyinSourceList, ref error);
@@ -407,7 +407,7 @@ namespace WebComponentWebAPI.Utilitys
 
         #endregion 辅助方法 获取首字母
     }
-    public interface IPinYinLibraryHelper : ITransentInject
+    public interface IPinYinLibraryHelper : ISingleTonInject
     {
         List<PinYinResult> GetPinYinAndHanZiResult(string typeString, List<PinYinSource> pinyinSourceList, string searchText, int pageSize, out int count, int page = 1, bool isDebug = false);
     }
