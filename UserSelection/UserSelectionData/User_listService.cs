@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using log4net;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +8,7 @@ using WebComponentData.Models;
 using WebComponentStore.Interface;
 using WebComponentStore.Models;
 using WebComponentWebAPI.ConfigCenter;
+using WebComponentWebAPI.Configs;
 using WebComponentWebAPI.Models;
 using WebComponentWebAPI.Utilitys;
 using WebComponentWebAPI.WCF.Models;
@@ -15,6 +17,7 @@ namespace UserSelectionData
 {
     public class User_listService : IUser_listService
     {
+        private static readonly ILog _log = LogManager.GetLogger(ConfigManager.repository.Name, typeof(User_listService));
         IUserStore _userStore;
         IDictStore _dictStore;
         IHttpContextAccessor _contextAccessor;
@@ -97,7 +100,7 @@ namespace UserSelectionData
                 //TODO:OK,当前用户信息,从cookie中获取newframeuid
                 int UserId = _httpContext.Request.GetCookieKeyInt("newframeuid");
                 //TODO:暂时如果未登录，使用模拟数据orgid=22
-                var LoginUser = _userStore.GetUser(UserId) ?? new WebComponentStore.Models.User_Detail() { UserId = 58988, orgid = 22 };
+                var LoginUser = _userCache.GetUser(UserId) ?? new WebComponentStore.Models.User_Detail() { UserId = 58988, orgid = 22 };
 
                 var current = _httpContext.Request.GetKeyInt("page");
                 var pagesize = _httpContext.Request.GetKeyInt("size");
@@ -431,7 +434,8 @@ namespace UserSelectionData
             }
             catch (Exception ex)
             {
-                result = ReturnUsers(null, -2, "(catch)选人插件代码错误"+ex.ToString());
+                _log.ErrorFormat("(redis)选人插件代码错误:{0}", ex.ToString());
+                result = ReturnUsers(null, -2, "(redis)选人插件代码错误");
             }
 
             return result;
@@ -610,45 +614,64 @@ namespace UserSelectionData
         /// <returns></returns>
         private List<User_Detail> UserCacheList(bool retFlag = true)
         {
-            //通过wcf处理变更集
-            var lastUpdateTime = _userCache.GetLastUpdateTime();
-            //初始化数据状态
-            bool InitTag = lastUpdateTime.Year > 1970 ? true : false;
-
-            if (InitTag)
+            try
             {
-                //wcf查询过滤条件及排序方式
-                var filterList = new List<CommonFilterModel>();
-                filterList.Add(new CommonFilterModel("UserId", ">", "10000"));
-                filterList.Add(new CommonFilterModel("LastTime", ">", lastUpdateTime.ToString("yyyy-MM-dd HH:mm:ss")));
+                //通过wcf处理变更集
+                var lastUpdateTime = _userCache.GetLastUpdateTime();
+                //初始化数据状态
+                bool InitTag = lastUpdateTime.Year > 1970 ? true : false;
 
-                var orderby = new List<CommonOrderModel>() { new CommonOrderModel() { Name = "UserId", Order = 0 } };
-
-                var changeUsers = new List<int>();
-
-                //查询wcf
-                int page = 1;
-                int pagesize = 100;
-                var wcfChangeUsers = _user_listVistor.GetIdListLock(page, pagesize, filterList, orderby);
-                //返回总条数
-                int changeCount = wcfChangeUsers.RetInt;
-                if (changeCount > 0)
+                if (InitTag)
                 {
-                    //返回数据
-                    changeUsers.AddRange(wcfChangeUsers.Data);
-                    //计算总页数
-                    var pagecount = (changeCount / pagesize) + (changeCount % pagesize > 0 ? 1 : 0);
-                    //获取剩余页数
-                    for (int i = 2; i <= pagecount; i++)
+                    //wcf查询过滤条件及排序方式
+                    var filterList = new List<CommonFilterModel>();
+                    filterList.Add(new CommonFilterModel("UserId", ">", "10000"));
+                    filterList.Add(new CommonFilterModel("LastTime", ">", lastUpdateTime.ToString("yyyy-MM-dd HH:mm:ss")));
+
+                    var orderby = new List<CommonOrderModel>() { new CommonOrderModel() { Name = "UserId", Order = 0 } };
+
+                    var changeUsers = new List<int>();
+
+                    //查询wcf
+                    int page = 1;
+                    int pagesize = 100;
+                    var wcfChangeUsers = _user_listVistor.GetIdListLock(page, pagesize, filterList, orderby);
+                    //返回总条数
+                    int changeCount = wcfChangeUsers.RetInt;
+                    if (changeCount > 0)
                     {
-                        page++;
-                        wcfChangeUsers = _user_listVistor.GetIdListLock(page, pagesize, filterList, orderby);
                         //返回数据
                         changeUsers.AddRange(wcfChangeUsers.Data);
-                    }
+                        //计算总页数
+                        var pagecount = (changeCount / pagesize) + (changeCount % pagesize > 0 ? 1 : 0);
+                        //获取剩余页数
+                        for (int i = 2; i <= pagecount; i++)
+                        {
+                            page++;
+                            wcfChangeUsers = _user_listVistor.GetIdListLock(page, pagesize, filterList, orderby);
+                            //返回数据
+                            changeUsers.AddRange(wcfChangeUsers.Data);
+                        }
 
+                        var userDetailList = new List<User_Detail>();
+                        foreach (var item in changeUsers)
+                        {
+                            var itemUser = _userStore.GetUser(item);
+                            if (itemUser != null)
+                            {
+                                userDetailList.Add(itemUser);
+                            }
+                        }
+                        //更新缓存
+                        _userCache.SetUserList(userDetailList);
+                    }
+                }
+                else
+                {
+                    //尚未初始化，通过redis加载数据
+                    var allUserKeys = _userStore.GetUserKeys();
                     var userDetailList = new List<User_Detail>();
-                    foreach (var item in changeUsers)
+                    foreach (var item in allUserKeys)
                     {
                         var itemUser = _userStore.GetUser(item);
                         if (itemUser != null)
@@ -659,33 +682,22 @@ namespace UserSelectionData
                     //更新缓存
                     _userCache.SetUserList(userDetailList);
                 }
-            }
-            else
-            {
-                //尚未初始化，通过redis加载数据
-                var allUserKeys = _userStore.GetUserKeys();
-                var userDetailList = new List<User_Detail>();
-                foreach (var item in allUserKeys)
+
+
+                //数据返回
+                if (retFlag)
                 {
-                    var itemUser = _userStore.GetUser(item);
-                    if (itemUser != null)
-                    {
-                        userDetailList.Add(itemUser);
-                    }
+                    //返回缓存数据
+                    return _userCache.GetUserList();
                 }
-                //更新缓存
-                _userCache.SetUserList(userDetailList);
+                else
+                {
+                    return null;
+                }
             }
-
-
-            //数据返回
-            if (retFlag)
+            catch (Exception ex)
             {
-                //返回缓存数据
-                return _userCache.GetUserList();
-            }
-            else
-            {
+                _log.ErrorFormat("(redis)缓存处理异常:{0}", ex.ToString());
                 return null;
             }
         }
@@ -726,26 +738,8 @@ namespace UserSelectionData
                         //TODO:OK,User_list中不存在mobile，从用户缓存获取 
 
                         #region 方案一
-                        //直接通过redis获取用户数据
-                        var user_detail = _userStore.GetUser(item) ?? new WebComponentStore.Models.User_Detail();
-                        list.Add(new
-                        {
-                            user_detail.UserId,
-                            ZaiZhiZhuangTai = flag_Dics.FirstOrDefault(m => m.DictUseId == user_detail.flag)?.DicName ?? "",
-                            UserName = user_detail.UserName2,
-                            user_detail.orgid,
-                            user_detail.isjjr,
-                            user_detail.OrgName,
-                            user_detail.mobile,
-                            RzRuzhiDate = string.Format("{0:yyyy-MM-dd}", user_detail.RzRuzhiDate),
-                            isyunying = isYunYing_isjjrList.Contains(user_detail.isjjr)
-                        });
-
-                        #endregion
-
-                        #region 方案二
-                        //////直接通过Cache获取用户数据
-                        //var user_detail = _userCache.GetUser(item) ?? new WebComponentStore.Models.User_Detail();
+                        ////直接通过redis获取用户数据
+                        //var user_detail = _userStore.GetUser(item) ?? new WebComponentStore.Models.User_Detail();
                         //list.Add(new
                         //{
                         //    user_detail.UserId,
@@ -758,6 +752,24 @@ namespace UserSelectionData
                         //    RzRuzhiDate = string.Format("{0:yyyy-MM-dd}", user_detail.RzRuzhiDate),
                         //    isyunying = isYunYing_isjjrList.Contains(user_detail.isjjr)
                         //});
+
+                        #endregion
+
+                        #region 方案二
+                        ////直接通过Cache获取用户数据
+                        var user_detail = _userCache.GetUser(item) ?? new WebComponentStore.Models.User_Detail();
+                        list.Add(new
+                        {
+                            user_detail.UserId,
+                            ZaiZhiZhuangTai = flag_Dics.FirstOrDefault(m => m.DictUseId == user_detail.flag)?.DicName ?? "",
+                            UserName = user_detail.UserName2,
+                            user_detail.orgid,
+                            user_detail.isjjr,
+                            user_detail.OrgName,
+                            user_detail.mobile,
+                            RzRuzhiDate = string.Format("{0:yyyy-MM-dd}", user_detail.RzRuzhiDate),
+                            isyunying = isYunYing_isjjrList.Contains(user_detail.isjjr)
+                        });
                         #endregion
 
                     }

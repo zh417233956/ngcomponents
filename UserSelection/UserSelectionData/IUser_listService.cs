@@ -5,7 +5,7 @@ using WebComponentWebAPI.Models;
 
 namespace UserSelectionData
 {
-    public interface IUser_listService :ISingleTonInject
+    public interface IUser_listService :IScopeInject
     {
         /// <summary>
         /// 通过指定的ids获取实例列表
