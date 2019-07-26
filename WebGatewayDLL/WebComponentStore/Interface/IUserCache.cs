@@ -31,5 +31,8 @@ namespace WebComponentStore.Interface
         /// <param name="userId"></param>
         /// <returns></returns>
         User_Detail GetUser(int userId);
+
+        bool GetIsInit();
+        void SetIsInit(bool flag);
     }
 }

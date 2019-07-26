@@ -17,11 +17,12 @@ namespace WebComponentData.Data
         public Pub_DictVistor(IWCFClientHelper wcfClientHelper)
         {
             _wcfClientHelper = wcfClientHelper;
-            //pub_DictClient = _wcfClientHelper.GetInterfaces<Pub_Dict>("/User/v3.0/NetService/Pub_DictService.svc");
-            pub_DictClient = new WCFService<Pub_Dict>("/User/v3.0/NetService/Pub_DictService.svc");
+            pub_DictClient = _wcfClientHelper.GetInterfaces<Pub_Dict>("/User/v3.0/NetService/Pub_DictService.svc");
+            //pub_DictClient = new WCFService<Pub_Dict>("/User/v3.0/NetService/Pub_DictService.svc");
         }
-        private IWCFService<Pub_Dict> pub_DictClient;
-        private IWCFService<Pub_Dict> Pub_DictClient
+        //IWCFService
+        private ISecondBaseInterface<Pub_Dict> pub_DictClient;
+        private ISecondBaseInterface<Pub_Dict> Pub_DictClient
         {
             get
             {

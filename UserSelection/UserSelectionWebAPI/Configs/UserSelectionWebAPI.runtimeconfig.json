@@ -7,7 +7,8 @@
     },
     "configProperties": {
       "System.GC.Server": true,
-      "System.Threading.ThreadPool.MaxThreads": 350
+      "System.Threading.ThreadPool.MinThreads": 200,
+      "System.Threading.ThreadPool.MaxThreads": 400
     }
   }
 }

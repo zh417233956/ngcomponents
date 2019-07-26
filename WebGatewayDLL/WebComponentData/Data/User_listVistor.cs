@@ -14,38 +14,33 @@ namespace WebComponentData.Data
 {
     public class User_listVistor : IUser_listVistor
     {
-        DateTime dt1 = DateTime.Now;
         private static readonly ILog _log = LogManager.GetLogger(ConfigManager.repository.Name, typeof(User_listVistor));
         IWCFClientHelper _wcfClientHelper;
 
         public User_listVistor(IWCFClientHelper wcfClientHelper)
         {
             _wcfClientHelper = wcfClientHelper;
-            //user_listClient = _wcfClientHelper.GetInterfaces<User_list>("/User/v3.0/NetService/User_listService.svc");
-            //_log.DebugFormat("User_listVistor:Init:{0}ms", (DateTime.Now - dt1).TotalMilliseconds);
-
-            user_listClient = new WCFService<User_list>("/User/v3.0/NetService/User_listService.svc");
-
-
+            user_listClient = _wcfClientHelper.GetInterfaces<User_list>("/User/v3.0/NetService/User_listService.svc");
+            //user_listClient = new WCFService<User_list>("/User/v3.0/NetService/User_listService.svc");
         }
 
-        //private ISecondBaseInterface<User_list> user_listClient;
-        //private ISecondBaseInterface<User_list> User_listClient
-        //{
-        //    get
-        //    {
-        //        return user_listClient;
-        //    }
-        //}
-
-        private IWCFService<User_list> user_listClient;
-        private IWCFService<User_list> User_listClient
+        private ISecondBaseInterface<User_list> user_listClient;
+        private ISecondBaseInterface<User_list> User_listClient
         {
             get
             {
                 return user_listClient;
             }
         }
+
+        //private IWCFService<User_list> user_listClient;
+        //private IWCFService<User_list> User_listClient
+        //{
+        //    get
+        //    {
+        //        return user_listClient;
+        //    }
+        //}
 
         private string WcfOtherString
         {
@@ -122,15 +117,10 @@ namespace WebComponentData.Data
         /// <returns></returns>
         public DefaultResult<List<int>> GetIdListLock(int page, int pagesize, List<CommonFilterModel> filters, List<CommonOrderModel> orders)
         {
-            var dt1 = DateTime.Now;
             //调用wcf
             var wcfRet = User_listClient.GetIdListLock(page, pagesize, filters, orders, WcfOtherString);
-
-            var dt2 = DateTime.Now;
             //进行数据解密
             var modelRet = (DefaultResult<List<int>>)_wcfClientHelper.Decrypt_v2019(wcfRet, Config.WCFSecretkey, Config.WCFSecretiv);
-            var dt3 = DateTime.Now;
-            _log.DebugFormat("GetUserList:InitData_wcf_get:{0}ms|Dedata:{1}ms|wcf_RunTime:{2}ms", (dt2 - dt1).TotalMilliseconds, (dt3 - dt2).TotalMilliseconds, wcfRet.RunTime);
             return modelRet;
         }
     }

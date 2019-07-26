@@ -24,7 +24,6 @@ namespace WebComponentWebAPI.WCF
         /// <returns></returns>
         public ISecondBaseInterface<MT> GetInterfaces<MT>(string url)
         {
-            DateTime dt1 = DateTime.Now;
             url = ConfigCenter.Config.WCFHost + url;
             var address = new System.ServiceModel.EndpointAddress(url);
             var ws = new System.ServiceModel.BasicHttpBinding();
@@ -49,7 +48,6 @@ namespace WebComponentWebAPI.WCF
                     dataContractBehavior.MaxItemsInObjectGraph = int.MaxValue;
                 }
             }
-            _log.DebugFormat("GetInterfaces:Init:{0}ms", (DateTime.Now - dt1).TotalMilliseconds);
             return factory.CreateChannel();
         }
 
