@@ -42,16 +42,5 @@ namespace WebComponentData.Interface
         /// <returns></returns>
         DefaultResult<List<int>> GetIdListLock(int page, int pagesize, List<CommonFilterModel> filters, List<CommonOrderModel> orders);
 
-        /// <summary>
-        /// 指定列数据查询并且不进行count操作
-        /// </summary>
-        /// <param name="page"></param>
-        /// <param name="pagesize"></param>
-        /// <param name="filters"></param>
-        /// <param name="orders"></param>
-        /// <param name="columns"></param>
-        /// <returns></returns>
-        DefaultResult<List<User_list>> GetColumnsNoCount(int page, int pagesize, List<CommonFilterModel> filters, List<CommonOrderModel> orders, List<string> columns);
-
     }
 }
