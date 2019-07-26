@@ -1,13 +1,13 @@
 {
-    "runtimeOptions": {
-        "tfm": "netcoreapp2.2",
-        "framework": {
-            "name": "Microsoft.AspNetCore.App",
-            "version": "2.2.0"
-        },
-        "configProperties": {
-            "System.GC.Server": true,
-            "System.Threading.ThreadPool.MinThreads": 350
-        }
+  "runtimeOptions": {
+    "tfm": "netcoreapp2.2",
+    "framework": {
+      "name": "Microsoft.AspNetCore.App",
+      "version": "2.2.0"
+    },
+    "configProperties": {
+      "System.GC.Server": true,
+      "System.Threading.ThreadPool.MaxThreads": 350
     }
+  }
 }

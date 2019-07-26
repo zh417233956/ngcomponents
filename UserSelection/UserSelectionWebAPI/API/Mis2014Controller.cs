@@ -22,6 +22,7 @@ namespace UserSelectionWebAPI.API
         {
             _user_listService = user_listService;
             dt_init = DateTime.Now;
+            _log.DebugFormat("Mis2014Controller:Init:{0}ms", (dt_init - dt_start).TotalMilliseconds);
         }
 
         [HttpPost("GetPostData")]

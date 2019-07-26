@@ -1,10 +1,12 @@
-﻿using System;
+﻿using log4net;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Xml;
+using WebComponentWebAPI.Configs;
 
 namespace WebComponentWebAPI.WCF
 {
@@ -13,6 +15,7 @@ namespace WebComponentWebAPI.WCF
     /// </summary>
     public class WCFClientHelper : IWCFClientHelper
     {
+        private static readonly ILog _log = LogManager.GetLogger(ConfigManager.repository.Name, typeof(WCFClientHelper));
         /// <summary>
         /// 获取WCF连接接口通道
         /// </summary>
@@ -21,6 +24,7 @@ namespace WebComponentWebAPI.WCF
         /// <returns></returns>
         public ISecondBaseInterface<MT> GetInterfaces<MT>(string url)
         {
+            DateTime dt1 = DateTime.Now;
             url = ConfigCenter.Config.WCFHost + url;
             var address = new System.ServiceModel.EndpointAddress(url);
             var ws = new System.ServiceModel.BasicHttpBinding();
@@ -45,6 +49,7 @@ namespace WebComponentWebAPI.WCF
                     dataContractBehavior.MaxItemsInObjectGraph = int.MaxValue;
                 }
             }
+            _log.DebugFormat("GetInterfaces:Init:{0}ms", (DateTime.Now - dt1).TotalMilliseconds);
             return factory.CreateChannel();
         }
 
