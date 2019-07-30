@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using WebComponentWebAPI.Configs;
 using WebComponentWebAPI.Utilitys;
 

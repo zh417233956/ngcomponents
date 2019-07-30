@@ -35,13 +35,15 @@ namespace UserSelectionWebAPI
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
+            services.AddOptions();
+            services.Configure<WebComponentWebAPI.ConfigCenter.Config>(Configuration.GetSection("ConfigCenter"));
+
             //依赖注入
             services.AutoRegisterService();
             services.AddSingleton<Microsoft.AspNetCore.Http.IHttpContextAccessor, Microsoft.AspNetCore.Http.HttpContextAccessor>();
 
             var serviceProvider = services.BuildServiceProvider();
             #region 用户数据初始化
-            services.Configure<WebComponentWebAPI.ConfigCenter.Config>(Configuration.GetSection("ConfigCenter"));
             serviceProvider.GetService<UserSelectionData.IUser_listService>();
             #endregion 用户数据初始化
 
