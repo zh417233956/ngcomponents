@@ -82,8 +82,8 @@
             }
         }
 
-        private static string wcfHost = "http://apicache200.517.dev:51707";//"http://192.168.4.98:8061";
-        //private static string wcfHost = "http://192.168.3.109:51707";//"http://192.168.4.98:8061";
+        //private static string wcfHost = "http://apicache200.517.dev:51707";//"http://192.168.4.98:8061";
+        private static string wcfHost = "http://192.168.3.109:51707";
         /// <summary>
         /// wcfpasskey
         /// </summary>
