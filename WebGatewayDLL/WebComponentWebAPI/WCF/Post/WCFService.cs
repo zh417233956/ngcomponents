@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using WebComponentWebAPI.ConfigCenter;
 using WebComponentWebAPI.Utilitys;
 using WebComponentWebAPI.WCF.Models;
 
@@ -8,6 +9,9 @@ namespace WebComponentWebAPI.WCF.Post
 {
     public class WCFService<Entity> : IWCFService<Entity>
     {
+        ICCHelper _ccHelper;
+        Config config;
+
         private string Xml_Body_Temp= "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\"><s:Body><{0} xmlns=\"http://tempuri.org/\">{1}<otherString>{2}</otherString></{0}></s:Body></s:Envelope>";
         private string Xml_Filters_Temp = "<filters xmlns:a=\"http://schemas.datacontract.org/2004/07/TT.Common.Frame.Model\" xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\">{0}</filters>";
         private string Xml_Filter_Temp = "<a:CommonFilterModel><a:Filter>=</a:Filter><a:ListValue i:nil=\"true\" xmlns:b=\"http://schemas.microsoft.com/2003/10/Serialization/Arrays\"/><a:Name>{0}</a:Name><a:Value>{1}</a:Value></a:CommonFilterModel>";
@@ -17,17 +21,19 @@ namespace WebComponentWebAPI.WCF.Post
         private string Xml_Id_Temp = "<a:int>{0}</a:int>";
 
         public string RemoteAddress { get; set; }
-        public WCFService()
+        public WCFService(ICCHelper ccHelper)
         {
+            _ccHelper = ccHelper;
+            config = _ccHelper.GetConfig();
         }
         public WCFService(string RemoteAddress)
         {
-            RemoteAddress = ConfigCenter.Config.WCFHost + RemoteAddress;
+            RemoteAddress = config.WCFHost + RemoteAddress;
             this.RemoteAddress = RemoteAddress;
         }
         public void SetRemoteAddress(string RemoteAddress)
         {
-            RemoteAddress = ConfigCenter.Config.WCFHost + RemoteAddress;
+            RemoteAddress = config.WCFHost + RemoteAddress;
             this.RemoteAddress = RemoteAddress;
         }
 

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Xml;
+using WebComponentWebAPI.ConfigCenter;
 using WebComponentWebAPI.Configs;
 
 namespace WebComponentWebAPI.WCF
@@ -16,6 +17,16 @@ namespace WebComponentWebAPI.WCF
     public class WCFClientHelper : IWCFClientHelper
     {
         private static readonly ILog _log = LogManager.GetLogger(ConfigManager.repository.Name, typeof(WCFClientHelper));
+
+        ICCHelper _ccHelper;
+        Config config;
+
+        public WCFClientHelper(ICCHelper ccHelper)
+        {
+            _ccHelper = ccHelper;
+            config = _ccHelper.GetConfig();
+        }
+
         /// <summary>
         /// 获取WCF连接接口通道
         /// </summary>
@@ -24,7 +35,7 @@ namespace WebComponentWebAPI.WCF
         /// <returns></returns>
         public ISecondBaseInterface<MT> GetInterfaces<MT>(string url)
         {
-            url = ConfigCenter.Config.WCFHost + url;
+            url = config.WCFHost + url;
             var address = new System.ServiceModel.EndpointAddress(url);
             var ws = new System.ServiceModel.BasicHttpBinding();
             ws.AllowCookies = true;

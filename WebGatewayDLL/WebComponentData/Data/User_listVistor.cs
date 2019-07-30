@@ -16,12 +16,16 @@ namespace WebComponentData.Data
     {
         private static readonly ILog _log = LogManager.GetLogger(ConfigManager.repository.Name, typeof(User_listVistor));
         IWCFClientHelper _wcfClientHelper;
+        Config config;
 
-        public User_listVistor(IWCFClientHelper wcfClientHelper)
+        public User_listVistor(IWCFClientHelper wcfClientHelper, ICCHelper ccHelper)
         {
             _wcfClientHelper = wcfClientHelper;
             user_listClient = _wcfClientHelper.GetInterfaces<User_list>("/User/v3.0/NetService/User_listService.svc");
             //user_listClient = new WCFService<User_list>("/User/v3.0/NetService/User_listService.svc");
+
+            var _ccHelper = ccHelper;
+            config = _ccHelper.GetConfig();
         }
 
         private ISecondBaseInterface<User_list> user_listClient;
@@ -47,7 +51,7 @@ namespace WebComponentData.Data
             get
             {
                 //加密方式
-                var passkey = Config.WCFPasskey;
+                var passkey = config.WCFPasskey;
                 //使用哪个加密的连接字符串
                 var connkey = "new";
                 return $"passkey$bc${passkey}$ac$debug$bc${IsDebug}$ac$connkey$bc${connkey}";
@@ -73,7 +77,7 @@ namespace WebComponentData.Data
             //调用wcf
             var wcfRet = User_listClient.GetModelByID(entityId, WcfOtherString);
             //进行数据解密
-            var modelRet = (DefaultResult<User_list>)_wcfClientHelper.Decrypt_v2019(wcfRet, Config.WCFSecretkey, Config.WCFSecretiv);
+            var modelRet = (DefaultResult<User_list>)_wcfClientHelper.Decrypt_v2019(wcfRet, config.WCFSecretkey, config.WCFSecretiv);
 
             return modelRet;
         }
@@ -87,7 +91,7 @@ namespace WebComponentData.Data
             //调用wcf
             var wcfRet = User_listClient.GetModelByIDS(idList, WcfOtherString);
             //进行数据解密
-            var modelRet = (DefaultResult<List<User_list>>)_wcfClientHelper.Decrypt_v2019(wcfRet, Config.WCFSecretkey, Config.WCFSecretiv);
+            var modelRet = (DefaultResult<List<User_list>>)_wcfClientHelper.Decrypt_v2019(wcfRet, config.WCFSecretkey, config.WCFSecretiv);
             return modelRet;
         }
         /// <summary>
@@ -103,7 +107,7 @@ namespace WebComponentData.Data
             //调用wcf
             var wcfRet = User_listClient.GetListByQuery(page, pagesize, filters, orders, WcfOtherString);
             //进行数据解密
-            var modelRet = (DefaultResult<List<User_list>>)_wcfClientHelper.Decrypt_v2019(wcfRet, Config.WCFSecretkey, Config.WCFSecretiv);
+            var modelRet = (DefaultResult<List<User_list>>)_wcfClientHelper.Decrypt_v2019(wcfRet, config.WCFSecretkey, config.WCFSecretiv);
 
             return modelRet;
         }
@@ -120,7 +124,7 @@ namespace WebComponentData.Data
             //调用wcf
             var wcfRet = User_listClient.GetIdListLock(page, pagesize, filters, orders, WcfOtherString);
             //进行数据解密
-            var modelRet = (DefaultResult<List<int>>)_wcfClientHelper.Decrypt_v2019(wcfRet, Config.WCFSecretkey, Config.WCFSecretiv);
+            var modelRet = (DefaultResult<List<int>>)_wcfClientHelper.Decrypt_v2019(wcfRet, config.WCFSecretkey, config.WCFSecretiv);
             return modelRet;
         }
     }

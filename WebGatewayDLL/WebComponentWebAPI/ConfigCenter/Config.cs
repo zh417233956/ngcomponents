@@ -5,98 +5,174 @@
     /// </summary>
     public class Config
     {
-        public const string CompanyKey = "zy";
-        public const string Compute = "zhonghai";
-        public const string Domain = "192.168.4.144";
-        public const string LocalIp = "192.168.4.144";
-        public const int LocalPort = 8032;
-        public const string ProjectKey = "ng-userselect";
+        private string companyKey = "zy";
+        /// <summary>
+        /// 站点所属公司
+        /// </summary>
+        public string CompanyKey
+        {
+            get { return companyKey; }
+            set { companyKey = value; }
+        }
 
-        public const string AccessKeyId = "local";
-        public const string AccessSecret = "ECdmF0qhIhPjcb5DLnqyGVqHFsbQK5Y8";
-        public const string ApiUrl = "http://configcenter2018.517api.cn";
+        private string compute = "zhonghai";
+        /// <summary>
+        /// 站点所在机器名
+        /// </summary>
+        public string Compute
+        {
+            get { return compute; }
+            set { compute = value; }
+        }
 
-        private static string singleKey;
+
+        private string domain = "192.168.4.144";
+        /// <summary>
+        /// 站点所在机器名域名
+        /// </summary>
+        public string Domain
+        {
+            get { return domain; }
+            set { domain = value; }
+        }
+
+        private string localIp = "192.168.4.144";
+        /// <summary>
+        /// 站点提供的局域网访问IP
+        /// </summary>
+        public string LocalIp
+        {
+            get { return localIp; }
+            set { localIp = value; }
+        }
+
+        private int localPort = 8032;
+        /// <summary>
+        /// 站点提供的局域网访问端口号
+        /// </summary>
+        public int LocalPort
+        {
+            get { return localPort; }
+            set { localPort = value; }
+        }
+
+        private string projectKey = "ng-userselect";
+        /// <summary>
+        /// 站点在跑的是哪个项目
+        /// </summary>
+        public string ProjectKey
+        {
+            get { return projectKey; }
+            set { projectKey = value; }
+        }
+
+        private string accessKeyId = "local";
+        /// <summary>
+        /// 连接使用的公钥
+        /// </summary>
+        public string AccessKeyId
+        {
+            get { return accessKeyId; }
+            set { accessKeyId = value; }
+        }
+
+        private string accessSecret = "ECdmF0qhIhPjcb5DLnqyGVqHFsbQK5Y8";
+
+        public string AccessSecret
+        {
+            get { return accessSecret; }
+            set { accessSecret = value; }
+        }
+
+        private string apiUrl = "http://configcenter2018.517api.cn";
+
+        public string ApiUrl
+        {
+            get { return apiUrl; }
+            set { apiUrl = value; }
+        }
+
+
+        private string singleKey;
 
         /// <summary>
         /// CC获取配置的通信签名key
         /// </summary>
-        public static string SingleKey
+        public string SingleKey
         {
             get
             {
-                if (string.IsNullOrEmpty(singleKey))
-                {
-                    singleKey = CCHelper.GetSingleKey();
-                }
                 return singleKey;
+            }
+            set
+            {
+                singleKey = value;
             }
         }
 
-        private static string wcfSecretkey;
+        private string wcfSecretkey;
 
         /// <summary>
         /// wcf解密密钥
         /// </summary>
-        public static string WCFSecretkey
+        public string WCFSecretkey
         {
             get
             {
-                if (string.IsNullOrEmpty(wcfSecretkey))
-                {
-                    wcfSecretkey = CCHelper.GetConfig("wcf.config.conn.third.secretkey", SingleKey);
-                }
                 return wcfSecretkey;
+            }
+            set
+            {
+                wcfSecretkey = value;
             }
         }
 
-        private static string wcfSecretiv;
+        private string wcfSecretiv;
         /// <summary>
         /// wcf解密偏移向量
         /// </summary>
-        public static string WCFSecretiv
+        public string WCFSecretiv
         {
             get
             {
-                if (string.IsNullOrEmpty(wcfSecretiv))
-                {
-                    wcfSecretiv = CCHelper.GetConfig("wcf.config.conn.third.secretiv", SingleKey);
-                }
                 return wcfSecretiv;
+            }
+            set
+            {
+                wcfSecretiv = value;
             }
         }
 
-        private static string wcfPasskey;
+        private string wcfPasskey;
         /// <summary>
         /// wcfpasskey
         /// </summary>
-        public static string WCFPasskey
+        public string WCFPasskey
         {
             get
-            {
-                if (string.IsNullOrEmpty(wcfPasskey))
-                {
-                    wcfPasskey = CCHelper.GetConfig("wcf.config.conn.third.passkey", SingleKey);
-                }
+            {                
                 return wcfPasskey;
+            }
+            set
+            {
+                wcfPasskey = value;
             }
         }
 
         //private static string wcfHost = "http://apicache200.517.dev:51707";//"http://192.168.4.98:8061";
-        private static string wcfHost = "http://192.168.3.109:51707";
+        private string wcfHost = "http://192.168.3.109:51707";
         /// <summary>
         /// wcfpasskey
         /// </summary>
-        public static string WCFHost
+        public string WCFHost
         {
             get
-            {
-                if (string.IsNullOrEmpty(wcfHost))
-                {
-                    //TODO:需要从服务器拉取，暂时使用的固定值
-                    wcfHost = CCHelper.GetConfig("wcf.config.conn.third.host", SingleKey);
-                }
+            {                
                 return wcfHost;
+            }
+            set
+            {
+                wcfHost = value;
             }
         }
     }

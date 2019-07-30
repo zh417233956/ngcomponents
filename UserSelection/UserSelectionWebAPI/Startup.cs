@@ -41,6 +41,7 @@ namespace UserSelectionWebAPI
 
             var serviceProvider = services.BuildServiceProvider();
             #region 用户数据初始化
+            services.Configure<WebComponentWebAPI.ConfigCenter.Config>(Configuration.GetSection("ConfigCenter"));
             serviceProvider.GetService<UserSelectionData.IUser_listService>();
             #endregion 用户数据初始化
 

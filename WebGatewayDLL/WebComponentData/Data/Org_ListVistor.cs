@@ -13,12 +13,15 @@ namespace WebComponentData.Data
     public class Org_ListVistor : IOrg_ListVistor
     {
         IWCFClientHelper _wcfClientHelper;
+        Config config;
 
-        public Org_ListVistor(IWCFClientHelper wcfClientHelper)
+        public Org_ListVistor(IWCFClientHelper wcfClientHelper, ICCHelper ccHelper)
         {
             _wcfClientHelper = wcfClientHelper;
             org_ListClient = _wcfClientHelper.GetInterfaces<Org_List>("/User/v3.0/NetService/Org_ListService.svc");
             //org_ListClient = new WCFService<Org_List>("/User/v3.0/NetService/Org_ListService.svc");
+            var _ccHelper = ccHelper;
+            config = _ccHelper.GetConfig();
         }
         private ISecondBaseInterface<Org_List> org_ListClient;
         private ISecondBaseInterface<Org_List> Org_ListClient
@@ -33,7 +36,7 @@ namespace WebComponentData.Data
             get
             {
                 //加密方式
-                var passkey = Config.WCFPasskey;
+                var passkey = config.WCFPasskey;
                 //使用哪个加密的连接字符串
                 var connkey = "new";
                 return $"passkey$bc${passkey}$ac$debug$bc${IsDebug}$ac$connkey$bc${connkey}";
@@ -61,7 +64,7 @@ namespace WebComponentData.Data
             //调用wcf
             var wcfRet = Org_ListClient.GetListByQuery(page, pagesize, filters, orders, WcfOtherString);
             //进行数据解密
-            var modelRet = (DefaultResult<List<Org_List>>)_wcfClientHelper.Decrypt_v2019(wcfRet, Config.WCFSecretkey, Config.WCFSecretiv);
+            var modelRet = (DefaultResult<List<Org_List>>)_wcfClientHelper.Decrypt_v2019(wcfRet, config.WCFSecretkey, config.WCFSecretiv);
 
             return modelRet;
         }
@@ -78,7 +81,7 @@ namespace WebComponentData.Data
             //调用wcf
             var wcfRet = Org_ListClient.GetIdList(page, pagesize, filters, orders, WcfOtherString);
             //进行数据解密
-            var modelRet = (DefaultResult<List<int>>)_wcfClientHelper.Decrypt_v2019(wcfRet, Config.WCFSecretkey, Config.WCFSecretiv);
+            var modelRet = (DefaultResult<List<int>>)_wcfClientHelper.Decrypt_v2019(wcfRet, config.WCFSecretkey, config.WCFSecretiv);
 
             return modelRet;
         }
