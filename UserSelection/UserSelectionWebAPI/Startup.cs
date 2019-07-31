@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using WebComponentWebAPI.Configs;
-using WebComponentWebAPI.Ioc;
-using WebComponentWebAPI.Utilitys;
+using WebComponentUtil.Configs;
+using WebComponentUtil.Ioc;
+using WebComponentUtil.Utilitys;
 
 namespace UserSelectionWebAPI
 {
@@ -36,7 +36,7 @@ namespace UserSelectionWebAPI
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddOptions();
-            services.Configure<WebComponentWebAPI.ConfigCenter.Config>(Configuration.GetSection("ConfigCenter"));
+            services.Configure<WebComponentUtil.ConfigCenter.Config>(Configuration.GetSection("ConfigCenter"));
 
             //依赖注入
             services.AutoRegisterService();

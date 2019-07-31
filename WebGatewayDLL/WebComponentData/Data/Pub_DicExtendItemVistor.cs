@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Text;
 using WebComponentData.Interface;
 using WebComponentData.Models;
-using WebComponentWebAPI.ConfigCenter;
-using WebComponentWebAPI.WCF;
-using WebComponentWebAPI.WCF.Models;
-using WebComponentWebAPI.WCF.Post;
+using WebComponentUtil.ConfigCenter;
+using WebComponentUtil.WCF;
+using WebComponentUtil.WCF.Models;
+using WebComponentUtil.WCF.Post;
 
 namespace WebComponentData.Data
 {

@@ -8,10 +8,10 @@ using WebComponentData.Interface;
 using WebComponentData.Models;
 using WebComponentStore.Interface;
 using WebComponentStore.Models;
-using WebComponentWebAPI.Configs;
-using WebComponentWebAPI.Models;
-using WebComponentWebAPI.Utilitys;
-using WebComponentWebAPI.WCF.Models;
+using WebComponentUtil.Configs;
+using WebComponentUtil.Models;
+using WebComponentUtil.Utilitys;
+using WebComponentUtil.WCF.Models;
 
 namespace UserSelectionData
 {

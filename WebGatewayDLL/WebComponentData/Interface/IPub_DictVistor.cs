@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using WebComponentData.Models;
-using WebComponentWebAPI.Ioc;
-using WebComponentWebAPI.WCF.Models;
+using WebComponentUtil.Ioc;
+using WebComponentUtil.WCF.Models;
 
 namespace WebComponentData.Interface
 {

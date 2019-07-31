@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using WebComponentStore.Models;
-using WebComponentWebAPI.Ioc;
-using WebComponentWebAPI.Models;
+using WebComponentUtil.Ioc;
+using WebComponentUtil.Models;
 
 namespace UserSelectionData
 {

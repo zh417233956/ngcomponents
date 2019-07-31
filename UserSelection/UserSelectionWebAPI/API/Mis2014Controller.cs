@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
 using UserSelectionData;
-using WebComponentWebAPI.Configs;
-using WebComponentWebAPI.Utilitys;
+using WebComponentUtil.Configs;
+using WebComponentUtil.Utilitys;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 

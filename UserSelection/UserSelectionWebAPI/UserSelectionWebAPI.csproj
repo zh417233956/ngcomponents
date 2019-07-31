@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\WebGatewayDLL\WebComponentWebAPI\WebComponentUtil.csproj" />
+    <ProjectReference Include="..\..\WebGatewayDLL\WebComponentUtil\WebComponentUtil.csproj" />
     <ProjectReference Include="..\UserSelectionData\UserSelectionData.csproj" />
   </ItemGroup>
 

@@ -18,7 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\WebGatewayDLL\WebComponentData\WebComponentData.csproj" />
     <ProjectReference Include="..\..\WebGatewayDLL\WebComponentStore\WebComponentStore.csproj" />
-    <ProjectReference Include="..\..\WebGatewayDLL\WebComponentWebAPI\WebComponentUtil.csproj" />
+    <ProjectReference Include="..\..\WebGatewayDLL\WebComponentUtil\WebComponentUtil.csproj" />
   </ItemGroup>
 
 </Project>
