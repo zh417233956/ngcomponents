@@ -2,6 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Company>Mango</Company>
+    <Authors>Mango.ZhongHai</Authors>
+    <PackageId>Mango.WebComponent.Util</PackageId>
+    <Copyright>Mango</Copyright>
+    <Description>Web组件公共服务层</Description>
+    <RepositoryUrl>http://repository.517.jiali/repository/nuget-hosted/</RepositoryUrl>
+    <Product>WebComponentUtil</Product>
   </PropertyGroup>
 
   <ItemGroup>

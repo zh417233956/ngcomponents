@@ -2,6 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>Mango.WebComponent.APIGateway</PackageId>
+    <Authors>Mango.ZhongHai</Authors>
+    <Company>Mango</Company>
+    <Copyright>Mango</Copyright>
+    <RepositoryUrl>http://repository.517.jiali/repository/nuget-hosted/</RepositoryUrl>
+    <Description>Web组件API数据请求帮助类</Description>
   </PropertyGroup>
 
   <ItemGroup>

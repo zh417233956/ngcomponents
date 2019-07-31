@@ -2,6 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>Mango.WebComponent.Store</PackageId>
+    <Company>Mango</Company>
+    <Authors>Mango.ZhongHai</Authors>
+    <Description>Web组件存储层</Description>
+    <Copyright>Mango</Copyright>
+    <RepositoryUrl>http://repository.517.jiali/repository/nuget-hosted/</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
