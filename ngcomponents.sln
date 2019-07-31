@@ -13,15 +13,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebDemo", "WebDemo", "{0666
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebComponentDemo", "WebDemo\WebComponentDemo\WebComponentDemo.csproj", "{4B894F6F-B692-4F5A-9064-C052B07D6A97}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebComponentAPIGateway", "WebGatewayDLL\WebComponentAPIGateway\WebComponentAPIGateway.csproj", "{3C4F53BC-DE6E-4375-A30E-230318716AF1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mango.WebComponent.APIGateway", "WebGatewayDLL\WebComponentAPIGateway\Mango.WebComponent.APIGateway.csproj", "{3C4F53BC-DE6E-4375-A30E-230318716AF1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserSelectionData", "UserSelection\UserSelectionData\UserSelectionData.csproj", "{D07F0AF7-8A02-4AA1-A135-7044086BDA06}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebComponentStore", "WebGatewayDLL\WebComponentStore\WebComponentStore.csproj", "{3197CF90-DC0C-4334-9717-4293E0340462}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mango.WebComponent.Store", "WebGatewayDLL\WebComponentStore\Mango.WebComponent.Store.csproj", "{3197CF90-DC0C-4334-9717-4293E0340462}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebComponentData", "WebGatewayDLL\WebComponentData\WebComponentData.csproj", "{359F7FDB-B806-47E4-9743-117738E9EE20}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mango.WebComponent.Data", "WebGatewayDLL\WebComponentData\Mango.WebComponent.Data.csproj", "{359F7FDB-B806-47E4-9743-117738E9EE20}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebComponentUtil", "WebGatewayDLL\WebComponentUtil\WebComponentUtil.csproj", "{C343A411-E3E9-4712-9F0E-95CC65654758}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mango.WebComponent.Util", "WebGatewayDLL\WebComponentUtil\Mango.WebComponent.Util.csproj", "{C343A411-E3E9-4712-9F0E-95CC65654758}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

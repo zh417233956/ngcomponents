@@ -16,9 +16,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\WebGatewayDLL\WebComponentData\WebComponentData.csproj" />
-    <ProjectReference Include="..\..\WebGatewayDLL\WebComponentStore\WebComponentStore.csproj" />
-    <ProjectReference Include="..\..\WebGatewayDLL\WebComponentUtil\WebComponentUtil.csproj" />
+    <ProjectReference Include="..\..\WebGatewayDLL\WebComponentData\Mango.WebComponent.Data.csproj" />
+    <ProjectReference Include="..\..\WebGatewayDLL\WebComponentStore\Mango.WebComponent.Store.csproj" />
+    <ProjectReference Include="..\..\WebGatewayDLL\WebComponentUtil\Mango.WebComponent.Util.csproj" />
   </ItemGroup>
 
 </Project>

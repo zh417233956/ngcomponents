@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WebComponentUtil\WebComponentUtil.csproj" />
+    <ProjectReference Include="..\WebComponentUtil\Mango.WebComponent.Util.csproj" />
   </ItemGroup>
 
 </Project>
