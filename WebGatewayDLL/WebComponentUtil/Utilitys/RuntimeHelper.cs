@@ -22,7 +22,7 @@ namespace WebComponentUtil.Utilitys
             List<Assembly> list = new List<Assembly>();
             var deps = DependencyContext.Default;
             //排除所有的系统程序集、Nuget下载包
-            var libs = deps.CompileLibraries.Where(lib => !lib.Serviceable && lib.Type != "package");
+            var libs = deps.CompileLibraries.Where(lib => (!lib.Serviceable && lib.Type != "package") || lib.Name.Contains("Mango."));
             foreach (var lib in libs)
             {
                 try
@@ -30,9 +30,9 @@ namespace WebComponentUtil.Utilitys
                     var assembly = AssemblyLoadContext.Default.LoadFromAssemblyName(new AssemblyName(lib.Name));
                     list.Add(assembly);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    //
+                    //throw new Exception($"获取项目程序集异常,共捕获到{libs.Count()}个,异常信息:{ex.ToString()}");
                 }
             }
             return list;
