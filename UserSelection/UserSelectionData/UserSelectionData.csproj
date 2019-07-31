@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -18,7 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\WebGatewayDLL\WebComponentData\WebComponentData.csproj" />
     <ProjectReference Include="..\..\WebGatewayDLL\WebComponentStore\WebComponentStore.csproj" />
-    <ProjectReference Include="..\..\WebGatewayDLL\WebComponentWebAPI\WebComponentWebAPI.csproj" />
+    <ProjectReference Include="..\..\WebGatewayDLL\WebComponentWebAPI\WebComponentUtil.csproj" />
   </ItemGroup>
 
 </Project>

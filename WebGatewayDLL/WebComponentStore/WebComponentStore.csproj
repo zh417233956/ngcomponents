@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WebComponentWebAPI\WebComponentWebAPI.csproj" />
+    <ProjectReference Include="..\WebComponentWebAPI\WebComponentUtil.csproj" />
   </ItemGroup>
 
 </Project>

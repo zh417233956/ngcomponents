@@ -15,13 +15,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebComponentDemo", "WebDemo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebComponentAPIGateway", "WebGatewayDLL\WebComponentAPIGateway\WebComponentAPIGateway.csproj", "{3C4F53BC-DE6E-4375-A30E-230318716AF1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebComponentWebAPI", "WebGatewayDLL\WebComponentWebAPI\WebComponentWebAPI.csproj", "{7513FEB2-6571-4319-A519-7C557C994A2B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebComponentUtil", "WebGatewayDLL\WebComponentWebAPI\WebComponentUtil.csproj", "{7513FEB2-6571-4319-A519-7C557C994A2B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserSelectionData", "UserSelection\UserSelectionData\UserSelectionData.csproj", "{D07F0AF7-8A02-4AA1-A135-7044086BDA06}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebComponentStore", "WebGatewayDLL\WebComponentStore\WebComponentStore.csproj", "{3197CF90-DC0C-4334-9717-4293E0340462}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebComponentStore", "WebGatewayDLL\WebComponentStore\WebComponentStore.csproj", "{3197CF90-DC0C-4334-9717-4293E0340462}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebComponentData", "WebGatewayDLL\WebComponentData\WebComponentData.csproj", "{359F7FDB-B806-47E4-9743-117738E9EE20}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebComponentData", "WebGatewayDLL\WebComponentData\WebComponentData.csproj", "{359F7FDB-B806-47E4-9743-117738E9EE20}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
