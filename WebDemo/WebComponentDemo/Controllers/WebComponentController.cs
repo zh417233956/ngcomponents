@@ -10,9 +10,9 @@ namespace WebComponentDemo.Controllers
         {
             //var host = "http://ng-userselect.me.517.me";
             var host = Startup.UserselectionAPI;
-            var path = "/api/mis2014/getlist";
+            var path = "";
             //转发获取数据
-            var result = await Request.GetAPIData(host, path);
+            var result = await Request.GetAPIData(host, "");
             return Content(result);
         }
     }
