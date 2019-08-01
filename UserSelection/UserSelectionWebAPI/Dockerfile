@@ -26,7 +26,10 @@ ENTRYPOINT ["dotnet", "UserSelectionWebAPI.dll"]
 ## 设置工作目录
 #WORKDIR /app
 ## 设置导出端口
-#EXPOSE 80
+#EXPOSE 5000
+## 设置CST东八区时间
+#RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+#RUN echo 'Asia/Shanghai' >/etc/timezone
 ## 指定应用入口点
 #ENTRYPOINT ["dotnet", "/app/UserSelectionWebAPI.dll"]
 #
@@ -35,3 +38,5 @@ ENTRYPOINT ["dotnet", "UserSelectionWebAPI.dll"]
 ## 挂载卷的方式启动：
 ## docker  create -p 9300:5000 --name mangouserselectionapiv1 -v "/opt/UserSelectionWebAPI/wwwapi:/app" zh417233956/mangouserselectionapi:1.0.0
 ## docker run -it -p 9300:5000 --name mangouserselectionapiv1 -v "/opt/UserSelectionWebAPI/wwwapi:/app" zh417233956/mangouserselectionapi:1.0.0
+## docker start mangouserselectionapiv1
+
