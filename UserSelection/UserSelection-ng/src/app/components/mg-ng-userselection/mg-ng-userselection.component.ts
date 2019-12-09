@@ -273,8 +273,8 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
     if ($event.which === 13) {
       this.type = v;
       this.bianData();
-      this.showHistory=false;
-      this.showSearch=true;
+      this.showHistory = false;
+      this.showSearch = true;
     }
   }
   // 翻页事件

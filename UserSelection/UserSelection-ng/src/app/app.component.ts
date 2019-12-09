@@ -1,5 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {NzMessageService} from 'ng-zorro-antd/message';
+import {Data} from './components/model/data';
+
 
 @Component({
   selector: 'app-root',
@@ -7,7 +9,8 @@ import {NzMessageService} from 'ng-zorro-antd/message';
   styleUrls: ['./app.component.less']
 })
 export class AppComponent implements OnInit {
-  title = '用户选择';
+  data = new Data();
+  title: string;
   bodyStyle = { 'width.px': 100, 'height.px': 100 };
   constructor(public msg: NzMessageService) { }
   mgOnOk(data): void {
@@ -27,6 +30,9 @@ export class AppComponent implements OnInit {
     console.info(data);
   }
   ngOnInit(): void {
+    this.data.title = '用户选择';
+    this.data.a = { n: '1'};
+    console.log(this.data);
   }
   test(): void {
     this.msg.error('11111');
