@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using WebComponentStore.Models;
-using WebComponentWebAPI.Ioc;
+using WebComponentUtil.Ioc;
 
 namespace WebComponentStore.Interface
 {

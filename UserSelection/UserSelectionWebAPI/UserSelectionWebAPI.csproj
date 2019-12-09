@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\WebGatewayDLL\WebComponentWebAPI\WebComponentWebAPI.csproj" />
+    <ProjectReference Include="..\..\WebGatewayDLL\WebComponentUtil\Mango.WebComponent.Util.csproj" />
     <ProjectReference Include="..\UserSelectionData\UserSelectionData.csproj" />
   </ItemGroup>
 

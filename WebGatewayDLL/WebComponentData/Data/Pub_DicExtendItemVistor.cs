@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Text;
 using WebComponentData.Interface;
 using WebComponentData.Models;
-using WebComponentWebAPI.ConfigCenter;
-using WebComponentWebAPI.WCF;
-using WebComponentWebAPI.WCF.Models;
+using WebComponentUtil.ConfigCenter;
+using WebComponentUtil.WCF;
+using WebComponentUtil.WCF.Models;
+using WebComponentUtil.WCF.Post;
 
 namespace WebComponentData.Data
 {
@@ -13,12 +14,16 @@ namespace WebComponentData.Data
     {
 
         IWCFClientHelper _wcfClientHelper;
-
-        public Pub_DicExtendItemVistor(IWCFClientHelper wcfClientHelper)
+        Config config;
+        public Pub_DicExtendItemVistor(IWCFClientHelper wcfClientHelper, ICCHelper ccHelper)
         {
             _wcfClientHelper = wcfClientHelper;
             pub_DicExtendItemClient = _wcfClientHelper.GetInterfaces<Pub_DicExtendItem>("/User/v3.0/NetService/Pub_DicExtendItemService.svc");
+            //pub_DicExtendItemClient = new WCFService<Pub_DicExtendItem>("/User/v3.0/NetService/Pub_DicExtendItemService.svc");
+            var _ccHelper = ccHelper;
+            config = _ccHelper.GetConfig();
         }
+        //IWCFService
         private ISecondBaseInterface<Pub_DicExtendItem> pub_DicExtendItemClient;
         private ISecondBaseInterface<Pub_DicExtendItem> Pub_DicExtendItemClient
         {
@@ -32,7 +37,7 @@ namespace WebComponentData.Data
             get
             {
                 //加密方式
-                var passkey = Config.WCFPasskey;
+                var passkey = config.WCFPasskey;
                 //使用哪个加密的连接字符串
                 var connkey = "new";
                 return $"passkey$bc${passkey}$ac$debug$bc${IsDebug}$ac$connkey$bc${connkey}";
@@ -67,7 +72,7 @@ namespace WebComponentData.Data
             //调用wcf
             var wcfRet = Pub_DicExtendItemClient.GetListByQuery(1, 50, filterList, orderby, WcfOtherString);
             //进行数据解密
-            var modelRet = (DefaultResult<List<Pub_DicExtendItem>>)_wcfClientHelper.Decrypt_v2019(wcfRet, Config.WCFSecretkey, Config.WCFSecretiv);
+            var modelRet = (DefaultResult<List<Pub_DicExtendItem>>)_wcfClientHelper.Decrypt_v2019(wcfRet, config.WCFSecretkey, config.WCFSecretiv);
 
             return modelRet;
         }

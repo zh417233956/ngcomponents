@@ -18,6 +18,7 @@ namespace WebComponentStore.Cache
             get { return _UserList; }
             set { _UserList = value; }
         }
+        private bool IsInit { get; set; }
         /// <summary>
         /// list是否正在作业
         /// </summary>
@@ -93,6 +94,14 @@ namespace WebComponentStore.Cache
             var model = UserList.FirstOrDefault(m => m.UserId == userId);
 
             return model;
+        }
+        public bool GetIsInit()
+        {
+            return IsInit;
+        }
+        public void SetIsInit(bool flag)
+        {
+            IsInit = flag;
         }
     }
 }

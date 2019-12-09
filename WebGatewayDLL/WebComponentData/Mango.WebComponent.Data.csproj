@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RepositoryUrl>http://repository.517.jiali/repository/nuget-hosted/</RepositoryUrl>
+    <Authors>Mango.ZhongHai</Authors>
+    <Company>Mango</Company>
+    <PackageId>Mango.WebComponent.Data</PackageId>
+    <Copyright>Mango</Copyright>
+    <Description>Web组件数据层</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WebComponentUtil\Mango.WebComponent.Util.csproj" />
+  </ItemGroup>
+
+</Project>

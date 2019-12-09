@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using WebComponentStore.Models;
-using WebComponentWebAPI.Ioc;
+using WebComponentUtil.Ioc;
 
 namespace WebComponentStore.Interface
 {
@@ -31,5 +31,8 @@ namespace WebComponentStore.Interface
         /// <param name="userId"></param>
         /// <returns></returns>
         User_Detail GetUser(int userId);
+
+        bool GetIsInit();
+        void SetIsInit(bool flag);
     }
 }

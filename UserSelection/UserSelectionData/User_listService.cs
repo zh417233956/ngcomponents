@@ -3,20 +3,20 @@ using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using WebComponentData.Interface;
 using WebComponentData.Models;
 using WebComponentStore.Interface;
 using WebComponentStore.Models;
-using WebComponentWebAPI.Configs;
-using WebComponentWebAPI.Models;
-using WebComponentWebAPI.Utilitys;
-using WebComponentWebAPI.WCF.Models;
+using WebComponentUtil.Configs;
+using WebComponentUtil.Models;
+using WebComponentUtil.Utilitys;
+using WebComponentUtil.WCF.Models;
 
 namespace UserSelectionData
 {
     public class User_listService : IUser_listService
     {
-        DateTime dt1 = DateTime.Now;
         private static readonly ILog _log = LogManager.GetLogger(ConfigManager.repository.Name, typeof(User_listService));
         IUserStore _userStore;
         IHttpContextAccessor _contextAccessor;
@@ -51,15 +51,8 @@ namespace UserSelectionData
             _orgStore = orgStore;
             _userCache = userCache;
             _pinYinLibraryHelper = pinYinLibraryHelper;
-            //初始化时间
-            var dt_init= DateTime.Now;
-            InitTims = (dt_init - dt1).TotalMilliseconds;
-            _log.DebugFormat("User_listService:Init:{0}ms", InitTims);
             //初始化用户缓存数据
             UserCacheList(false);
-            //初始化数据时间
-            _log.DebugFormat("User_listService:InitData:{0}ms", (DateTime.Now - dt_init).TotalMilliseconds);
-
         }
 
 
@@ -72,7 +65,7 @@ namespace UserSelectionData
         /// <returns></returns>
         public ClientResult GetModelByIds(string ids)
         {
-            var result = ClientResult.Error("");
+            var result = ClientResult.Error("");            
             if (!string.IsNullOrWhiteSpace(ids))
             {
                 int temp;
@@ -101,7 +94,6 @@ namespace UserSelectionData
 
         public ClientResult GetUserList()
         {
-            var dt_GetUserList = DateTime.Now;
             var result = ClientResult.Error("");
             try
             {
@@ -446,7 +438,6 @@ namespace UserSelectionData
                 _log.ErrorFormat("(redis)选人插件代码错误:{0}", ex.ToString());
                 result = ReturnUsers(null, -2, "(redis)选人插件代码错误");
             }
-            _log.DebugFormat("GetUserList:Init:{0}ms", (DateTime.Now - dt_GetUserList).TotalMilliseconds);
             return result;
         }
 
@@ -632,74 +623,56 @@ namespace UserSelectionData
 
                 if (InitTag)
                 {
-                    var dt_1 = DateTime.Now;
-
-                    //wcf查询过滤条件及排序方式
-                    var filterList = new List<CommonFilterModel>();
-                    filterList.Add(new CommonFilterModel("UserId", ">", "10000"));
-                    filterList.Add(new CommonFilterModel("LastTime", ">", lastUpdateTime.ToString("yyyy-MM-dd HH:mm:ss")));
-
-                    var orderby = new List<CommonOrderModel>() { new CommonOrderModel() { Name = "UserId", Order = 0 } };
-
-                    var changeUsers = new List<int>();
-
-                    //查询wcf
-                    int page = 1;
-                    int pagesize = 100;
-                    var wcfChangeUsers = _user_listVistor.GetIdListLock(page, pagesize, filterList, orderby);
-
-                    var dt_2 = DateTime.Now;
-                    _log.DebugFormat("GetUserList:InitData_wcf:{0}ms", (dt_2 - dt_1).TotalMilliseconds);
-                    //返回总条数
-                    int changeCount = wcfChangeUsers.RetInt;
-                    if (changeCount > 0)
+                    //如果不是获取返回值，则更新
+                    if (!retFlag)
                     {
-                        //返回数据
-                        changeUsers.AddRange(wcfChangeUsers.Data);
-                        //计算总页数
-                        var pagecount = (changeCount / pagesize) + (changeCount % pagesize > 0 ? 1 : 0);
-                        //获取剩余页数
-                        for (int i = 2; i <= pagecount; i++)
+                        //wcf查询过滤条件及排序方式
+                        var filterList = new List<CommonFilterModel>();
+                        filterList.Add(new CommonFilterModel("UserId", ">", "10000"));
+                        filterList.Add(new CommonFilterModel("LastTime", ">", lastUpdateTime.ToString("yyyy-MM-dd HH:mm:ss")));
+
+                        var orderby = new List<CommonOrderModel>() { new CommonOrderModel() { Name = "UserId", Order = 0 } };
+
+                        var changeUsers = new List<int>();
+
+                        //查询wcf
+                        int page = 1;
+                        int pagesize = 100;
+                        var wcfChangeUsers = _user_listVistor.GetIdListLock(page, pagesize, filterList, orderby);
+
+                        //返回总条数
+                        int changeCount = wcfChangeUsers.RetInt;
+                        if (changeCount > 0)
                         {
-                            page++;
-                            wcfChangeUsers = _user_listVistor.GetIdListLock(page, pagesize, filterList, orderby);
                             //返回数据
                             changeUsers.AddRange(wcfChangeUsers.Data);
-                        }
-                        var dt_3 = DateTime.Now;
-                        _log.DebugFormat("GetUserList:InitData_wcf2:{0}ms", (dt_3 - dt_2).TotalMilliseconds);
-                        var userDetailList = new List<User_Detail>();
-                        foreach (var item in changeUsers)
-                        {
-                            var itemUser = _userStore.GetUser(item);
-                            if (itemUser != null)
+                            //计算总页数
+                            var pagecount = (changeCount / pagesize) + (changeCount % pagesize > 0 ? 1 : 0);
+                            //获取剩余页数
+                            for (int i = 2; i <= pagecount; i++)
                             {
-                                userDetailList.Add(itemUser);
+                                page++;
+                                wcfChangeUsers = _user_listVistor.GetIdListLock(page, pagesize, filterList, orderby);
+                                //返回数据
+                                changeUsers.AddRange(wcfChangeUsers.Data);
                             }
+                            var userDetailList = new List<User_Detail>();
+                            foreach (var item in changeUsers)
+                            {
+                                var itemUser = _userStore.GetUser(item);
+                                if (itemUser != null)
+                                {
+                                    userDetailList.Add(itemUser);
+                                }
+                            }
+                            //更新缓存
+                            _userCache.SetUserList(userDetailList);
                         }
-                        var dt_4 = DateTime.Now;
-                        _log.DebugFormat("GetUserList:InitData_wcf3:{0}ms", (dt_4 - dt_3).TotalMilliseconds);
-                        //更新缓存
-                        _userCache.SetUserList(userDetailList);
-                        var dt_5 = DateTime.Now;
-                        _log.DebugFormat("GetUserList:InitData_wcf4:{0}ms", (dt_5 - dt_4).TotalMilliseconds);
                     }
                 }
                 else
                 {
-                    //尚未初始化，通过redis加载数据
-                    var allUserKeys = _userStore.GetUserKeys();
-                    var userDetailList = new List<User_Detail>();
-                    foreach (var item in allUserKeys)
-                    {
-                        var itemUser = _userStore.GetUser(item);
-                        if (itemUser != null)
-                        {
-                            userDetailList.Add(itemUser);
-                        }
-                    }
-                    //更新缓存
-                    _userCache.SetUserList(userDetailList);
+                    _ = InitUserCacheAsync();
                 }
 
 
@@ -720,7 +693,31 @@ namespace UserSelectionData
                 return null;
             }
         }
-
+        /// <summary>
+        /// 初始化用户缓存
+        /// </summary>
+        private async Task InitUserCacheAsync()
+        {
+            await Task.Run(() => {
+                if (!_userCache.GetIsInit())
+                {
+                    _userCache.SetIsInit(true);
+                    //尚未初始化，通过redis加载数据
+                    var allUserKeys = _userStore.GetUserKeys();
+                    var userDetailList = new List<User_Detail>();
+                    foreach (var item in allUserKeys)
+                    {
+                        var itemUser = _userStore.GetUser(item);
+                        if (itemUser != null)
+                        {
+                            userDetailList.Add(itemUser);
+                        }
+                    }
+                    //更新缓存
+                    _userCache.SetUserList(userDetailList);
+                }
+            });            
+        }
 
         #endregion 用户变更数据操作
 
@@ -735,7 +732,6 @@ namespace UserSelectionData
         /// <returns></returns>
         private ClientResult ReturnUsers(IEnumerable<int> userIds, int number, string info, List<int> history = null, List<int> changyong = null)
         {
-            var dt_ReturnUsers = DateTime.Now;
             var result = ClientResult.Error("");
             if (userIds == null)
             {
@@ -795,9 +791,7 @@ namespace UserSelectionData
                     }
                 }
                 result = ClientResult.Ok(new { data = list, count = number, msg = info, history, changyong });
-                result.debug = $"构造函数初始化时间:{InitTims}ms;";
             }
-            _log.DebugFormat("ReturnUsers:Init:{0}ms", (DateTime.Now - dt_ReturnUsers).TotalMilliseconds);
 
             return result;
         }

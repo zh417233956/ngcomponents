@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
 using UserSelectionData;
-using WebComponentWebAPI.Configs;
-using WebComponentWebAPI.Utilitys;
+using WebComponentUtil.Configs;
+using WebComponentUtil.Utilitys;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -14,15 +14,11 @@ namespace UserSelectionWebAPI.API
     [Route("api/[controller]")]
     public class Mis2014Controller : Controller
     {
-        DateTime dt_start = DateTime.Now;
-        DateTime dt_init = DateTime.Now;
         private static readonly ILog _log = LogManager.GetLogger(ConfigManager.repository.Name, typeof(Mis2014Controller));
         IUser_listService _user_listService;
         public Mis2014Controller(IUser_listService user_listService)
         {
             _user_listService = user_listService;
-            dt_init = DateTime.Now;
-            _log.DebugFormat("Mis2014Controller:Init:{0}ms", (dt_init - dt_start).TotalMilliseconds);
         }
 
         [HttpPost("GetPostData")]
@@ -75,8 +71,6 @@ namespace UserSelectionWebAPI.API
             try
             {               
                 var modelRet = _user_listService.GetUserList();
-                DateTime dt2 = DateTime.Now;
-                modelRet.debug += $"API初始化耗时：{(dt_init - dt_start).TotalMilliseconds}ms;API查询耗时：{(dt2 - dt_init).TotalMilliseconds}ms";
                 result = JsonConvert.SerializeObject(modelRet);
             }
             catch (Exception)

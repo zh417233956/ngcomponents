@@ -16,7 +16,7 @@
 
 
   <ItemGroup>
-    <ProjectReference Include="..\..\WebGatewayDLL\WebComponentAPIGateway\WebComponentAPIGateway.csproj" />
+    <ProjectReference Include="..\..\WebGatewayDLL\WebComponentAPIGateway\Mango.WebComponent.APIGateway.csproj" />
   </ItemGroup>
 
 </Project>
