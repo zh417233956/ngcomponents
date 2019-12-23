@@ -223,17 +223,17 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
       this.handleOk();
     } else {
       user.checked = e;
-      this.pushSelectUser(user);
+      if (e) {
+        this.pushSelectUser(user);
+      } else {
+        this.deleteSelectUser(user);
+      }
     }
   }
   // 添加所选用户
   pushSelectUser(user: User): void {
-    if (user.checked) {
-      this.checkMaxSelect();
-      this.selectUserList.push(user);
-    } else {
-      this.selectUserList = this.selectUserList.filter( f => f.UserId !== user.UserId);
-    }
+    this.checkMaxSelect();
+    this.selectUserList.push(user);
   }
   // 检查是否超过最大选择数(多选时触发)
   checkMaxSelect(): void {
@@ -248,36 +248,50 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
   }
   // 关掉tags
   handleClose(removedTag): void {
-    this.selectUserList = this.selectUserList.filter(e => e !== removedTag);
-    const user = this.userList.find(e => e.UserId === removedTag.UserId);
+    this.deleteSelectUser(removedTag);
+  }
+  // 删除所选用户
+  deleteSelectUser(selectUser: User): void {
+    this.selectUserList = this.selectUserList.filter(e => e !== selectUser);
+    if (this.selectUserList.length === 0) { this.showPrev = false; }
+    const user = this.userList.find(e => e.UserId === selectUser.UserId);
     if (user) {
       user.checked = false;
     }
   }
   // 全选
   checkAll(type: number): void {
+    // 全部取消
     if (type === 3) {
       this.userList.forEach(e => e.checked = false);
       this.selectUserList = [];
       this.showPrev = false;
     } else {
+      // 选择状态取反
       this.checkInfo[type].checked = !this.checkInfo[type].checked;
+      // 替换标题
       this.checkInfo[type].title = this.checkInfo[type].title === '选择全部' ? '全部取消' : '选择全部';
+      // 选择状态为true
       if (this.checkInfo[type].checked) {
         // 未在选择结果中的
-        let unSelectUserList = this.checkInfo[type].userList.filter(e => e !== this.selectUserList.find(f => f.UserId === e.UserId));
+        let unSelectUserList = this.userList.filter(a => !this.selectUserList.some(e => e.UserId === a.UserId));
         // 限制选择个数
-        unSelectUserList = unSelectUserList.splice(0, this.maxSelectNumber - this.selectUserList.length);
+        if (this.selectUserList.length === this.maxSelectNumber) {
+          this.selectUserList.forEach(user => user.checked = false);
+          this.selectUserList = [];
+          unSelectUserList = unSelectUserList.splice(0, this.maxSelectNumber);
+        } else {
+          unSelectUserList = unSelectUserList.splice(0, this.maxSelectNumber - this.selectUserList.length);
+        }
         if (unSelectUserList.length > 0) {
           unSelectUserList.forEach(e => {
             e.checked = this.checkInfo[type].checked;
-            this.selectUserList.push(e);
+            this.pushSelectUser(e);
           });
         }
       } else {
         this.checkInfo[type].userList.forEach(e => {
-          e.checked = this.checkInfo[type].checked;
-          this.selectUserList.fill(e);
+          this.deleteSelectUser(e);
         });
       }
     }
