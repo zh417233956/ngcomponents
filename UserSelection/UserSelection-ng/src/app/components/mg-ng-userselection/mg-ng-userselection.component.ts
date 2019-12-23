@@ -344,7 +344,7 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
   }
   // 获取数据
   bianData(): void {
-    // 公用搜索参数
+    // 搜索参数
     const param = {
       type: this.type,
       action: 'user',
@@ -411,7 +411,7 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
   }
   // 获取已存在信息
   bindExistResults(): void {
-    // 公用搜索参数
+    // 搜索参数
     const param = {
       action: 'getids',
       ids: this.existResults
