@@ -214,6 +214,12 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
       this.showHistory = false;
       this.showSearch = true;
     }
+    this.checkInfo[0].checked = false;
+    this.checkInfo[1].checked = false;
+    this.checkInfo[2].checked = false;
+    this.checkInfo[0].title = '选择全部';
+    this.checkInfo[1].title = '选择全部';
+    this.checkInfo[2].title = '选择全部';
     this.type = type;
     this.bianData();
   }
@@ -274,14 +280,26 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
       // 选择状态为true
       if (this.checkInfo[type].checked) {
         // 未在选择结果中的
-        let unSelectUserList = this.userList.filter(a => !this.selectUserList.some(e => e.UserId === a.UserId));
+        let unSelectUserList = [];
+        // 最近结果
+        if (type === 0) {
+          unSelectUserList = this.historyUserList.filter(a => !this.selectUserList.some(e => e.UserId === a.UserId));
+        }
+        // 常用结果
+        if (type === 1) {
+          unSelectUserList = this.changyongUserList.filter(a => !this.selectUserList.some(e => e.UserId === a.UserId));
+        }
+        // 搜索结果
+        if (type === 2) {
+          unSelectUserList = this.userList.filter(a => !this.selectUserList.some(e => e.UserId === a.UserId));
+        }
+        const num = this.maxSelectNumber - this.selectUserList.length;
         // 限制选择个数
-        if (this.selectUserList.length === this.maxSelectNumber) {
-          this.selectUserList.forEach(user => user.checked = false);
-          this.selectUserList = [];
+        if (num === 0) {
+          this.selectUserList.forEach(user => this.deleteSelectUser(user));
           unSelectUserList = unSelectUserList.splice(0, this.maxSelectNumber);
-        } else {
-          unSelectUserList = unSelectUserList.splice(0, this.maxSelectNumber - this.selectUserList.length);
+        } else if (unSelectUserList.length >= num) {
+          unSelectUserList = unSelectUserList.splice(0, num);
         }
         if (unSelectUserList.length > 0) {
           unSelectUserList.forEach(e => {
@@ -290,7 +308,21 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
           });
         }
       } else {
-        this.checkInfo[type].userList.forEach(e => {
+        // 在选择结果中的
+        let inSelectUserList = [];
+        // 最近结果
+        if (type === 0) {
+          inSelectUserList = this.historyUserList;
+        }
+        // 常用结果
+        if (type === 1) {
+          inSelectUserList = this.changyongUserList;
+        }
+        // 搜索结果
+        if (type === 2) {
+          inSelectUserList = this.userList;
+        }
+        inSelectUserList.forEach(e => {
           this.deleteSelectUser(e);
         });
       }
@@ -356,8 +388,6 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
                 this.historyUserList.push(historyUser);
               }
             });
-            this.checkInfo['0'].userList = this.historyUserList;
-            this.checkInfo['1'].userList = this.changyongUserList;
           } else {
             if (this.userList.length > this.pizeSize) {
               this.onPaging = true;
@@ -366,7 +396,6 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
               this.onPaging = false;
             }
           }
-          this.checkInfo['2'].userList = this.userList;
         } else {
           this.userList = [];
           this.changyongUserList = [];
