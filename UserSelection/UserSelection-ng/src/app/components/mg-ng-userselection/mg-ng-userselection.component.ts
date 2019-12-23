@@ -255,7 +255,7 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
     }
   }
   // 全选
-  checakAll(type: number): void {
+  checkAll(type: number): void {
     if (type === 3) {
       this.userList.forEach(e => e.checked = false);
       this.selectUserList = [];
