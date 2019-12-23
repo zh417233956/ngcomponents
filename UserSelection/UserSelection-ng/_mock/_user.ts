@@ -1,4 +1,4 @@
-import { MockRequest } from '@delon/mock';
+import {MockRequest} from '@delon/mock';
 
 const data: any[] = [
   {
@@ -147,16 +147,28 @@ function genData(params: any) {
       },
       debug: '',
       flag: 1
-    }
+    };
     if (params.type === 'history') {
-      result.data.changyong = [59632]
-      result.data.history = [59632]
+      result.data.changyong = [59632];
+      result.data.history = [59632];
     }
-    console.log(result);
     return result;
+  }
+  if (params.action === 'getids') {
+    const item = data;
+    return {
+      data: {
+        data: item,
+        changyong: [],
+        history: [],
+        count: item.length
+      },
+      debug: '',
+      flag: 1
+    };
   }
 }
 
 export const USERS = {
-  '/getlist': (req: MockRequest) => genData(req.queryString)
+  '/a10_common/a1020_selection/Actions/UserAction.ashx': (req: MockRequest) => genData(req.queryString)
 };
