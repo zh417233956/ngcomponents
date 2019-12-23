@@ -1,6 +1,7 @@
 import { Component, Input, Output, OnInit, EventEmitter, TemplateRef, Type } from '@angular/core';
 import { HttpService } from '../mg-ng-service/http-service.service';
 import { NzMessageService } from 'ng-zorro-antd/message';
+import {User} from '../model/user';
 
 @Component({
   // tslint:disable-next-line:component-selector
@@ -148,13 +149,13 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
   @Output()
   mgAfterClose = new EventEmitter();
   // 所选择的结果
-  selectUserList = [];
+  selectUserList: User[] = [];
   // 搜索结果
-  userList = [];
+  userList: User[] = [];
   // 历史记录用户信息
-  historyUserList = [];
+  historyUserList: User[] = [];
   // 常用用户信息
-  changyongUserList = [];
+  changyongUserList: User[] = [];
   // 全选状态
   checkInfo = {
     0: {
@@ -188,14 +189,11 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
     this.isduoxuan === true ? this.showResult = true : this.showResult = false;
     this.existResults === '' ? this.showPrev = false : this.showPrev = true;
     this.checkChange('history');
-    if (this.existResults) {
-      this.bindExistResults();
-    }
+    this.bindExistResults();
   }
   // 显示弹窗
   showModal(): void {
     this.isVisible = true;
-    this.bindExistResults();
   }
   // 确定提交
   handleOk(): void {
@@ -220,27 +218,29 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
     this.bianData();
   }
   // 点击用户
-  checkUser(user, e: boolean): void {
+  checkUser(user: User, e: boolean): void {
     if (!this.isduoxuan) {
       this.handleOk();
     } else {
-      this.checkMaxSelect();
       user.checked = e;
+      this.pushSelectUser(user);
+    }
+  }
+  // 添加所选用户
+  pushSelectUser(user: User): void {
+    if (user.checked) {
+      this.checkMaxSelect();
       this.selectUserList.push(user);
-      this.selectUser();
+    } else {
+      this.selectUserList = this.selectUserList.filter( f => f.UserId !== user.UserId);
     }
   }
   // 检查是否超过最大选择数(多选时触发)
-  checkMaxSelect(): number {
-    let add = 0;
-    const tempList = this.selectUserList;
-    if (this.maxSelectNumber === tempList.length) {
-      tempList[tempList.length - 1].checked = false;
-      add = 1;
-    } else {
-      add = this.maxSelectNumber - tempList.length;
+  checkMaxSelect(): void {
+    if (this.maxSelectNumber === this.selectUserList.length) {
+      this.selectUserList[this.selectUserList.length - 1].checked = false;
+      this.selectUserList = this.selectUserList.slice(0, this.maxSelectNumber - 1);
     }
-    return add < 0 ? 0 : add;
   }
   // 管理历史记录
   refHistory(): void {
@@ -249,28 +249,38 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
   // 关掉tags
   handleClose(removedTag): void {
     this.selectUserList = this.selectUserList.filter(e => e !== removedTag);
-    this.userList.find(e => e.UserId === removedTag.UserId).checked = false;
+    const user = this.userList.find(e => e.UserId === removedTag.UserId);
+    if (user) {
+      user.checked = false;
+    }
   }
   // 全选
   checakAll(type: number): void {
     if (type === 3) {
-      this.userList.find(e => e.checked === true).checked = false;
+      this.userList.forEach(e => e.checked = false);
+      this.selectUserList = [];
       this.showPrev = false;
     } else {
       this.checkInfo[type].checked = !this.checkInfo[type].checked;
-      this.checkInfo[type].title = this.checkInfo[type].title === '选择全部' ? '取消全部' : '选择全部';
+      this.checkInfo[type].title = this.checkInfo[type].title === '选择全部' ? '全部取消' : '选择全部';
       if (this.checkInfo[type].checked) {
-        // tslint:disable-next-line:max-line-length
-        (this.checkInfo[type].userList.filter(e => e !== this.selectUserList.find(f => f.UserId === e.UserId)).splice(0, this.maxSelectNumber - this.selectUserList.length)).forEach(e => e.checked = this.checkInfo[type].checked);
+        // 未在选择结果中的
+        let unSelectUserList = this.checkInfo[type].userList.filter(e => e !== this.selectUserList.find(f => f.UserId === e.UserId));
+        // 限制选择个数
+        unSelectUserList = unSelectUserList.splice(0, this.maxSelectNumber - this.selectUserList.length);
+        if (unSelectUserList.length > 0) {
+          unSelectUserList.forEach(e => {
+            e.checked = this.checkInfo[type].checked;
+            this.selectUserList.push(e);
+          });
+        }
       } else {
-        this.checkInfo[type].userList.forEach(e => e.checked = this.checkInfo[type].checked);
+        this.checkInfo[type].userList.forEach(e => {
+          e.checked = this.checkInfo[type].checked;
+          this.selectUserList.fill(e);
+        });
       }
     }
-    this.selectUser();
-  }
-  // 选择结果重组
-  selectUser(): void {
-    this.selectUserList = this.userList.filter(e => e.checked === true);
   }
   // 回车事件绑定
   enter(v: string, $event): void {
@@ -345,7 +355,6 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
           this.checkInfo['2'].userList = this.userList;
         } else {
           this.userList = [];
-          this.selectUserList = [];
           this.changyongUserList = [];
           this.historyUserList = [];
           if (res.data.msg.length > 0) {
@@ -369,17 +378,17 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
       this.loading = false;
       if (res.flag === 1) {
         if (res.data.data.length > 0) {
-          const userList = res.data.data;
-          userList.forEach(a => {
+          const existUserList: User[] = res.data.data;
+          existUserList.forEach(a => {
             const user = this.userList.find(e => e.UserId === a.UserId);
             if (user) {
               user.checked = true;
+              this.selectUserList.push(user);
             } else {
               a.checked = true;
-              this.userList.push(a);
+              this.selectUserList.push(a);
             }
           });
-          this.selectUser();
         } else {
           if (res.data.msg.length > 0) {
             this.msg.error(res.data.msg);
