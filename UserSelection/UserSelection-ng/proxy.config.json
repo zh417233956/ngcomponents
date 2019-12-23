@@ -1,5 +1,6 @@
 {
   "/":{
-    "target":"http://192.168.4.144:8031"
+    "target":"https://mis.517.cn",
+    "changeOrigin": true
   }
 }

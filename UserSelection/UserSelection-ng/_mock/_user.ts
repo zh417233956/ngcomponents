@@ -158,5 +158,5 @@ function genData(params: any) {
 }
 
 export const USERS = {
-  '/webcomponent/index': (req: MockRequest) => genData(req.queryString)
+  '/getlist': (req: MockRequest) => genData(req.queryString)
 };

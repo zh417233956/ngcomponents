@@ -176,7 +176,7 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
   // 弹窗开启之后回调事件
   afterOpen(): void {
     this.mgAfterOpen.emit('弹窗打开了');
-    // TODO 不知道可不可以调用初始化方法 现在调用为了打开窗口清空之前所选
+    // 打开窗口清空之前所选
     // this.ngOnInit();
   }
   // 弹窗关闭之后回调事件
@@ -185,13 +185,17 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
   }
   ngOnInit() {
     console.log('初始化');
-    this.checkChange('history');
     this.isduoxuan === true ? this.showResult = true : this.showResult = false;
     this.existResults === '' ? this.showPrev = false : this.showPrev = true;
+    this.checkChange('history');
+    if (this.existResults) {
+      this.bindExistResults();
+    }
   }
   // 显示弹窗
   showModal(): void {
     this.isVisible = true;
+    this.bindExistResults();
   }
   // 确定提交
   handleOk(): void {
@@ -298,18 +302,19 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
       orgId: this.orgId
     };
     this.loading = true;
-    this.http.get('/webcomponent/index', param, false).subscribe(res => {
+    this.http.get('/a10_common/a1020_selection/Actions/UserAction.ashx', param, false).subscribe(res => {
       this.loading = false;
       if (res.flag === 1) {
         if (res.data.data.length > 0) {
-          // this.selectUserList = [];
           this.userList = res.data.data;
-          // this.userList = this.userList.sort((a, b) => {
-          //   return a.UserId - b.UserId;
-          // });
-          this.selectUserList.forEach(e => {
-            this.userList.find(f => f.UserId === e.UserId).checked = true;
-          });
+          if (this.selectUserList.length > 0) {
+            this.selectUserList.forEach(e => {
+              const user = this.userList.find(f => f.UserId === e.UserId);
+              if (user) {
+                user.checked = true;
+              }
+            });
+          }
           if (this.type === 'history') {
             this.changyongUserList = [];
             this.historyUserList = [];
@@ -317,18 +322,16 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
             const history = res.data.history;
             changyong.forEach(e => {
               const changyongUser = this.userList.find(a => a.UserId === e);
-              this.changyongUserList.push(changyongUser);
+              if (changyongUser) {
+                this.changyongUserList.push(changyongUser);
+              }
             });
-            // this.changyongUserList = this.changyongUserList.sort((a, b) => {
-            //   return a.UserId - b.UserId;
-            // });
             history.forEach(e => {
               const historyUser = this.userList.find(a => a.UserId === e);
-              this.historyUserList.push(historyUser);
+              if (historyUser) {
+                this.historyUserList.push(historyUser);
+              }
             });
-            // this.historyUserList = this.historyUserList.sort((a, b) => {
-            //   return a.UserId - b.UserId;
-            // });
             this.checkInfo['0'].userList = this.historyUserList;
             this.checkInfo['1'].userList = this.changyongUserList;
           } else {
@@ -340,20 +343,50 @@ export class MgNgUserselectionComponent<T = any> implements OnInit {
             }
           }
           this.checkInfo['2'].userList = this.userList;
-          if (this.existResults !== '') {
-            const resultIds = this.existResults.split(',');
-            resultIds.forEach(a => {
-              this.userList.find(e => e.UserId.toString() === a).checked = true;
-            });
-            this.selectUser();
+        } else {
+          this.userList = [];
+          this.selectUserList = [];
+          this.changyongUserList = [];
+          this.historyUserList = [];
+          if (res.data.msg.length > 0) {
+            this.msg.error(res.data.msg);
           }
+        }
+      } else {
+        this.msg.error(res.data.msg);
+      }
+    });
+  }
+  // 获取已存在信息
+  bindExistResults(): void {
+    // 公用搜索参数
+    const param = {
+      action: 'getids',
+      ids: this.existResults
+    };
+    this.loading = true;
+    this.http.get('/a10_common/a1020_selection/Actions/UserAction.ashx', param, false).subscribe(res => {
+      this.loading = false;
+      if (res.flag === 1) {
+        if (res.data.data.length > 0) {
+          const userList = res.data.data;
+          userList.forEach(a => {
+            const user = this.userList.find(e => e.UserId === a.UserId);
+            if (user) {
+              user.checked = true;
+            } else {
+              a.checked = true;
+              this.userList.push(a);
+            }
+          });
+          this.selectUser();
         } else {
           if (res.data.msg.length > 0) {
             this.msg.error(res.data.msg);
           }
         }
       } else {
-        this.msg.error('程序异常');
+        this.msg.error(res.data.msg);
       }
     });
   }
